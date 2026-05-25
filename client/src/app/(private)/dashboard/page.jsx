@@ -16,6 +16,9 @@ import {
 import DashboardBanner from "@/components/DashboardBanner";
 import StatsCards from "@/components/StatsCards";
 import CardWrp from "@/components/CardWrp";
+import QuickActions from "@/components/QuickActions";
+import ActivityInsights from "@/components/ActivityInsights";
+import CareerScore from "@/components/CareerScore";
 
 /* ─── Quick Action Cards ─────────────────────────────────────── */
 const quickActions = [
@@ -137,7 +140,7 @@ const scoreBreakdown = [
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function DashboardPage() {
   return (
-    <div className="animate-fade-in-up">
+    <div className="animate-fade-in-up flex flex-col gap-[20px] md:gap-[30px]">
       {/* Hero Banner */}
       <DashboardBanner />
 
@@ -148,129 +151,19 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <CardWrp>
-        <h2 className="text-lg font-bold text-white mb-4">Quick Actions</h2>
-        <Grid container spacing={2}>
-          {quickActions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <Grid key={action.label} size={{ xs: 12, sm: 6, xl: 3 }}>
-                <Link
-                  href={action.href}
-                  className={`glass-card rounded-xl p-4 flex items-center gap-4 group transition-all duration-300 border border-transparent ${action.border} hover:translate-y-[-2px]`}
-                >
-                  <div className={`w-10 h-10 rounded-xl ${action.bg} flex items-center justify-center shrink-0`}>
-                    <Icon className={`w-5 h-5 ${action.color}`} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-sm truncate">{action.label}</p>
-                    <p className="text-zinc-500 text-xs mt-0.5 truncate">{action.description}</p>
-                  </div>
-                  <ArrowRight className="w-4 h-4 text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all ml-auto shrink-0" />
-                </Link>
-              </Grid>
-            );
-          })}
-        </Grid>
+        <QuickActions data={quickActions} />
       </CardWrp>
 
       {/* Activity + Insights row */}
-      <Grid container spacing={3} className="mt-0">
-        {/* Recent Activity */}
-        <Grid size={{ xs: 12, lg: 7 }}>
-          <CardWrp className="mt-0 h-full">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-white">Recent Activity</h2>
-              <Link
-                href="/job-tracker"
-                className="text-xs font-semibold flex items-center gap-1 transition-colors hover:opacity-80"
-                style={{ color: "var(--color-orange)" }}
-              >
-                View all <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
 
-            <div className="flex flex-col gap-3">
-              {recentActivity.map((item, idx) => {
-                const StatusIcon = item.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors border border-transparent hover:border-white/5"
-                  >
-                    <div className={`w-9 h-9 rounded-xl ${item.statusBg} flex items-center justify-center shrink-0`}>
-                      <StatusIcon className={`w-4 h-4 ${item.statusColor}`} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-semibold truncate">{item.role}</p>
-                      <p className="text-zinc-500 text-xs mt-0.5">{item.company}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${item.statusBg} ${item.statusColor} capitalize`}>
-                        {item.status}
-                      </span>
-                      <p className="text-zinc-600 text-xs mt-1">{item.time}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardWrp>
-        </Grid>
-
-        {/* AI Insights */}
-        <Grid size={{ xs: 12, lg: 5 }}>
-          <CardWrp className="mt-0 h-full">
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,87,34,0.12)" }}>
-                <Zap className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
-              </div>
-              <h2 className="text-lg font-bold text-white">AI Insights</h2>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              {aiInsights.map((insight, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] transition-all hover:border-orange-500/20"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="text-white text-sm font-semibold leading-snug">{insight.title}</p>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${insight.priorityBg} ${insight.priorityColor}`}>
-                      {insight.priority}
-                    </span>
-                  </div>
-                  <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed">{insight.detail}</p>
-                </div>
-              ))}
-            </div>
-          </CardWrp>
-        </Grid>
-      </Grid>
+      <ActivityInsights
+        recentActivity={recentActivity}
+        aiInsights={aiInsights}
+      />
 
       {/* Career Score Breakdown */}
       <CardWrp>
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,87,34,0.12)" }}>
-            <TrendingUp className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
-          </div>
-          <h2 className="text-lg font-bold text-white">Career Score Breakdown</h2>
-        </div>
-
-        <Grid container spacing={3}>
-          {scoreBreakdown.map((item) => (
-            <Grid key={item.label} size={{ xs: 12, sm: 6 }}>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">{item.label}</span>
-                  <span className="text-white text-sm font-bold">{item.score}%</span>
-                </div>
-                <div className="h-1.5 w-full rounded-full bg-white/5">
-                  <div className="progress-bar" style={{ width: `${item.score}%` }} />
-                </div>
-              </div>
-            </Grid>
-          ))}
-        </Grid>
+        <CareerScore scoreBreakdown={scoreBreakdown} />
       </CardWrp>
     </div>
   );

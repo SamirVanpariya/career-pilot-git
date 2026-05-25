@@ -83,10 +83,8 @@ export default function Sidebar() {
       <div className="p-2 border-t border-[var(--color-border)] space-y-2 shrink-0">
         {(!collapsed || isMobile) && (
           <Link href="/resume-analysis"
-            className="flex items-center justify-center gap-2 w-full h-9 rounded-xl border text-xs font-semibold transition-all"
-            style={{ background: "rgba(255,87,34,0.12)", borderColor: "rgba(255,87,34,0.25)", color: "#FFAB91" }}
-            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,87,34,0.20)"}
-            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,87,34,0.12)"}>
+            className="flex items-center justify-center gap-2 w-full h-9 rounded-xl border text-xs font-semibold transition-all hover:opacity-80"
+            style={{ background: "rgba(255,87,34,0.12)", borderColor: "rgba(255,87,34,0.25)", color: "#FFAB91" }}>
             <Zap className="w-3.5 h-3.5" /> Optimise Resume
           </Link>
         )}
