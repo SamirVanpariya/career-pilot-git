@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-const PrimaryButton = ({
+const DangerButton = ({
   children,
   onClick,
   href,
@@ -15,8 +15,8 @@ const PrimaryButton = ({
 
   const styles =
     disabled || loading
-      ? "bg-zinc-700 text-zinc-300 cursor-not-allowed"
-      : " bg-[var(--color-primary)] text-white hover:bg-[var(--color-secondary)] active:scale-[0.97] cursor-pointer";
+      ? "bg-red-700 text-white cursor-not-allowed"
+      : " bg-red-700 uppercase text-white hover:bg-red-500 active:scale-[0.97] cursor-pointer";
 
   const content = loading ? "Loading..." : children;
 
@@ -42,4 +42,4 @@ const PrimaryButton = ({
   );
 };
 
-export default PrimaryButton;
+export default DangerButton;

@@ -20,7 +20,7 @@ const Input = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full h-11  bg-[#161618] border border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-600 ${className} ${icon ? "pl-9" : "pl-3"}`}
+        className={`w-full h-10  bg-[#161618] border border-zinc-800 rounded-lg text-sm focus:outline-none focus:border-zinc-600 ${className} ${icon ? "pl-9" : "pl-3"}`}
       />
     </div>
   );

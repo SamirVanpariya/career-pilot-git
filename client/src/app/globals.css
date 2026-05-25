@@ -7,15 +7,59 @@
   --color-secondary: #8b5cf6;
   --color-tertiary: #b95f00;
   --color-neutral: #0a0a0a;
+
   --color-border: #232326;
   --color-text-primary: #ffffff;
   --color-text-secondary: #a1a1aa;
 }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #5c30e1 #121212;
+}
 
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
 
+*::-webkit-scrollbar-track {
+  background: #121212;
+  border-radius: 10px;
+}
 
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8a67fa 0%, #5c30e1 100%);
+  border-radius: 10px;
+  border: 2px solid #121212;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #9b7cff 0%, #6d42f0 100%);
+}
+
+*::-webkit-scrollbar-corner {
+  background: #121212;
+}
 body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--color-text-primary);
+}
+p,
+span {
+  color: var(--color-text-secondary);
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }

@@ -17,12 +17,11 @@ import {
   Users,
 } from "lucide-react";
 import Input from "@/components/atoms/input/Input";
-import PrimaryButton from "@/components/atoms/buttons/PrimaryButton";
 import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
 
-export default function RegisterComponent() {
+export default function ResetPWComponent() {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -53,15 +52,15 @@ export default function RegisterComponent() {
           <div className="z-10 bg-[#161618] border border-zinc-800 rounded-2xl p-6 space-y-5">
             <div className="flex justify-between">
               <div>
-                <h2 className="font-bold">Career Growth Index</h2>
+                <h2 className="font-bold">Create New Password</h2>
                 <p className="text-xs text-zinc-400">
-                  AI-powered market insights
+                  Update your account credentials securely
                 </p>
               </div>
               <Activity className="text-purple-400" />
             </div>
 
-            {/* Replaced SVG with Lucide-based visual block */}
+            {/* SAME VISUAL BLOCK */}
             <div className="h-40 bg-black/30 border border-zinc-800 rounded-xl flex items-end justify-between p-4">
               <TrendingUp className="text-purple-400 w-6 h-6" />
               <TrendingUp className="text-purple-500 w-8 h-8" />
@@ -72,21 +71,24 @@ export default function RegisterComponent() {
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Users size={14} className="text-zinc-400" />
-                <span className="text-xs text-zinc-400">12k+ users</span>
+                <span className="text-xs text-zinc-400">
+                  Strong passwords keep accounts secure
+                </span>
               </div>
 
               <span className="text-[10px] px-2 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                +24% Growth
+                Secure
               </span>
             </div>
           </div>
 
           <div className="z-10">
             <h1 className="text-xl font-bold">
-              Build your future with AI precision.
+              Set a strong password for your account.
             </h1>
             <p className="text-xs text-zinc-400 mt-2">
-              Join professionals optimizing careers with real-time insights.
+              Choose a secure password to protect your AI-powered career
+              journey.
             </p>
           </div>
         </div>
@@ -95,126 +97,68 @@ export default function RegisterComponent() {
         <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
           <div className="w-full max-w-md space-y-6">
             <div>
-              <h1 className="text-2xl font-bold">Create account</h1>
+              <h1 className="text-2xl font-bold">Reset Password</h1>
               <p className="text-xs text-zinc-400">
-                Start your AI-powered career journey
+                Create a new password to regain secure access to your account
               </p>
-            </div>
-
-            {/* SOCIAL */}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 h-10 bg-[#161618] border border-zinc-800 rounded-lg text-xs">
-                Google
-              </button>
-              <button className="flex items-center justify-center gap-2 h-10 bg-[#161618] border border-zinc-800 rounded-lg text-xs">
-                GitHub
-              </button>
             </div>
 
             {/* FORM */}
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* NAME */}
+              {/* NEW PASSWORD */}
               <div>
-                <label className="text-xs text-zinc-400">Full Name</label>
+                <label className="text-xs text-zinc-400">New Password</label>
 
                 <Input
-                  name="fullName"
-                  value={formData.fullName}
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
                   onChange={(e) =>
-                    setFormData({ ...formData, fullName: e.target.value })
+                    setFormData({ ...formData, password: e.target.value })
                   }
-                  placeholder="Enter full name"
-                  icon={<User size={16} />}
+                  placeholder="Enter new password"
+                  icon={<Lock size={16} />}
                 />
               </div>
 
-              {/* EMAIL */}
+              {/* CONFIRM PASSWORD */}
               <div>
-                <label className="text-xs text-zinc-400">Email</label>
+                <label className="text-xs text-zinc-400">
+                  Confirm Password
+                </label>
 
                 <Input
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="Enter email"
-                  icon={<Mail size={16} />}
-                />
-              </div>
-
-              {/* PASSWORD */}
-              <div>
-                <label className="text-xs text-zinc-400">Password</label>
-                <div className="relative mt-1">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={(e) =>
-                      setFormData({ ...formData, password: e.target.value })
-                    }
-                    placeholder="Enter password"
-                    icon={<Lock size={16} />}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3 text-zinc-500"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* TERMS */}
-              <label className="flex items-center gap-2 text-xs text-zinc-400">
-                <input
-                  type="checkbox"
-                  checked={formData.agreeToTerms}
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      agreeToTerms: e.target.checked,
+                      confirmPassword: e.target.value,
                     })
                   }
+                  placeholder="Confirm new password"
+                  icon={<Lock size={16} />}
                 />
-                I agree to terms
-              </label>
+              </div>
 
               {/* SUBMIT */}
-
               <SecondaryButton type="submit" className="!w-full">
-                Create Account <ArrowRight size={16} />
+                Reset Password <ArrowRight size={16} />
               </SecondaryButton>
             </form>
 
             {/* SUCCESS */}
             <div className="flex items-center gap-2 text-xs text-green-400">
-              Account created successfully
+              Password updated successfully
             </div>
 
             <p className="text-xs text-zinc-500 text-center">
-              Already have an account? <span className="text-white">Login</span>
+              Back to <span className="text-white">Login</span>
             </p>
           </div>
         </div>
       </div>
-
-      {/* FOOTER */}
-      <footer className="border-t border-zinc-800 py-4 text-xs text-zinc-500 flex justify-between px-6">
-        <span>© 2026 CareerPilot AI</span>
-
-        <div className="flex gap-4">
-          <span className="flex items-center gap-1">
-            <HelpCircle size={12} /> Support
-          </span>
-          <span className="flex items-center gap-1">
-            <ShieldCheck size={12} /> Security
-          </span>
-        </div>
-      </footer>
     </div>
   );
 }

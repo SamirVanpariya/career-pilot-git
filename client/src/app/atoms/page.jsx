@@ -1,6 +1,8 @@
 "use client";
+import DangerButton from "@/components/atoms/buttons/DangerButton";
 import PrimaryButton from "@/components/atoms/buttons/PrimaryButton";
-import Secondary from "@/components/atoms/buttons/SecondaryButton";
+import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
+import Colors from "@/components/atoms/colors/Colors";
 import Input from "@/components/atoms/input/Input";
 import { Lock } from "lucide-react";
 import React, { useState } from "react";
@@ -8,7 +10,7 @@ import React, { useState } from "react";
 const page = () => {
   const [formData, setFormData] = useState({ password: "" });
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+    <div className="p-5 flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <Input
         type="text"
         name="password"
@@ -28,10 +30,18 @@ const page = () => {
         <PrimaryButton href="/login">Go to Login</PrimaryButton>
       </div>
       <div className="flex gap-4 mb-4">
-        <Secondary onClick={() => console.log("Secondary clicked")}>
+        <SecondaryButton onClick={() => console.log("Secondary clicked")}>
           Secondary Action
-        </Secondary>
-        <Secondary disabled>Disabled</Secondary>
+        </SecondaryButton>
+        <SecondaryButton disabled>Disabled</SecondaryButton>
+      </div>
+      <div className="flex gap-4 mb-4">
+        <DangerButton onClick={() => console.log("Danger clicked")}>
+          Delete Account
+        </DangerButton>
+      </div>
+      <div className="flex gap-4">
+        <Colors />
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import Input from "@/components/atoms/input/Input";
+import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -136,19 +137,14 @@ export default function Login() {
               </label>
 
               {/* SUBMIT */}
-              <button
+
+              <SecondaryButton
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg text-xs font-bold flex items-center justify-center gap-2"
+                className="!w-full"
               >
-                {isSubmitting ? (
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    Sign in <ArrowRight size={14} />
-                  </>
-                )}
-              </button>
+                Sign in <ArrowRight size={14} />
+              </SecondaryButton>
             </form>
 
             {/* SUCCESS */}

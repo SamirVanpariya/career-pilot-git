@@ -14,6 +14,9 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Register", href: "/register" },
     { name: "Login", href: "/login" },
+    { name: "Forgot Password", href: "/forgot-password" },
+    { name: "Reset Password", href: "/reset-password" },
+    { name: "Dashboard", href: "/dashboard" },
   ];
 
   return (

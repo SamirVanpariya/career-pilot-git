@@ -1,6 +1,6 @@
-import React from "react";
-
-const Secondary = ({
+"use client";
+import Link from "next/link";
+const SecondaryButton = ({
   children,
   onClick,
   href,
@@ -10,21 +10,21 @@ const Secondary = ({
   loading = false,
 }) => {
   const baseStyles =
-    "inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 sm:px-5 h-10 sm:h-11 rounded-lg text-sm sm:text-base font-medium transition-all duration-200 focus:outline-none select-none";
+    "inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 sm:px-5 h-9 sm:h-11 rounded-lg text-[14px] font-[600] transition-all duration-200 focus:outline-none select-none";
 
   const styles =
     disabled || loading
       ? "bg-zinc-700 text-zinc-300 cursor-not-allowed"
-      : "bg-white text-black hover:bg-zinc-200 active:scale-[0.97]";
+      : "text-[14px] bg-[var(--color-secondary)] text-white hover:bg-[var(--color-primary)] active:scale-[0.97] cursor-pointer";
 
   const content = loading ? "Loading..." : children;
 
   // Link mode
   if (href) {
     return (
-      <a href={href} className={`${baseStyles} ${styles} ${className}`}>
+      <Link href={href} className={`${baseStyles} ${styles} ${className}`}>
         {content}
-      </a>
+      </Link>
     );
   }
 
@@ -41,4 +41,4 @@ const Secondary = ({
   );
 };
 
-export default Secondary;
+export default SecondaryButton;
