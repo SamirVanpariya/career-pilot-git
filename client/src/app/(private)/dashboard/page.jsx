@@ -1,16 +1,11 @@
-import Link from "next/link";
-import Grid from "@mui/material/Grid";
 import {
   FileText,
   Briefcase,
   BarChart2,
   MessageSquare,
-  ArrowRight,
   CheckCircle,
   Clock,
-  Zap,
   Star,
-  TrendingUp,
 } from "lucide-react";
 
 import DashboardBanner from "@/components/DashboardBanner";
