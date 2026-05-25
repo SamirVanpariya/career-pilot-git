@@ -191,7 +191,7 @@ const Sidebar = () => {
               : "text-white hover:bg-[#ffffff13] hover:text-white"
           }`}
                 >
-                  <span style={{ filter: active && "brightness(0) invert(1)" }}>
+                  <span className={active ? "brightness-0 invert" : ""}>
                     {item.icon}
                   </span>
 

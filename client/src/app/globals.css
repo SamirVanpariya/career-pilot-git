@@ -11,6 +11,79 @@
   --color-border: #232326;
   --color-text-primary: #ffffff;
   --color-text-secondary: #a1a1aa;
+
+  --glass-bg: rgba(22, 22, 26, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glow-purple: rgba(92, 48, 225, 0.35);
+  --glow-indigo: rgba(99, 102, 241, 0.25);
+}
+
+/* ── Glassmorphism card ── */
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ── Animated gradient text ── */
+.gradient-text {
+  background: linear-gradient(135deg, #c3b4ff 0%, #8b5cf6 50%, #6366f1 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 4s ease infinite;
+}
+
+/* ── Animated gradient border glow ── */
+.glow-border {
+  position: relative;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #8a67fa, #5c30e1, #6366f1, #8a67fa);
+  background-size: 300% 300%;
+  animation: gradientShift 5s ease infinite;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+/* ── Pulse glow ── */
+.pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+
+/* ── Keyframes ── */
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(92, 48, 225, 0.3); }
+  50%       { box-shadow: 0 0 40px rgba(92, 48, 225, 0.7); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* ── Progress bar ── */
+.progress-bar {
+  height: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #8a67fa, #5c30e1);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 * {
   scrollbar-width: thin;
@@ -46,16 +119,15 @@ body {
   color: var(--color-text-primary);
   font-family: Arial, Helvetica, sans-serif;
 }
-h1,
+/* h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
   color: var(--color-text-primary);
-}
-p,
-span {
+} */
+p {
   color: var(--color-text-secondary);
 }
 .container {
