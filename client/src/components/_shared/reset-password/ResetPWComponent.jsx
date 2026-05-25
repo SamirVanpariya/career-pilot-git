@@ -1,162 +1,190 @@
 "use client";
 
 import React, { useState } from "react";
-
-// Lucide Icons only (NO SVG USED)
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  TrendingUp,
-  ArrowRight,
-  HelpCircle,
-  ShieldCheck,
-  Activity,
-  Users,
-} from "lucide-react";
+import Link from "next/link";
+import { Lock, Eye, EyeOff, ArrowRight, Zap, CheckCircle, Shield } from "lucide-react";
 import Input from "@/components/atoms/input/Input";
-import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
+
+function PasswordStrength({ password }) {
+  const checks = [
+    { label: "8+ chars",   pass: password.length >= 8 },
+    { label: "Uppercase",  pass: /[A-Z]/.test(password) },
+    { label: "Number",     pass: /\d/.test(password) },
+  ];
+  const score = checks.filter((c) => c.pass).length;
+  const barColors = ["bg-red-500", "bg-amber-500", "bg-emerald-500"];
+  const labels    = ["Weak", "Fair", "Strong"];
+  if (!password) return null;
+  return (
+    <div className="mt-2">
+      <div className="flex gap-1 mb-1.5">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i < score ? barColors[score - 1] : "bg-zinc-800"}`} />
+        ))}
+      </div>
+      <div className="flex items-center justify-between">
+        <div className="flex gap-3">
+          {checks.map((c) => (
+            <span key={c.label} className={`text-[10px] flex items-center gap-1 ${c.pass ? "text-emerald-400" : "text-zinc-600"}`}>
+              <CheckCircle className="w-2.5 h-2.5" /> {c.label}
+            </span>
+          ))}
+        </div>
+        {score > 0 && <span className={`text-[10px] font-bold ${barColors[score - 1].replace("bg-", "text-")}`}>{labels[score - 1]}</span>}
+      </div>
+    </div>
+  );
+}
 
 export default function ResetPWComponent() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    password: "",
-    agreeToTerms: false,
-  });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
 
-  const handleSubmit = (e) => {};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.password || formData.password !== formData.confirmPassword) return;
+    setLoading(true);
+    setTimeout(() => { setLoading(false); setSuccess(true); }, 1200);
+  };
+
+  const mismatch = formData.confirmPassword && formData.password !== formData.confirmPassword;
 
   return (
-    <div className="min-h-screen bg-[#0D0D0E] text-white flex flex-col">
-      {/* MAIN GRID */}
-      <div className="flex flex-col md:flex-row flex-1">
-        {/* LEFT PANEL */}
-        <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 border-r border-zinc-800 relative overflow-hidden">
-          <div className="absolute -top-10 -left-10 w-72 h-72 bg-indigo-500/10 blur-3xl rounded-full" />
-          <div className="absolute -bottom-10 -right-10 w-72 h-72 bg-purple-500/10 blur-3xl rounded-full" />
+    <div className="min-h-screen bg-[var(--color-bg)] text-white flex">
+      {/* Left Panel */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden border-r border-[var(--color-border)]">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] blur-[100px] rounded-full" style={{ background: "rgba(255,87,34,0.07)" }} />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] blur-[80px] rounded-full" style={{ background: "rgba(255,112,67,0.05)" }} />
+          <div className="absolute inset-0 opacity-[0.02]"
+            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+        </div>
 
-          {/* BRAND */}
-          <div className="flex items-center gap-2 z-10">
-            <TrendingUp className="text-indigo-400" />
-            <span className="font-bold tracking-widest text-sm">
-              CareerPilot AI
-            </span>
+        <Link href="/" className="flex items-center gap-2.5 z-10">
+          <div className="w-8 h-8 rounded-xl gradient-bg-primary flex items-center justify-center">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-black text-white text-lg">Career<span className="gradient-text">Pilot</span></span>
+        </Link>
+
+        <div className="z-10 space-y-8">
+          <div>
+            <h2 className="text-3xl font-black text-white leading-tight mb-3">
+              Set a strong<br /><span className="gradient-text">new password</span>
+            </h2>
+            <p className="text-zinc-400 text-sm leading-relaxed max-w-sm">
+              Choose a secure password to protect your AI-powered career journey.
+            </p>
           </div>
 
-          {/* CARD */}
-          <div className="z-10 bg-[#161618] border border-zinc-800 rounded-2xl p-6 space-y-5">
-            <div className="flex justify-between">
-              <div>
-                <h2 className="font-bold">Create New Password</h2>
-                <p className="text-xs text-zinc-400">
-                  Update your account credentials securely
-                </p>
+          <div className="flex flex-col gap-3">
+            {[
+              "Use 8+ characters with uppercase and numbers",
+              "Avoid reusing passwords from other sites",
+              "Consider using a password manager",
+            ].map((tip) => (
+              <div key={tip} className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(255,87,34,0.10)" }}>
+                  <Shield className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
+                </div>
+                <span className="text-zinc-300 text-sm">{tip}</span>
               </div>
-              <Activity className="text-purple-400" />
-            </div>
-
-            {/* SAME VISUAL BLOCK */}
-            <div className="h-40 bg-black/30 border border-zinc-800 rounded-xl flex items-end justify-between p-4">
-              <TrendingUp className="text-purple-400 w-6 h-6" />
-              <TrendingUp className="text-purple-500 w-8 h-8" />
-              <TrendingUp className="text-purple-400 w-10 h-10" />
-              <TrendingUp className="text-purple-600 w-12 h-12" />
-            </div>
-
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Users size={14} className="text-zinc-400" />
-                <span className="text-xs text-zinc-400">
-                  Strong passwords keep accounts secure
-                </span>
-              </div>
-
-              <span className="text-[10px] px-2 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
-                Secure
-              </span>
-            </div>
+            ))}
           </div>
 
-          <div className="z-10">
-            <h1 className="text-xl font-bold">
-              Set a strong password for your account.
-            </h1>
-            <p className="text-xs text-zinc-400 mt-2">
-              Choose a secure password to protect your AI-powered career
-              journey.
+          <div className="glass-card rounded-2xl p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,87,34,0.12)" }}>
+                <Shield className="w-3.5 h-3.5" style={{ color: "var(--color-orange)" }} />
+              </div>
+              <p className="text-white text-sm font-semibold">Security tip</p>
+            </div>
+            <p className="text-zinc-400 text-xs leading-relaxed">
+              A strong password is your first line of defence. Use a mix of letters, numbers, and symbols.
             </p>
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
-          <div className="w-full max-w-md space-y-6">
-            <div>
-              <h1 className="text-2xl font-bold">Reset Password</h1>
-              <p className="text-xs text-zinc-400">
-                Create a new password to regain secure access to your account
-              </p>
+        <p className="text-zinc-700 text-xs z-10">© 2026 CareerPilot AI. All rights reserved.</p>
+      </div>
+
+      {/* Right Panel */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-md">
+          <Link href="/" className="flex items-center gap-2 mb-8 lg:hidden">
+            <div className="w-7 h-7 rounded-lg gradient-bg-primary flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 text-white" />
             </div>
+            <span className="font-black text-white">Career<span className="gradient-text">Pilot</span></span>
+          </Link>
 
-            {/* FORM */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* NEW PASSWORD */}
-              <div>
-                <label className="text-xs text-zinc-400">New Password</label>
-
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  placeholder="Enter new password"
-                  icon={<Lock size={16} />}
-                />
+          {success ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 border"
+                style={{ background: "rgba(255,87,34,0.10)", borderColor: "rgba(255,87,34,0.25)" }}>
+                <CheckCircle className="w-8 h-8" style={{ color: "var(--color-orange)" }} />
+              </div>
+              <h3 className="text-white font-black text-xl mb-2">Password updated!</h3>
+              <p className="text-zinc-400 text-sm mb-6">Your account is secure. You can now sign in with your new password.</p>
+              <Link href="/login" className="btn-primary !w-full !justify-center">
+                Sign In <ArrowRight size={16} />
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div className="mb-8">
+                <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Reset password</h1>
+                <p className="text-zinc-500 text-sm">Create a new secure password for your account.</p>
               </div>
 
-              {/* CONFIRM PASSWORD */}
-              <div>
-                <label className="text-xs text-zinc-400">
-                  Confirm Password
-                </label>
+              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div>
+                  <label className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block mb-1.5">New Password</label>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} name="password"
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="Create a strong password" icon={<Lock size={16} />} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <PasswordStrength password={formData.password} />
+                </div>
 
-                <Input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  placeholder="Confirm new password"
-                  icon={<Lock size={16} />}
-                />
-              </div>
+                <div>
+                  <label className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block mb-1.5">Confirm Password</label>
+                  <div className="relative">
+                    <Input type={showConfirm ? "text" : "password"} name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                      placeholder="Repeat your password" icon={<Lock size={16} />} />
+                    <button type="button" onClick={() => setShowConfirm(!showConfirm)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                      {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {mismatch && <p className="text-red-400 text-xs mt-1.5">Passwords do not match.</p>}
+                </div>
 
-              {/* SUBMIT */}
-              <SecondaryButton type="submit" className="!w-full">
-                Reset Password <ArrowRight size={16} />
-              </SecondaryButton>
-            </form>
+                <button type="submit" disabled={loading || !formData.password || mismatch}
+                  className={`btn-primary !w-full !justify-center !h-11 mt-1 ${(loading || !formData.password || mismatch) ? "opacity-50 cursor-not-allowed" : ""}`}>
+                  {loading ? "Updating..." : <><span>Update Password</span><ArrowRight size={16} /></>}
+                </button>
+              </form>
+            </>
+          )}
 
-            {/* SUCCESS */}
-            <div className="flex items-center gap-2 text-xs text-green-400">
-              Password updated successfully
-            </div>
-
-            <p className="text-xs text-zinc-500 text-center">
-              Back to <span className="text-white">Login</span>
-            </p>
-          </div>
+          <p className="text-zinc-500 text-sm text-center mt-6">
+            Back to{" "}
+            <Link href="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>
+              Sign in
+            </Link>
+          </p>
         </div>
       </div>
     </div>

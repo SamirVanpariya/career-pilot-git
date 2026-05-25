@@ -24,36 +24,36 @@ const quickActions = [
     description: "AI-powered resume scoring",
     href: "/resume-analysis",
     icon: FileText,
-    color: "text-indigo-400",
-    bg: "bg-indigo-500/10",
-    border: "hover:border-indigo-500/40",
+    color: "text-orange-400",
+    bg: "bg-orange-500/10",
+    border: "hover:border-orange-500/40",
   },
   {
     label: "Job Tracker",
     description: "Track your applications",
     href: "/job-tracker",
     icon: Briefcase,
-    color: "text-violet-400",
-    bg: "bg-violet-500/10",
-    border: "hover:border-violet-500/40",
+    color: "text-orange-300",
+    bg: "bg-orange-400/10",
+    border: "hover:border-orange-400/40",
   },
   {
     label: "Analytics",
     description: "Career performance insights",
     href: "/analytics",
     icon: BarChart2,
-    color: "text-purple-400",
-    bg: "bg-purple-500/10",
-    border: "hover:border-purple-500/40",
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    border: "hover:border-amber-500/40",
   },
   {
     label: "Interviews",
     description: "Prep & schedule sessions",
     href: "/interviews",
     icon: MessageSquare,
-    color: "text-fuchsia-400",
-    bg: "bg-fuchsia-500/10",
-    border: "hover:border-fuchsia-500/40",
+    color: "text-orange-200",
+    bg: "bg-orange-300/10",
+    border: "hover:border-orange-300/40",
   },
 ];
 
@@ -86,8 +86,8 @@ const recentActivity = [
     time: "3 days ago",
     status: "reviewed",
     icon: Star,
-    statusColor: "text-indigo-400",
-    statusBg: "bg-indigo-400/10",
+    statusColor: "text-orange-400",
+    statusBg: "bg-orange-400/10",
   },
   {
     type: "applied",
@@ -182,7 +182,8 @@ export default function DashboardPage() {
               <h2 className="text-lg font-bold text-white">Recent Activity</h2>
               <Link
                 href="/job-tracker"
-                className="text-xs text-violet-400 hover:text-violet-300 font-semibold flex items-center gap-1 transition-colors"
+                className="text-xs font-semibold flex items-center gap-1 transition-colors hover:opacity-80"
+                style={{ color: "var(--color-orange)" }}
               >
                 View all <ArrowRight className="w-3 h-3" />
               </Link>
@@ -220,8 +221,8 @@ export default function DashboardPage() {
         <Grid size={{ xs: 12, lg: 5 }}>
           <CardWrp className="mt-0 h-full">
             <div className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg bg-violet-500/15 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-violet-400" />
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,87,34,0.12)" }}>
+                <Zap className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
               </div>
               <h2 className="text-lg font-bold text-white">AI Insights</h2>
             </div>
@@ -230,7 +231,7 @@ export default function DashboardPage() {
               {aiInsights.map((insight, idx) => (
                 <div
                   key={idx}
-                  className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] hover:border-violet-500/20 transition-all"
+                  className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.04] transition-all hover:border-orange-500/20"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="text-white text-sm font-semibold leading-snug">{insight.title}</p>
@@ -249,8 +250,8 @@ export default function DashboardPage() {
       {/* Career Score Breakdown */}
       <CardWrp>
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-7 h-7 rounded-lg bg-indigo-500/15 flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-indigo-400" />
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "rgba(255,87,34,0.12)" }}>
+            <TrendingUp className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
           </div>
           <h2 className="text-lg font-bold text-white">Career Score Breakdown</h2>
         </div>
@@ -264,10 +265,7 @@ export default function DashboardPage() {
                   <span className="text-white text-sm font-bold">{item.score}%</span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-white/5">
-                  <div
-                    className="progress-bar"
-                    style={{ width: `${item.score}%` }}
-                  />
+                  <div className="progress-bar" style={{ width: `${item.score}%` }} />
                 </div>
               </div>
             </Grid>

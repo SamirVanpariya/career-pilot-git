@@ -38,24 +38,56 @@ const notificationGroups = [
   {
     group: "Applications",
     items: [
-      { label: "Application status updates", description: "When a company changes your application status", defaultOn: true },
-      { label: "New job matches", description: "AI-matched roles based on your profile", defaultOn: true },
-      { label: "Application reminders", description: "Follow-up reminders for pending applications", defaultOn: false },
+      {
+        label: "Application status updates",
+        description: "When a company changes your application status",
+        defaultOn: true,
+      },
+      {
+        label: "New job matches",
+        description: "AI-matched roles based on your profile",
+        defaultOn: true,
+      },
+      {
+        label: "Application reminders",
+        description: "Follow-up reminders for pending applications",
+        defaultOn: false,
+      },
     ],
   },
   {
     group: "Interviews",
     items: [
-      { label: "Interview scheduled", description: "When a new interview is booked", defaultOn: true },
-      { label: "Interview reminders", description: "24h and 1h before each interview", defaultOn: true },
-      { label: "Feedback received", description: "When interview feedback is available", defaultOn: true },
+      {
+        label: "Interview scheduled",
+        description: "When a new interview is booked",
+        defaultOn: true,
+      },
+      {
+        label: "Interview reminders",
+        description: "24h and 1h before each interview",
+        defaultOn: true,
+      },
+      {
+        label: "Feedback received",
+        description: "When interview feedback is available",
+        defaultOn: true,
+      },
     ],
   },
   {
     group: "Platform",
     items: [
-      { label: "Weekly career digest", description: "Summary of your career progress every Monday", defaultOn: false },
-      { label: "Product updates", description: "New features and improvements", defaultOn: false },
+      {
+        label: "Weekly career digest",
+        description: "Summary of your career progress every Monday",
+        defaultOn: false,
+      },
+      {
+        label: "Product updates",
+        description: "New features and improvements",
+        defaultOn: false,
+      },
     ],
   },
 ];
@@ -90,12 +122,12 @@ const integrations = [
 
 /* ─── Accent Colours ─────────────────────────────────────────── */
 const accentColors = [
-  { label: "Indigo", value: "bg-indigo-500" },
-  { label: "Violet", value: "bg-violet-500" },
-  { label: "Purple", value: "bg-purple-500" },
-  { label: "Fuchsia", value: "bg-fuchsia-500" },
-  { label: "Sky", value: "bg-sky-500" },
-  { label: "Emerald", value: "bg-emerald-500" },
+  { label: "Orange",  value: "bg-orange-500" },
+  { label: "Amber",   value: "bg-amber-500"  },
+  { label: "Red",     value: "bg-red-500"    },
+  { label: "Emerald", value: "bg-emerald-500"},
+  { label: "Sky",     value: "bg-sky-500"    },
+  { label: "Zinc",    value: "bg-zinc-500"   },
 ];
 
 /* ─── Toggle Component ───────────────────────────────────────── */
@@ -105,7 +137,7 @@ function Toggle({ defaultOn = false }) {
     <button
       onClick={() => setOn(!on)}
       className={`relative w-10 h-5 rounded-full transition-colors duration-300 shrink-0 ${
-        on ? "bg-violet-500" : "bg-zinc-700"
+        on ? "bg-orange-500" : "bg-zinc-700"
       }`}
       aria-pressed={on}
     >
@@ -121,7 +153,7 @@ function Toggle({ defaultOn = false }) {
 /* ─── Page ───────────────────────────────────────────────────── */
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("profile");
-  const [selectedAccent, setSelectedAccent] = useState("bg-violet-500");
+  const [selectedAccent, setSelectedAccent] = useState("bg-orange-500");
 
   return (
     <div className="animate-fade-in-up">
@@ -136,7 +168,7 @@ export default function SettingsPage() {
       <Grid container spacing={3} className="items-start">
         {/* ── Left Nav ── */}
         <Grid size={{ xs: 12, md: 3 }}>
-          <div className="glass-card rounded-2xl p-2 flex flex-col gap-1">
+          <div className="glass-card rounded-[15px] p-2 flex flex-col gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const active = activeTab === tab.id;
@@ -146,7 +178,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 text-left ${
                     active
-                      ? "bg-violet-500/15 text-violet-300 border border-violet-500/20"
+                      ? "bg-orange-500/15 text-orange-300 border border-orange-500/20"
                       : "text-zinc-400 hover:text-white hover:bg-white/[0.04]"
                   }`}
                 >
@@ -169,25 +201,32 @@ export default function SettingsPage() {
 
         {/* ── Right Panel ── */}
         <Grid size={{ xs: 12, md: 9 }}>
-
           {/* ── PROFILE ── */}
           {activeTab === "profile" && (
             <div className="flex flex-col gap-6">
               {/* Avatar */}
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-5">Profile Photo</h2>
+                <h2 className="text-base font-bold text-white mb-5">
+                  Profile Photo
+                </h2>
                 <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                   <div className="relative shrink-0">
-                    <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500/40 to-indigo-500/30 border border-violet-500/20 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-2xl border flex items-center justify-center"
+                      style={{ background: "linear-gradient(135deg, rgba(255,87,34,0.35), rgba(255,112,67,0.25))", borderColor: "rgba(255,87,34,0.25)" }}>
                       <span className="text-white text-3xl font-black">A</span>
                     </div>
-                    <button className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-lg bg-violet-500 flex items-center justify-center hover:bg-violet-400 transition-colors">
+                    <button className="absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-lg flex items-center justify-center hover:opacity-80 transition-colors"
+                      style={{ background: "var(--color-orange)" }}>
                       <Camera className="w-3.5 h-3.5 text-white" />
                     </button>
                   </div>
                   <div>
-                    <p className="text-white font-semibold text-sm">Alex Johnson</p>
-                    <p className="text-zinc-500 text-xs mt-1">JPG, PNG or GIF · Max 2 MB</p>
+                    <p className="text-white font-semibold text-sm">
+                      Alex Johnson
+                    </p>
+                    <p className="text-zinc-500 text-xs mt-1">
+                      JPG, PNG or GIF · Max 2 MB
+                    </p>
                     <div className="flex gap-2 mt-3">
                       <SecondaryButton href="#">Upload Photo</SecondaryButton>
                     </div>
@@ -197,15 +236,41 @@ export default function SettingsPage() {
 
               {/* Personal Info */}
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-5">Personal Information</h2>
+                <h2 className="text-base font-bold text-white mb-5">
+                  Personal Information
+                </h2>
                 <Grid container spacing={3}>
                   {[
-                    { label: "Full Name", placeholder: "Alex Johnson", icon: User },
-                    { label: "Email Address", placeholder: "alex@example.com", icon: Mail },
-                    { label: "Phone Number", placeholder: "+1 (555) 000-0000", icon: Phone },
-                    { label: "Location", placeholder: "San Francisco, CA", icon: MapPin },
-                    { label: "Job Title", placeholder: "Senior Frontend Engineer", icon: Briefcase },
-                    { label: "Website", placeholder: "https://alexjohnson.dev", icon: Globe },
+                    {
+                      label: "Full Name",
+                      placeholder: "Alex Johnson",
+                      icon: User,
+                    },
+                    {
+                      label: "Email Address",
+                      placeholder: "alex@example.com",
+                      icon: Mail,
+                    },
+                    {
+                      label: "Phone Number",
+                      placeholder: "+1 (555) 000-0000",
+                      icon: Phone,
+                    },
+                    {
+                      label: "Location",
+                      placeholder: "San Francisco, CA",
+                      icon: MapPin,
+                    },
+                    {
+                      label: "Job Title",
+                      placeholder: "Senior Frontend Engineer",
+                      icon: Briefcase,
+                    },
+                    {
+                      label: "Website",
+                      placeholder: "https://alexjohnson.dev",
+                      icon: Globe,
+                    },
                   ].map((field) => {
                     const Icon = field.icon;
                     return (
@@ -220,7 +285,9 @@ export default function SettingsPage() {
                               type="text"
                               placeholder={field.placeholder}
                               defaultValue={field.placeholder}
-                              className="w-full h-10 pl-9 pr-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:bg-white/[0.06] transition-all"
+                              className="w-full h-10 pl-9 pr-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:bg-white/[0.06] transition-all"
+                              onFocus={e => e.target.style.borderColor = "rgba(255,87,34,0.50)"}
+                              onBlur={e => e.target.style.borderColor = ""}
                             />
                           </div>
                         </label>
@@ -238,7 +305,9 @@ export default function SettingsPage() {
                         rows={3}
                         placeholder="Tell recruiters about yourself..."
                         defaultValue="Passionate frontend engineer with 6+ years building scalable web applications. Specialising in React, TypeScript, and design systems."
-                        className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:bg-white/[0.06] transition-all resize-none"
+                        className="w-full p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:bg-white/[0.06] transition-all resize-none"
+                        onFocus={e => e.target.style.borderColor = "rgba(255,87,34,0.50)"}
+                        onBlur={e => e.target.style.borderColor = ""}
                       />
                     </label>
                   </Grid>
@@ -254,7 +323,9 @@ export default function SettingsPage() {
           {/* ── NOTIFICATIONS ── */}
           {activeTab === "notifications" && (
             <CardWrp className="mt-0">
-              <h2 className="text-base font-bold text-white mb-6">Notification Preferences</h2>
+              <h2 className="text-base font-bold text-white mb-6">
+                Notification Preferences
+              </h2>
               <div className="flex flex-col gap-8">
                 {notificationGroups.map((group) => (
                   <div key={group.group}>
@@ -268,8 +339,12 @@ export default function SettingsPage() {
                           className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
                         >
                           <div>
-                            <p className="text-white text-sm font-semibold">{item.label}</p>
-                            <p className="text-zinc-500 text-xs mt-0.5">{item.description}</p>
+                            <p className="text-white text-sm font-semibold">
+                              {item.label}
+                            </p>
+                            <p className="text-zinc-500 text-xs mt-0.5">
+                              {item.description}
+                            </p>
                           </div>
                           <Toggle defaultOn={item.defaultOn} />
                         </div>
@@ -288,9 +363,15 @@ export default function SettingsPage() {
           {activeTab === "security" && (
             <div className="flex flex-col gap-6">
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-5">Change Password</h2>
+                <h2 className="text-base font-bold text-white mb-5">
+                  Change Password
+                </h2>
                 <div className="flex flex-col gap-4 max-w-md">
-                  {["Current Password", "New Password", "Confirm New Password"].map((label) => (
+                  {[
+                    "Current Password",
+                    "New Password",
+                    "Confirm New Password",
+                  ].map((label) => (
                     <label key={label} className="flex flex-col gap-1.5">
                       <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
                         {label}
@@ -298,7 +379,9 @@ export default function SettingsPage() {
                       <input
                         type="password"
                         placeholder="••••••••"
-                        className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 focus:bg-white/[0.06] transition-all"
+                        className="w-full h-10 px-3 rounded-xl bg-white/[0.04] border border-white/[0.08] text-white text-sm placeholder-zinc-600 focus:outline-none focus:bg-white/[0.06] transition-all"
+                        onFocus={e => e.target.style.borderColor = "rgba(255,87,34,0.50)"}
+                        onBlur={e => e.target.style.borderColor = ""}
                       />
                     </label>
                   ))}
@@ -309,7 +392,9 @@ export default function SettingsPage() {
               </CardWrp>
 
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-2">Two-Factor Authentication</h2>
+                <h2 className="text-base font-bold text-white mb-2">
+                  Two-Factor Authentication
+                </h2>
                 <p className="text-zinc-500 text-sm mb-5">
                   Add an extra layer of security to your account.
                 </p>
@@ -319,8 +404,12 @@ export default function SettingsPage() {
                       <Shield className="w-4 h-4 text-emerald-400" />
                     </div>
                     <div>
-                      <p className="text-white text-sm font-semibold">Authenticator App</p>
-                      <p className="text-zinc-500 text-xs mt-0.5">Not configured</p>
+                      <p className="text-white text-sm font-semibold">
+                        Authenticator App
+                      </p>
+                      <p className="text-zinc-500 text-xs mt-0.5">
+                        Not configured
+                      </p>
                     </div>
                   </div>
                   <SecondaryButton href="#">Enable</SecondaryButton>
@@ -328,13 +417,25 @@ export default function SettingsPage() {
               </CardWrp>
 
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-2">Active Sessions</h2>
+                <h2 className="text-base font-bold text-white mb-2">
+                  Active Sessions
+                </h2>
                 <p className="text-zinc-500 text-sm mb-5">
                   Devices currently signed in to your account.
                 </p>
                 {[
-                  { device: "MacBook Pro · Chrome", location: "San Francisco, CA", time: "Active now", current: true },
-                  { device: "iPhone 15 · Safari", location: "San Francisco, CA", time: "2 hours ago", current: false },
+                  {
+                    device: "MacBook Pro · Chrome",
+                    location: "San Francisco, CA",
+                    time: "Active now",
+                    current: true,
+                  },
+                  {
+                    device: "iPhone 15 · Safari",
+                    location: "San Francisco, CA",
+                    time: "2 hours ago",
+                    current: false,
+                  },
                 ].map((session, idx) => (
                   <div
                     key={idx}
@@ -371,7 +472,7 @@ export default function SettingsPage() {
                 <h2 className="text-base font-bold text-white mb-5">Theme</h2>
                 <Grid container spacing={2}>
                   {[
-                    { label: "Dark", desc: "Default dark theme", active: true },
+                    { label: "Dark",   desc: "Default dark theme",   active: true  },
                     { label: "Darker", desc: "Pure black background", active: false },
                     { label: "System", desc: "Follows OS preference", active: false },
                   ].map((theme) => (
@@ -379,14 +480,16 @@ export default function SettingsPage() {
                       <button
                         className={`w-full p-4 rounded-xl border text-left transition-all ${
                           theme.active
-                            ? "border-violet-500/40 bg-violet-500/10"
+                            ? "border-white/[0.06] bg-white/[0.02]"
                             : "border-white/[0.06] bg-white/[0.02] hover:border-white/10"
                         }`}
+                        style={theme.active ? { borderColor: "rgba(255,87,34,0.40)", background: "rgba(255,87,34,0.08)" } : {}}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <p className="text-white text-sm font-semibold">{theme.label}</p>
                           {theme.active && (
-                            <div className="w-4 h-4 rounded-full bg-violet-500 flex items-center justify-center">
+                            <div className="w-4 h-4 rounded-full flex items-center justify-center"
+                              style={{ background: "var(--color-orange)" }}>
                               <Check className="w-2.5 h-2.5 text-white" />
                             </div>
                           )}
@@ -399,7 +502,9 @@ export default function SettingsPage() {
               </CardWrp>
 
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-2">Accent Colour</h2>
+                <h2 className="text-base font-bold text-white mb-2">
+                  Accent Colour
+                </h2>
                 <p className="text-zinc-500 text-sm mb-5">
                   Personalise the highlight colour across the dashboard.
                 </p>
@@ -424,20 +529,35 @@ export default function SettingsPage() {
               </CardWrp>
 
               <CardWrp className="mt-0">
-                <h2 className="text-base font-bold text-white mb-5">Display Preferences</h2>
+                <h2 className="text-base font-bold text-white mb-5">
+                  Display Preferences
+                </h2>
                 <div className="flex flex-col gap-3">
                   {[
-                    { label: "Compact sidebar", description: "Show icons only in the sidebar by default" },
-                    { label: "Animated gradients", description: "Enable gradient animations across the UI" },
-                    { label: "Reduce motion", description: "Minimise animations for accessibility" },
+                    {
+                      label: "Compact sidebar",
+                      description: "Show icons only in the sidebar by default",
+                    },
+                    {
+                      label: "Animated gradients",
+                      description: "Enable gradient animations across the UI",
+                    },
+                    {
+                      label: "Reduce motion",
+                      description: "Minimise animations for accessibility",
+                    },
                   ].map((pref) => (
                     <div
                       key={pref.label}
                       className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.02]"
                     >
                       <div>
-                        <p className="text-white text-sm font-semibold">{pref.label}</p>
-                        <p className="text-zinc-500 text-xs mt-0.5">{pref.description}</p>
+                        <p className="text-white text-sm font-semibold">
+                          {pref.label}
+                        </p>
+                        <p className="text-zinc-500 text-xs mt-0.5">
+                          {pref.description}
+                        </p>
                       </div>
                       <Toggle />
                     </div>
@@ -450,7 +570,9 @@ export default function SettingsPage() {
           {/* ── INTEGRATIONS ── */}
           {activeTab === "integrations" && (
             <CardWrp className="mt-0">
-              <h2 className="text-base font-bold text-white mb-2">Connected Apps</h2>
+              <h2 className="text-base font-bold text-white mb-2">
+                Connected Apps
+              </h2>
               <p className="text-zinc-500 text-sm mb-6">
                 Link external services to enhance your CareerPilot experience.
               </p>
@@ -469,8 +591,12 @@ export default function SettingsPage() {
                           <Icon className={`w-5 h-5 ${int.color}`} />
                         </div>
                         <div>
-                          <p className="text-white text-sm font-semibold">{int.name}</p>
-                          <p className="text-zinc-500 text-xs mt-0.5">{int.description}</p>
+                          <p className="text-white text-sm font-semibold">
+                            {int.name}
+                          </p>
+                          <p className="text-zinc-500 text-xs mt-0.5">
+                            {int.description}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 shrink-0">
@@ -493,7 +619,6 @@ export default function SettingsPage() {
               </div>
             </CardWrp>
           )}
-
         </Grid>
       </Grid>
     </div>

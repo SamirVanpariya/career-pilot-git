@@ -1,249 +1,135 @@
 "use client";
 import React, { useState } from "react";
-import { IconButton, Tooltip, useMediaQuery } from "@mui/material";
-
-import MenuOpenIcon from "@mui/icons-material/MenuOpen";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
+import { Tooltip, useMediaQuery } from "@mui/material";
 import Link from "next/link";
-import DangerButton from "../atoms/buttons/DangerButton";
 import { usePathname } from "next/navigation";
 import { sidebarTopNavigation } from "@/utils/RoutesMapper";
 import {
-  AudioWaveform,
-  ChartPie,
-  FileUser,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  Video,
+  LayoutDashboard, FileUser, AudioWaveform, Video,
+  ChartPie, Settings, LogOut, Menu, X, Zap, ChevronLeft, ChevronRight,
 } from "lucide-react";
 
-const RocketLogo = () => (
-  <svg
-    className="w-6 h-6 text-white transform -rotate-45"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M15.536 8.464a5 5 0 010 7.072L13 18.072v-3.657l-2.414-2.414H6.928l2.536-2.536a5 5 0 017.072 0z"
-    />
-  </svg>
-);
+const navItems = [
+  { text: "Dashboard",       icon: LayoutDashboard, idx: 0 },
+  { text: "Resume Analysis", icon: FileUser,         idx: 1 },
+  { text: "Job Tracker",     icon: AudioWaveform,    idx: 2 },
+  { text: "Interviews",      icon: Video,            idx: 3 },
+  { text: "Analytics",       icon: ChartPie,         idx: 4 },
+  { text: "Settings",        icon: Settings,         idx: 5 },
+];
 
-const Sidebar = () => {
+export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
-  const topMenuItems = [
-    {
-      text: "Dashboard",
-      path: sidebarTopNavigation[0].path,
-      icon: <LayoutDashboard />,
-    },
-    {
-      text: "Resume Analysis",
-      path: sidebarTopNavigation[1].path,
-      icon: <FileUser />,
-    },
-    {
-      text: "Job Tracker",
-      path: sidebarTopNavigation[2].path,
-      icon: <AudioWaveform />,
-      active: true,
-    },
-    {
-      text: "Interviews",
-      path: sidebarTopNavigation[3].path,
-      icon: <Video />,
-    },
-    {
-      text: "Analytics",
-      path: sidebarTopNavigation[4].path,
-      icon: <ChartPie />,
-    },
-    {
-      text: "Settings",
-      path: sidebarTopNavigation[5].path,
-      icon: <Settings />,
-    },
-  ];
   const pathname = usePathname();
-  console.log("Current Path:", pathname);
 
-  const bottomMenuItems = [
-    // { text: "Help Center", icon: <HelpIcon /> },
-    { text: "Logout", path: "/logout", icon: <LogOut />, isLogout: true },
-  ];
+  const SidebarContent = () => (
+    <div className={`h-screen bg-[var(--color-surface)] border-r border-[var(--color-border)] flex flex-col transition-all duration-300 ${collapsed && !isMobile ? "w-[68px]" : "w-64"}`}>
+      {/* Header */}
+      <div className={`flex items-center h-16 px-4 border-b border-[var(--color-border)] shrink-0 ${collapsed && !isMobile ? "justify-center" : "justify-between"}`}>
+        {(!collapsed || isMobile) && (
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg gradient-bg-primary flex items-center justify-center shrink-0">
+              <Zap className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-black text-white text-base">Career<span className="gradient-text">Pilot</span></span>
+          </Link>
+        )}
+        <div className="flex items-center gap-1">
+          {isMobile ? (
+            <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
+              <X className="w-4 h-4" />
+            </button>
+          ) : (
+            <button onClick={() => setCollapsed(!collapsed)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
+              {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const path = sidebarTopNavigation[item.idx]?.path;
+          const active = pathname === path;
+          return (
+            <Tooltip key={item.text} title={collapsed && !isMobile ? item.text : ""} placement="right">
+              <Link
+                href={path || "#"}
+                onClick={isMobile ? () => setMobileOpen(false) : undefined}
+                className={`flex items-center gap-3 h-10 rounded-xl px-3 transition-all duration-200 group ${
+                  collapsed && !isMobile ? "justify-center" : ""
+                } ${
+                  active
+                    ? "border"
+                    : "text-zinc-500 hover:text-white hover:bg-white/[0.05]"
+                }`}
+                style={active ? { background: "rgba(255,87,34,0.12)", borderColor: "rgba(255,87,34,0.25)", color: "#FFAB91" } : {}}
+              >
+                <Icon className="w-4 h-4 shrink-0" style={active ? { color: "var(--color-orange)" } : {}} />
+                {(!collapsed || isMobile) && (
+                  <span className="text-sm font-medium truncate">{item.text}</span>
+                )}
+              </Link>
+            </Tooltip>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-2 border-t border-[var(--color-border)] space-y-2 shrink-0">
+        {(!collapsed || isMobile) && (
+          <Link href="/resume-analysis"
+            className="flex items-center justify-center gap-2 w-full h-9 rounded-xl border text-xs font-semibold transition-all"
+            style={{ background: "rgba(255,87,34,0.12)", borderColor: "rgba(255,87,34,0.25)", color: "#FFAB91" }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,87,34,0.20)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,87,34,0.12)"}>
+            <Zap className="w-3.5 h-3.5" /> Optimise Resume
+          </Link>
+        )}
+        <Tooltip title={collapsed && !isMobile ? "Logout" : ""} placement="right">
+          <button className={`flex items-center gap-3 h-10 w-full rounded-xl px-3 text-zinc-500 hover:text-red-400 hover:bg-red-400/5 transition-all ${collapsed && !isMobile ? "justify-center" : ""}`}>
+            <LogOut className="w-4 h-4 shrink-0" />
+            {(!collapsed || isMobile) && <span className="text-sm font-medium">Logout</span>}
+          </button>
+        </Tooltip>
+      </div>
+    </div>
+  );
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <div className="md:hidden fixed top-4 left-4 z-50">
-        <IconButton
-          onClick={() => setMobileOpen(true)}
-          sx={{
-            color: "white",
-            backgroundColor: "#1E1E1E",
-            "&:hover": {
-              backgroundColor: "#2A2A2A",
-            },
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 h-[60px] glass-nav flex items-center justify-between px-4">
+        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-all">
+          <Menu className="w-5 h-5" />
+        </button>
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-lg gradient-bg-primary flex items-center justify-center">
+            <Zap className="w-3 h-3 text-white" />
+          </div>
+          <span className="font-black text-white text-sm">Career<span className="gradient-text">Pilot</span></span>
+        </Link>
+        <div className="w-9" />
       </div>
 
-      {/* Mobile Overlay */}
+      {/* Mobile overlay */}
       {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      <div
-        className={`h-screen bg-[#121212] border-r border-[#1F1F1F] flex flex-col p-4 transition-all duration-300 z-50
-          ${mobileOpen ? "fixed top-0 left-0 translate-x-0" : "-translate-x-full"}
-          md:translate-x-0
-          ${collapsed ? "w-20" : "w-64"}
-          ${isMobile ? "fixed" : ""}
-        `}
-      >
-        {/* Header */}
-        <div
-          className={`flex items-center ${
-            collapsed ? "justify-center" : "justify-between"
-          } mb-6`}
-        >
-          {!collapsed && (
-            <div className="flex items-center gap-3">
-              <div className="w-[44px] h-[44px] rounded-xl bg-gradient-to-br from-[#8A67FA] to-[#5C30E1] flex items-center justify-center">
-                <RocketLogo />
-              </div>
-
-              <div>
-                <h1 className="text-white font-bold text-lg">CareerPilot</h1>
-
-                <p className="text-xs text-[#737373]">AI Career Intelligence</p>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            {/* Desktop Collapse Button */}
-            <div className="hidden md:block">
-              <IconButton
-                onClick={() => setCollapsed(!collapsed)}
-                sx={{
-                  color: "white",
-                  backgroundColor: "#1E1E1E",
-                  "&:hover": {
-                    backgroundColor: "#2A2A2A",
-                  },
-                }}
-              >
-                {collapsed ? <MenuIcon /> : <MenuOpenIcon />}
-              </IconButton>
-            </div>
-
-            {/* Mobile Close Button */}
-            <div className="md:hidden">
-              <IconButton
-                onClick={() => setMobileOpen(false)}
-                sx={{
-                  color: "white",
-                  backgroundColor: "#1E1E1E",
-                  "&:hover": {
-                    backgroundColor: "#2A2A2A",
-                  },
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </div>
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <div className="absolute left-0 top-0 h-full z-10">
+            <SidebarContent />
           </div>
         </div>
+      )}
 
-        {/* Navigation */}
-        <nav className="flex-grow space-y-2 overflow-y-auto py-2">
-          {topMenuItems.map((item, index) => {
-            const active = pathname === item.path;
-            return (
-              <Tooltip
-                key={index}
-                title={collapsed ? item.text : ""}
-                placement="right"
-                onClick={isMobile ? () => setMobileOpen(false) : undefined}
-              >
-                <Link
-                  href={item?.path}
-                  className={`group flex items-center ${
-                    collapsed ? "justify-center" : "gap-3"
-                  } h-[40px] rounded-[5px] px-3 transition-all duration-200
-          ${
-            active
-              ? "bg-[var(--color-secondary)] text-white"
-              : "text-white hover:bg-[#ffffff13] hover:text-white"
-          }`}
-                >
-                  <span className={active ? "brightness-0 invert" : ""}>
-                    {item.icon}
-                  </span>
-
-                  {!collapsed && (
-                    <span
-                      className={`text-[16px] font-[600] ${
-                        active ? "!text-white" : "text-[#A1A1AA]"
-                      }`}
-                    >
-                      {item.text}
-                    </span>
-                  )}
-                </Link>
-              </Tooltip>
-            );
-          })}
-        </nav>
-
-        {/* Footer */}
-        <div className="space-y-4">
-          {!collapsed && (
-            <button className="w-full h-[44px] rounded-xl bg-[#CDD1FF] text-[#5C30E1] font-bold text-sm hover:bg-[#BCC1FF] transition">
-              Optimize Resume
-            </button>
-          )}
-
-          <nav className="space-y-2">
-            {bottomMenuItems.map((item, index) => (
-              <Tooltip
-                key={index}
-                title={collapsed ? item.text : ""}
-                placement="right"
-              >
-                <DangerButton
-                  onClick={() => console.log(`${item.text} clicked`)}
-                  className="!w-full"
-                >
-                  <span>{item.icon}</span>
-
-                  {!collapsed && (
-                    <span className="!text-white text-[16px] font-[600]">
-                      {item.text}
-                    </span>
-                  )}
-                </DangerButton>
-              </Tooltip>
-            ))}
-          </nav>
-        </div>
+      {/* Desktop sidebar */}
+      <div className="hidden md:block sticky top-0 h-screen shrink-0">
+        <SidebarContent />
       </div>
     </>
   );
-};
-
-export default Sidebar;
+}

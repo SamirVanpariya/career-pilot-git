@@ -2,166 +2,173 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  TrendingUp,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, CheckCircle2, Zap, TrendingUp, Users, Award } from "lucide-react";
 import Input from "@/components/atoms/input/Input";
-import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
+
+const highlights = [
+  { icon: TrendingUp, text: "3x faster job search with AI" },
+  { icon: Users, text: "50,000+ professionals trust us" },
+  { icon: Award, text: "89% interview success rate" },
+];
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState(false);
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const [formData, setFormData] = useState({ email: "", password: "", rememberMe: false });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     setTimeout(() => {
       setIsSubmitting(false);
       setSuccessMsg(true);
-
       setTimeout(() => setSuccessMsg(false), 3000);
     }, 1200);
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0E] text-white flex flex-col">
-      {/* MAIN GRID */}
-      <div className="flex flex-col md:flex-row flex-1">
-        {/* LEFT PANEL */}
-        <div className="hidden md:flex md:w-1/2 flex-col justify-between p-12 border-r border-zinc-800 relative overflow-hidden">
-          <div className="absolute -top-20 -left-20 w-96 h-96 bg-indigo-500/10 blur-3xl rounded-full" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 blur-3xl rounded-full" />
-
-          {/* BRAND */}
-          <div className="flex items-center gap-2 z-10">
-            <TrendingUp className="text-indigo-400" />
-            <span className="text-sm font-bold tracking-widest">
-              CareerPilot
-            </span>
-          </div>
-
-          {/* HERO TEXT */}
-          <div className="z-10 space-y-4">
-            <h1 className="text-3xl font-black leading-tight">
-              Navigate your future with precision.
-            </h1>
-            <p className="text-xs text-zinc-400 max-w-sm">
-              AI-powered insights to accelerate your career growth.
-            </p>
-          </div>
-
-          <p className="text-[10px] text-zinc-600 z-10">
-            © 2026 CareerPilot AI
-          </p>
+    <div className="min-h-screen bg-[var(--color-bg)] text-white flex">
+      {/* Left Panel */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden border-r border-[var(--color-border)]">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] blur-[100px] rounded-full" style={{ background: "rgba(255,87,34,0.07)" }} />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] blur-[80px] rounded-full" style={{ background: "rgba(255,112,67,0.05)" }} />
+          <div className="absolute inset-0 opacity-[0.02]"
+            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
-          <div className="w-full max-w-md space-y-6">
-            {/* HEADER */}
-            <div>
-              <h1 className="text-2xl font-bold">Welcome back</h1>
-              <p className="text-xs text-zinc-400">Sign in to your account</p>
-            </div>
+        <Link href="/" className="flex items-center gap-2.5 z-10">
+          <div className="w-8 h-8 rounded-xl gradient-bg-primary flex items-center justify-center">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <span className="font-black text-white text-lg">Career<span className="gradient-text">Pilot</span></span>
+        </Link>
 
-            {/* SOCIAL */}
-            <div className="grid grid-cols-2 gap-3">
-              <button className="h-11 flex items-center justify-center gap-2 bg-[#161618] border border-zinc-800 rounded-lg text-xs">
-                Google
-              </button>
-
-              <button className="h-11 flex items-center justify-center gap-2 bg-[#161618] border border-zinc-800 rounded-lg text-xs">
-                GitHub
-              </button>
-            </div>
-
-            {/* FORM */}
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* EMAIL */}
-              <div>
-                <label className="text-xs text-zinc-400">Email</label>
-                <Input
-                  type={"email"}
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="Enter email"
-                  icon={<Mail size={16} />}
-                />
-              </div>
-
-              {/* PASSWORD */}
-              <div>
-                <label className="text-xs text-zinc-400">Password</label>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  placeholder="Enter password"
-                  icon={<Lock size={16} />}
-                />
-              </div>
-
-              {/* REMEMBER */}
-              <label className="flex items-center gap-2 text-xs text-zinc-400">
-                <input
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      rememberMe: e.target.checked,
-                    })
-                  }
-                />
-                Remember me
-              </label>
-
-              {/* SUBMIT */}
-
-              <SecondaryButton
-                type="submit"
-                disabled={isSubmitting}
-                className="!w-full"
-              >
-                Sign in <ArrowRight size={14} />
-              </SecondaryButton>
-            </form>
-
-            {/* SUCCESS */}
-            {successMsg && (
-              <div className="flex items-center gap-2 text-xs text-green-400">
-                <CheckCircle2 size={14} />
-                Login successful
-              </div>
-            )}
-
-            <p className="text-xs text-zinc-500 text-center">
-              Don’t have an account?{" "}
-              <Link href="#" className="text-white font-bold">
-                Sign up
-              </Link>
+        <div className="z-10 space-y-8">
+          <div>
+            <h2 className="text-3xl font-black text-white leading-tight mb-3">
+              Navigate your future<br />with <span className="gradient-text">AI precision</span>
+            </h2>
+            <p className="text-zinc-400 text-sm leading-relaxed max-w-sm">
+              Join 50,000+ professionals who use CareerPilot to land better jobs, faster.
             </p>
           </div>
+
+          <div className="flex flex-col gap-3">
+            {highlights.map((h) => {
+              const Icon = h.icon;
+              return (
+                <div key={h.text} className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: "rgba(255,87,34,0.10)" }}>
+                    <Icon className="w-4 h-4" style={{ color: "var(--color-orange)" }} />
+                  </div>
+                  <span className="text-zinc-300 text-sm">{h.text}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Testimonial */}
+          <div className="glass-card rounded-2xl p-5">
+            <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+              "CareerPilot helped me go from 8% to 34% callback rate. Landed my dream job at Stripe in 6 weeks."
+            </p>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full gradient-bg-primary flex items-center justify-center">
+                <span className="text-white text-xs font-black">SC</span>
+              </div>
+              <div>
+                <p className="text-white text-xs font-semibold">Sarah Chen</p>
+                <p className="text-zinc-500 text-xs">Software Engineer @ Stripe</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-zinc-700 text-xs z-10">© 2026 CareerPilot AI. All rights reserved.</p>
+      </div>
+
+      {/* Right Panel */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-10">
+        <div className="w-full max-w-md">
+          {/* Mobile logo */}
+          <Link href="/" className="flex items-center gap-2 mb-8 lg:hidden">
+            <div className="w-7 h-7 rounded-lg gradient-bg-primary flex items-center justify-center">
+              <Zap className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-black text-white">Career<span className="gradient-text">Pilot</span></span>
+          </Link>
+
+          <div className="mb-8">
+            <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Welcome back</h1>
+            <p className="text-zinc-500 text-sm">Sign in to continue your career journey</p>
+          </div>
+
+          {/* Social */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {["Google", "GitHub"].map((provider) => (
+              <button key={provider} className="btn-secondary !h-11 !text-sm !w-full !justify-center">
+                {provider}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-[var(--color-border)]" />
+            <span className="text-zinc-600 text-xs">or continue with email</span>
+            <div className="flex-1 h-px bg-[var(--color-border)]" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <label className="text-zinc-400 text-xs font-semibold uppercase tracking-wider block mb-1.5">Email</label>
+              <Input type="email" name="email" value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                placeholder="you@example.com" icon={<Mail size={16} />} />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">Password</label>
+                <Link href="/forgot-password" className="text-xs hover:opacity-80 transition-colors" style={{ color: "var(--color-orange)" }}>Forgot password?</Link>
+              </div>
+              <div className="relative">
+                <Input type={showPassword ? "text" : "password"} name="password" value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Enter your password" icon={<Lock size={16} />} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors mt-0.5">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            <label className="flex items-center gap-2.5 cursor-pointer">
+              <input type="checkbox" checked={formData.rememberMe}
+                onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
+                className="w-4 h-4 rounded border-zinc-700 bg-zinc-800 shrink-0" style={{ accentColor: "var(--color-orange)" }} />
+              <span className="text-zinc-400 text-sm">Remember me for 30 days</span>
+            </label>
+
+            <button type="submit" disabled={isSubmitting}
+              className="btn-primary !w-full !justify-center !h-11 mt-1">
+              {isSubmitting ? "Signing in..." : <><span>Sign In</span><ArrowRight size={16} /></>}
+            </button>
+          </form>
+
+          {successMsg && (
+            <div className="flex items-center gap-2 text-sm text-emerald-400 mt-4 p-3 rounded-xl bg-emerald-400/10 border border-emerald-400/20">
+              <CheckCircle2 size={16} /> Signed in successfully! Redirecting...
+            </div>
+          )}
+
+          <p className="text-zinc-500 text-sm text-center mt-6">
+            Don't have an account?{" "}
+            <Link href="/register" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>
+              Create one free
+            </Link>
+          </p>
         </div>
       </div>
     </div>

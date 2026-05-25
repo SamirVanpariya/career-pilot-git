@@ -1,155 +1,146 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Menu as MenuIcon, Search, Bell, X } from "lucide-react";
+import { Menu, X, Zap } from "lucide-react";
+
+const navLinks = [
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Features", href: "#features" },
+  { name: "Pricing", href: "#pricing" },
+  { name: "Testimonials", href: "#testimonials" },
+  { name: "FAQ", href: "#faq" },
+];
 
 export default function Header() {
-  const [activeLink, setActiveLink] = useState("Home");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Register", href: "/register" },
-    { name: "Login", href: "/login" },
-    { name: "Forgot Password", href: "/forgot-password" },
-    { name: "Reset Password", href: "/reset-password" },
-    { name: "Dashboard", href: "/dashboard" },
-  ];
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border)] bg-[#0D0D0E]/85 backdrop-blur-md shadow-lg shadow-black/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* LEFT - Logo */}
-          <Link href="/" className="flex items-center space-x-3 shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center shadow-md">
-              <span className="font-black text-white text-lg">P</span>
-            </div>
-
-            <div className="flex flex-col">
-              <span className="font-bold text-sm text-white">
-                Precision & Flow
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "glass-nav shadow-lg shadow-black/20"
+            : "bg-transparent border-b border-transparent"
+        }`}
+      >
+        <div className="container">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+              <div className="w-8 h-8 rounded-xl gradient-bg-primary flex items-center justify-center glow-sm">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <span className="font-black text-white text-lg tracking-tight">
+                Career<span className="gradient-text">Pilot</span>
               </span>
-              <span className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold">
-                Design System
-              </span>
-            </div>
-          </Link>
+            </Link>
 
-          {/* CENTER - Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-200"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+
+            {/* CTA */}
+            <div className="hidden md:flex items-center gap-3">
               <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setActiveLink(link.name)}
-                className={`px-3.5 py-2 rounded-lg text-xs font-semibold uppercase transition-all ${
-                  activeLink === link.name
-                    ? "bg-white/5 text-white border border-white/10"
-                    : "text-zinc-400 hover:text-white hover:bg-white/5"
-                }`}
+                href="/login"
+                className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white transition-colors"
               >
-                {link.name}
+                Sign in
               </Link>
-            ))}
-          </nav>
-
-          {/* RIGHT */}
-          <div className="flex items-center space-x-3.5">
-            {/* Search */}
-            <div className="hidden lg:flex items-center relative w-56">
-              <Search className="absolute left-3 text-zinc-500 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-9 pl-9 pr-3 text-xs bg-[#161618] border border-[var(--color-border)] rounded-lg text-white"
-              />
+              <Link
+                href="/register"
+                className="btn-primary !h-9 !px-5 !text-sm"
+              >
+                Get Started Free
+              </Link>
             </div>
 
-            {/* Bell */}
-            <button className="p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-[#161618] border border-transparent hover:border-zinc-700 relative">
-              <Bell size={16} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-500 ring-2 ring-[#0D0D0E]" />
-            </button>
-
-            {/* User */}
-            <button className="hidden sm:flex items-center space-x-2 pl-2.5 pr-1.5 py-1 rounded-full bg-[#161618] border border-[var(--color-border)]">
-              <span className="text-xs font-bold text-zinc-300">
-                Geist Admin
-              </span>
-
-              <Image
-                src="https://i.pravatar.cc/40"
-                alt="User"
-                width={28}
-                height={28}
-                className="rounded-full"
-              />
-            </button>
-
-            {/* Mobile menu button */}
+            {/* Mobile toggle */}
             <button
-              onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden p-2.5 rounded-xl text-zinc-400 hover:text-white hover:bg-[#161618] border border-[var(--color-border)]"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
+              aria-label="Toggle menu"
             >
-              <MenuIcon size={18} />
+              {mobileOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
       </header>
 
-      {/* ================= MOBILE SIDEBAR ================= */}
+      {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-50 transition-all ${
-          mobileMenuOpen ? "visible" : "invisible"
+        className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
+          mobileOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
-        {/* Overlay */}
         <div
-          onClick={() => setMobileMenuOpen(false)}
-          className={`absolute inset-0 bg-black/60 transition-opacity ${
-            mobileMenuOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+          onClick={() => setMobileOpen(false)}
         />
-
-        {/* Sidebar */}
         <div
-          className={`absolute left-0 top-0 h-full w-72 bg-[#0D0D0E] border-r border-zinc-800 p-5 transform transition-transform ${
-            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          className={`absolute top-0 right-0 h-full w-72 bg-[#0f0f1a] border-l border-[var(--color-border)] p-6 transform transition-transform duration-300 ${
+            mobileOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          {/* Top */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <span className="text-white font-bold">Menu</span>
-            <button onClick={() => setMobileMenuOpen(false)}>
-              <X className="text-white" />
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5"
+            >
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          {/* Links */}
-          <div className="flex flex-col space-y-2">
+          <nav className="flex flex-col gap-1 mb-8">
             {navLinks.map((link) => (
-              <Link
+              <a
                 key={link.name}
                 href={link.href}
-                onClick={() => {
-                  setActiveLink(link.name);
-                  setMobileMenuOpen(false);
-                }}
-                className={`px-3 py-2 rounded-lg text-sm ${
-                  activeLink === link.name
-                    ? "bg-white/10 text-white"
-                    : "text-zinc-400"
-                }`}
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-3 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
+          </nav>
+
+          <div className="flex flex-col gap-3">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="btn-secondary !w-full !justify-center"
+            >
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              onClick={() => setMobileOpen(false)}
+              className="btn-primary !w-full !justify-center"
+            >
+              Get Started Free
+            </Link>
           </div>
         </div>
       </div>
