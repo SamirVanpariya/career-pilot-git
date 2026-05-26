@@ -1,8 +1,22 @@
+"use client";
 import { Grid } from "@mui/material";
 import CardWrp from "./CardWrp";
 import { DollarSign, MapPin } from "lucide-react";
+import Select from "./atoms/select/Select";
+import { useState } from "react";
 
-const ApplicationBoard = ({ columns, jobs, priorityStyles }) => {
+const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
+  const STATUS = ["applied", "interview", "offer", "rejected"];
+
+  const [jobs, setJobs] = useState(initialJobs);
+
+  const handleChangeStatus = (jobId, newStatus) => {
+    setJobs((prev) =>
+      prev.map((job) =>
+        job.id === jobId ? { ...job, status: newStatus } : job,
+      ),
+    );
+  };
   return (
     <CardWrp>
       <h2 className="text-lg font-bold text-white mb-5">Application Board</h2>
@@ -48,11 +62,17 @@ const ApplicationBoard = ({ columns, jobs, priorityStyles }) => {
                               {job.company}
                             </span>
                           </div>
-                          <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${p.bg} ${p.color}`}
-                          >
-                            {p.label}
-                          </span>
+
+                          <Select
+                            name="status"
+                            value={job.status}
+                            onChange={(e) =>
+                              handleChangeStatus(job.id, e.target.value)
+                            }
+                            options={STATUS}
+                            placeholder="Move to..."
+                            className="!w-[100px] !h-[30px]"
+                          />
                         </div>
                         <p className="text-zinc-300 text-xs leading-relaxed">
                           {job.role}
