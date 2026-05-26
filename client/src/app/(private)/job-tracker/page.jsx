@@ -171,6 +171,7 @@ export default function JobTrackerPage() {
       <JobTrackerHead />
       <div className="flex flex-col gap-[20px] md:gap-[30px]  ">
         <JobStates summaryStats={summaryStats} />
+        
         <ApplicationBoard
           columns={columns}
           jobs={jobs}

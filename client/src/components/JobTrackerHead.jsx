@@ -1,7 +1,14 @@
+"use client";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import PrimaryButton from "./atoms/buttons/PrimaryButton";
+import AddJobModal from "./AddJobModal";
 
 const JobTrackerHead = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpen = () => setIsModalOpen(true);
+  const handleClose = () => setIsModalOpen(false);
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
       <div>
@@ -10,9 +17,11 @@ const JobTrackerHead = () => {
           Manage and track all your job applications.
         </p>
       </div>
-      <PrimaryButton href="#">
-        <Plus className="w-4 h-4" /> Add Application
+
+      <PrimaryButton onClick={handleOpen}>
+        <Plus className="w-4 h-4" /> Add Job
       </PrimaryButton>
+      <AddJobModal open={isModalOpen} onClose={handleClose} />
     </div>
   );
 };

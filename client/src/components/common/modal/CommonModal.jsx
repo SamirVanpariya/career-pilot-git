@@ -1,8 +1,8 @@
 import React from "react";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
-import { X } from "lucide-react";
+import { Subtitles, X } from "lucide-react";
 
-const CommonModal = ({ open, onClose, title, children, maxWidth = "md" }) => {
+const CommonModal = ({ open, onClose, title, children, maxWidth = "md",subTitle }) => {
   return (
     <Dialog
       open={open}
@@ -48,7 +48,10 @@ const CommonModal = ({ open, onClose, title, children, maxWidth = "md" }) => {
           alignItems: "center",
         }}
       >
-        <span className="text-xl font-bold">{title}</span>
+        <div>
+          <span className="text-xl font-bold">{title}</span>
+          {subTitle && <p className="text-zinc-500 text-sm">{subTitle}</p>}
+        </div>
         <IconButton
           onClick={onClose}
           size="small"
