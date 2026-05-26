@@ -22,10 +22,10 @@ const Input = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full h-11 bg-white/[0.04] border border-[var(--color-border)] rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:bg-white/[0.06] transition-all duration-200 ${icon ? "pl-10 pr-3" : "px-3"} ${className}`}
+        className={`w-full h-11 bg-white/[0.04] border border-[var(--color-border)] rounded-xl !mb-0 text-sm text-white placeholder-zinc-600 focus:outline-none focus:bg-white/[0.06] transition-all duration-200 ${icon ? "pl-10 pr-3" : "px-3"} ${className}`}
         style={{ outlineColor: "transparent" }}
-        onFocus={e => e.target.style.borderColor = "rgba(255,87,34,0.50)"}
-        onBlur={e => e.target.style.borderColor = ""}
+        onFocus={(e) => (e.target.style.borderColor = "rgba(255,87,34,0.50)")}
+        onBlur={(e) => (e.target.style.borderColor = "")}
       />
     </div>
   );
