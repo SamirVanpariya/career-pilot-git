@@ -1,13 +1,10 @@
 import React from "react";
+import JobDetailClient from "./JobDetailClient";
 
 const JobDetailPage = async ({ params }) => {
   const { id } = await params;
-  return (
-    <div className="flex items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold text-white">Job Detail Page</h1>
-      <p className="text-white">Job ID: {id}</p>
-    </div>
-  );
+  return <JobDetailClient id={id} />;
 };
 
 export default JobDetailPage;
+
