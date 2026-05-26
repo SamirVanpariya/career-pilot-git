@@ -188,7 +188,7 @@ function FaqItem({ q, a }) {
         <span className="text-white font-semibold text-sm sm:text-base">
           {q}
         </span>
-        <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-300 group-open:rotate-180" />
+        <ChevronDown className="w-4 h-4 text-[var(--color-text-secondary)] shrink-0 transition-transform duration-300 group-open:rotate-180" />
       </summary>
       <div className="px-5 pb-5">
         <p className="text-zinc-400 text-sm leading-relaxed">{a}</p>
@@ -267,7 +267,7 @@ export default function LandingPage() {
             </div>
 
             {/* Social proof */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-zinc-500 animate-fade-in-up delay-400">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-[var(--color-text-secondary)] animate-fade-in-up delay-400">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="w-4 h-4 text-emerald-400" /> No credit
                 card required
@@ -293,7 +293,7 @@ export default function LandingPage() {
                 <p className="text-2xl sm:text-3xl font-black gradient-text">
                   {s.value}
                 </p>
-                <p className="text-zinc-500 text-xs mt-1">{s.label}</p>
+                <p className="text-[var(--color-text-secondary)] text-xs mt-1">{s.label}</p>
               </div>
             ))}
           </div>
@@ -458,7 +458,7 @@ export default function LandingPage() {
                   </div>
                   <div>
                     <p className="text-white text-sm font-semibold">{t.name}</p>
-                    <p className="text-zinc-500 text-xs">{t.role}</p>
+                    <p className="text-[var(--color-text-secondary)] text-xs">{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -517,11 +517,11 @@ export default function LandingPage() {
                     <span className="text-4xl font-black text-white">
                       {plan.price}
                     </span>
-                    <span className="text-zinc-500 text-sm mb-1">
+                    <span className="text-[var(--color-text-secondary)] text-sm mb-1">
                       /{plan.period}
                     </span>
                   </div>
-                  <p className="text-zinc-500 text-xs mt-2">{plan.desc}</p>
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-2">{plan.desc}</p>
                 </div>
 
                 <ul className="flex flex-col gap-2.5 flex-1">
@@ -625,7 +625,7 @@ export default function LandingPage() {
                 </div>
                 <span className="font-black text-white">CareerPilot</span>
               </div>
-              <p className="text-zinc-500 text-sm leading-relaxed mb-4">
+              <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-4">
                 AI-powered career intelligence to help you land your dream job
                 faster.
               </p>
@@ -634,7 +634,7 @@ export default function LandingPage() {
                   <Link
                     key={i}
                     href="#"
-                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-zinc-500 hover:text-white hover:border-white/10 transition-all"
+                    className="w-8 h-8 rounded-lg bg-white/5 border border-white/5 flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:border-white/10 transition-all"
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </Link>
@@ -671,7 +671,7 @@ export default function LandingPage() {
                     <li key={l}>
                       <Link
                         href="#"
-                        className="text-zinc-500 text-sm hover:text-zinc-300 transition-colors"
+                        className="text-[var(--color-text-secondary)] text-sm hover:text-zinc-300 transition-colors"
                       >
                         {l}
                       </Link>

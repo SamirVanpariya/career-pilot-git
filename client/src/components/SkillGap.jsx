@@ -9,7 +9,7 @@ const SkillGap = ({ skillGap }) => {
         <h2 className="text-lg font-bold text-white mb-5">
           Skill Gap Analysis
         </h2>
-        <p className="text-zinc-500 text-xs mb-4">
+        <p className="text-[var(--color-text-secondary)] text-xs mb-4">
           Based on top 50 matched job descriptions.
         </p>
         <div className="flex flex-col gap-2.5">

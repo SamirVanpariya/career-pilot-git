@@ -25,7 +25,7 @@ const AISuggestions = ({ suggestions }) => {
                 </div>
                 <div>
                   <p className="text-white text-sm font-semibold">{s.title}</p>
-                  <p className="text-zinc-500 text-xs mt-1 leading-relaxed">
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-1 leading-relaxed">
                     {s.detail}
                   </p>
                 </div>

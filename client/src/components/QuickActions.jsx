@@ -26,7 +26,7 @@ const QuickActions = ({ data }) => {
                   <p className="text-white font-semibold text-sm truncate">
                     {action.label}
                   </p>
-                  <p className="text-zinc-500 text-xs mt-0.5 truncate">
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-0.5 truncate">
                     {action.description}
                   </p>
                 </div>

@@ -41,10 +41,10 @@ const InterviewPrep = ({ prepResources }) => {
                   <p className="text-white text-sm font-bold leading-snug">
                     {res.title}
                   </p>
-                  <p className="text-zinc-500 text-xs mt-1">{res.category}</p>
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-1">{res.category}</p>
                 </div>
                 <div className="flex items-center justify-between mt-auto">
-                  <span className="flex items-center gap-1 text-zinc-500 text-xs">
+                  <span className="flex items-center gap-1 text-[var(--color-text-secondary)] text-xs">
                     <Clock className="w-3 h-3" />
                     {res.duration}
                   </span>

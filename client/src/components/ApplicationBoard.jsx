@@ -1,37 +1,35 @@
 "use client";
-
 import * as React from "react";
 import { useState } from "react";
-
 import { Grid } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
-import { DeleteIcon, DollarSign, EditIcon, MapPin } from "lucide-react";
-
+import { DollarSign, EditIcon, MapPin, Trash2 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import Select from "./atoms/select/Select";
 import Textarea from "./atoms/textarea/Textarea";
 import EditJobModal from "./EditJobModal";
+import DeleteJobModal from "./DeleteJobModal";
+import Link from "next/link";
 
 const options = ["edit", "delete"];
 const ITEM_HEIGHT = 48;
 
-const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
+const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
   const STATUS = ["applied", "interview", "offer", "rejected"];
 
   const [jobs, setJobs] = useState(initialJobs || []);
   const [openNoteJobId, setOpenNoteJobId] = useState(null);
-
+  const [tempNotes, setTempNotes] = useState({});
   const [editJobID, setEditJobID] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // menu state
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedJobId, setSelectedJobId] = useState(null);
-
   const open = Boolean(anchorEl);
 
   // change status
@@ -50,25 +48,37 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
 
   // note toggle
   const handleAddNote = (jobId) => {
+    const job = jobs.find((j) => j.id === jobId);
+
+    setTempNotes((prev) => ({
+      ...prev,
+      [jobId]: job?.notes || "",
+    }));
+
     setOpenNoteJobId((prev) => (prev === jobId ? null : jobId));
   };
 
   // note change
   const handleNoteChange = (jobId, value) => {
+    setTempNotes((prev) => ({
+      ...prev,
+      [jobId]: value,
+    }));
+  };
+
+  // note save
+  const handleSaveNote = (jobId) => {
     setJobs((prev) =>
       prev.map((job) =>
         job.id === jobId
           ? {
               ...job,
-              notes: value,
+              notes: tempNotes[jobId],
             }
           : job,
       ),
     );
-  };
 
-  // note save
-  const handleSaveNote = () => {
     setOpenNoteJobId(null);
   };
 
@@ -81,7 +91,6 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
   // menu close
   const handleClose = () => {
     setAnchorEl(null);
-    setSelectedJobId(null);
   };
 
   // edit modal
@@ -98,8 +107,21 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
 
   // delete job
   const handleDeleteJob = (jobId) => {
-    setJobs((prev) => prev.filter((job) => job.id !== jobId));
+    setIsDeleteModalOpen(true);
+    setSelectedJobId(jobId);
     handleClose();
+  };
+
+  // delete job confirm
+  const handleDeleteConfirm = (jobId) => {
+    setJobs((prev) => prev.filter((job) => job.id !== jobId));
+    setIsDeleteModalOpen(false);
+    setSelectedJobId(null);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedJobId(null);
   };
 
   return (
@@ -112,7 +134,6 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
         <Grid container spacing={3}>
           {columns.map((col) => {
             const ColIcon = col.icon;
-
             const colJobs = jobs.filter((job) => job.status === col.id);
 
             return (
@@ -203,13 +224,13 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
 
                           {/* location + salary */}
                           <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
+                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
                               <MapPin className="w-3 h-3 shrink-0" />
 
                               <span className="truncate">{job.location}</span>
                             </div>
 
-                            <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
+                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
                               <DollarSign className="w-3 h-3 shrink-0" />
 
                               <span>{job.salary}</span>
@@ -228,7 +249,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
                             <>
                               <Textarea
                                 name="notes"
-                                value={job.notes || ""}
+                                value={tempNotes[job.id] || ""}
                                 onChange={(e) =>
                                   handleNoteChange(job.id, e.target.value)
                                 }
@@ -252,13 +273,29 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
                               </div>
                             </>
                           ) : (
-                            <button
-                              onClick={() => handleAddNote(job.id)}
-                              className="px-4 py-2 border border-dashed border-white/30 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
-                            >
-                              Add Note
-                            </button>
+                            <>
+                              {job?.notes && (
+                                <p className="text-zinc-300 text-sm">
+                                  <span className="text-white">Note:</span>{" "}
+                                  {job?.notes}
+                                </p>
+                              )}
+
+                              <button
+                                onClick={() => handleAddNote(job.id)}
+                                className="px-4 py-2 border border-dashed border-white/30 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
+                              >
+                                {job?.notes ? "Edit Note" : "Add Note"}
+                              </button>
+                            </>
                           )}
+                          {/* --------- view details ---------- */}
+                          <Link
+                            href={`/job-tracker/${job.id}`}
+                            className="px-4 py-2 text-center border border-dashed border-green-500/50 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
+                          >
+                            View Details
+                          </Link>
                         </div>
                       );
                     })}
@@ -309,7 +346,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
                 </>
               ) : (
                 <>
-                  <DeleteIcon size={20} />
+                  <Trash2 size={20} />
                   {option.charAt(0).toUpperCase() + option.slice(1)}
                 </>
               )}
@@ -318,11 +355,18 @@ const ApplicationBoard = ({ columns, jobs: initialJobs, priorityStyles }) => {
         ))}
       </Menu>
 
-      {/* edit modal */}
+      {/* --------------- modals --------------- */}
       <EditJobModal
         open={isEditModalOpen}
         onClose={handleEditModalClose}
         jobId={editJobID}
+      />
+
+      <DeleteJobModal
+        open={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
+        jobId={selectedJobId}
+        onDelete={() => handleDeleteConfirm(selectedJobId)}
       />
     </>
   );

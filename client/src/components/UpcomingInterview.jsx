@@ -44,7 +44,7 @@ const UpcomingInterview = ({ upcoming }) => {
                     <p className="text-white text-sm font-semibold">
                       {item.company}
                     </p>
-                    <p className="text-zinc-500 text-xs mt-0.5 truncate max-w-[160px]">
+                    <p className="text-[var(--color-text-secondary)] text-xs mt-0.5 truncate max-w-[160px]">
                       {item.role}
                     </p>
                   </div>
@@ -55,7 +55,7 @@ const UpcomingInterview = ({ upcoming }) => {
                   {item.type}
                 </span>
               </div>
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
+              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-[var(--color-text-secondary)]">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-3 h-3" />
                   {item.date}

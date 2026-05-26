@@ -38,11 +38,11 @@ export default function Sidebar() {
         )}
         <div className="flex items-center gap-1">
           {isMobile ? (
-            <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
+            <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-lg text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5 transition-all">
               <X className="w-4 h-4" />
             </button>
           ) : (
-            <button onClick={() => setCollapsed(!collapsed)} className="p-1.5 rounded-lg text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
+            <button onClick={() => setCollapsed(!collapsed)} className="p-1.5 rounded-lg text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5 transition-all">
               {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
             </button>
           )}
@@ -65,7 +65,7 @@ export default function Sidebar() {
                 } ${
                   active
                     ? "border"
-                    : "text-zinc-500 hover:text-white hover:bg-white/[0.05]"
+                    : "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.05]"
                 }`}
                 style={active ? { background: "rgba(255,87,34,0.12)", borderColor: "rgba(255,87,34,0.25)", color: "#FFAB91" } : {}}
               >
@@ -89,7 +89,7 @@ export default function Sidebar() {
           </Link>
         )}
         <Tooltip title={collapsed && !isMobile ? "Logout" : ""} placement="right">
-          <button className={`flex items-center gap-3 h-10 w-full rounded-xl px-3 text-zinc-500 hover:text-red-400 hover:bg-red-400/5 transition-all ${collapsed && !isMobile ? "justify-center" : ""}`}>
+          <button className={`flex items-center gap-3 h-10 w-full rounded-xl px-3 text-[var(--color-text-secondary)] hover:text-red-400 hover:bg-red-400/5 transition-all ${collapsed && !isMobile ? "justify-center" : ""}`}>
             <LogOut className="w-4 h-4 shrink-0" />
             {(!collapsed || isMobile) && <span className="text-sm font-medium">Logout</span>}
           </button>

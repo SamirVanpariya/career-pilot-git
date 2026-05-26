@@ -221,7 +221,7 @@ const SettingsTabs = () => {
                   <p className="text-white font-semibold text-sm">
                     Alex Johnson
                   </p>
-                  <p className="text-zinc-500 text-xs mt-1">
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-1">
                     JPG, PNG or GIF · Max 2 MB
                   </p>
                   <div className="flex gap-2 mt-3">
@@ -331,7 +331,7 @@ const SettingsTabs = () => {
             <div className="flex flex-col gap-8">
               {notificationGroups.map((group) => (
                 <div key={group.group}>
-                  <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3">
+                  <p className="text-xs font-bold text-[var(--color-text-secondary)] uppercase tracking-widest mb-3">
                     {group.group}
                   </p>
                   <div className="flex flex-col gap-3">
@@ -344,7 +344,7 @@ const SettingsTabs = () => {
                           <p className="text-white text-sm font-semibold">
                             {item.label}
                           </p>
-                          <p className="text-zinc-500 text-xs mt-0.5">
+                          <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                             {item.description}
                           </p>
                         </div>
@@ -399,7 +399,7 @@ const SettingsTabs = () => {
               <h2 className="text-base font-bold text-white mb-2">
                 Two-Factor Authentication
               </h2>
-              <p className="text-zinc-500 text-sm mb-5">
+              <p className="text-[var(--color-text-secondary)] text-sm mb-5">
                 Add an extra layer of security to your account.
               </p>
               <div className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.04]">
@@ -411,7 +411,7 @@ const SettingsTabs = () => {
                     <p className="text-white text-sm font-semibold">
                       Authenticator App
                     </p>
-                    <p className="text-zinc-500 text-xs mt-0.5">
+                    <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                       Not configured
                     </p>
                   </div>
@@ -424,7 +424,7 @@ const SettingsTabs = () => {
               <h2 className="text-base font-bold text-white mb-2">
                 Active Sessions
               </h2>
-              <p className="text-zinc-500 text-sm mb-5">
+              <p className="text-[var(--color-text-secondary)] text-sm mb-5">
                 Devices currently signed in to your account.
               </p>
               {[
@@ -454,7 +454,7 @@ const SettingsTabs = () => {
                         </span>
                       )}
                     </p>
-                    <p className="text-zinc-500 text-xs mt-0.5">
+                    <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                       {session.location} · {session.time}
                     </p>
                   </div>
@@ -517,7 +517,7 @@ const SettingsTabs = () => {
                           </div>
                         )}
                       </div>
-                      <p className="text-zinc-500 text-xs">{theme.desc}</p>
+                      <p className="text-[var(--color-text-secondary)] text-xs">{theme.desc}</p>
                     </button>
                   </Grid>
                 ))}
@@ -528,7 +528,7 @@ const SettingsTabs = () => {
               <h2 className="text-base font-bold text-white mb-2">
                 Accent Colour
               </h2>
-              <p className="text-zinc-500 text-sm mb-5">
+              <p className="text-[var(--color-text-secondary)] text-sm mb-5">
                 Personalise the highlight colour across the dashboard.
               </p>
               <div className="flex flex-wrap gap-3">
@@ -578,7 +578,7 @@ const SettingsTabs = () => {
                       <p className="text-white text-sm font-semibold">
                         {pref.label}
                       </p>
-                      <p className="text-zinc-500 text-xs mt-0.5">
+                      <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                         {pref.description}
                       </p>
                     </div>
@@ -596,7 +596,7 @@ const SettingsTabs = () => {
             <h2 className="text-base font-bold text-white mb-2">
               Connected Apps
             </h2>
-            <p className="text-zinc-500 text-sm mb-6">
+            <p className="text-[var(--color-text-secondary)] text-sm mb-6">
               Link external services to enhance your CareerPilot experience.
             </p>
             <div className="flex flex-col gap-3">
@@ -617,7 +617,7 @@ const SettingsTabs = () => {
                         <p className="text-white text-sm font-semibold">
                           {int.name}
                         </p>
-                        <p className="text-zinc-500 text-xs mt-0.5">
+                        <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                           {int.description}
                         </p>
                       </div>
@@ -628,7 +628,7 @@ const SettingsTabs = () => {
                           <span className="text-xs font-semibold text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full flex items-center gap-1">
                             <Check className="w-3 h-3" /> Connected
                           </span>
-                          <button className="text-xs text-zinc-500 hover:text-red-400 font-semibold transition-colors">
+                          <button className="text-xs text-[var(--color-text-secondary)] hover:text-red-400 font-semibold transition-colors">
                             Disconnect
                           </button>
                         </>

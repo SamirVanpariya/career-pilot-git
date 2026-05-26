@@ -15,7 +15,7 @@ const JobStates = ({ summaryStats }) => {
               </div>
               <div>
                 <p className="text-white text-xl font-black">{s.value}</p>
-                <p className="text-zinc-500 text-xs">{s.label}</p>
+                <p className="text-[var(--color-text-secondary)] text-xs">{s.label}</p>
               </div>
             </div>
           </Grid>

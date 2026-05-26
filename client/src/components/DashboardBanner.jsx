@@ -12,7 +12,7 @@ function StatPill({ icon: Icon, label, value, color, bg }) {
       </div>
       <div>
         <p className={`text-xs font-black ${color} leading-none`}>{value}</p>
-        <p className="text-[10px] text-zinc-500 mt-0.5 leading-none">{label}</p>
+        <p className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 leading-none">{label}</p>
       </div>
     </div>
   );
@@ -145,7 +145,7 @@ export default function DashboardBanner() {
                 </span>{" "}
                 of candidates globally.
               </p>
-              <p className="text-zinc-500 text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
+              <p className="text-[var(--color-text-secondary)] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
                 AI detected{" "}
                 <span className="font-semibold" style={{ color: "var(--color-orange-light)" }}>3 high-intent matches</span>{" "}
                 aligned with your skills, salary range, and growth goals.
@@ -208,7 +208,7 @@ export default function DashboardBanner() {
                           {m.match}%
                         </span>
                       </div>
-                      <p className="text-zinc-500 text-[10px] truncate pl-7">{m.role}</p>
+                      <p className="text-[var(--color-text-secondary)] text-[10px] truncate pl-7">{m.role}</p>
                       <div className="mt-1.5 pl-7">
                         <div className="h-1 w-full rounded-full bg-white/5">
                           <div className="h-full rounded-full transition-all duration-500"

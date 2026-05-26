@@ -42,7 +42,7 @@ const ActivityInsights = ({ recentActivity, aiInsights }) => {
                         <p className="text-white text-sm font-semibold truncate">
                           {item.role}
                         </p>
-                        <p className="text-zinc-500 text-xs mt-0.5">
+                        <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                           {item.company}
                         </p>
                       </div>
@@ -95,7 +95,7 @@ const ActivityInsights = ({ recentActivity, aiInsights }) => {
                         {insight.priority}
                       </span>
                     </div>
-                    <p className="text-zinc-500 text-xs mt-1.5 leading-relaxed">
+                    <p className="text-[var(--color-text-secondary)] text-xs mt-1.5 leading-relaxed">
                       {insight.detail}
                     </p>
                   </div>

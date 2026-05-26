@@ -2,7 +2,14 @@ import React from "react";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
 import { Subtitles, X } from "lucide-react";
 
-const CommonModal = ({ open, onClose, title, children, maxWidth = "md",subTitle }) => {
+const CommonModal = ({
+  open,
+  onClose,
+  title,
+  children,
+  maxWidth = "md",
+  subTitle,
+}) => {
   return (
     <Dialog
       open={open}
@@ -37,30 +44,32 @@ const CommonModal = ({ open, onClose, title, children, maxWidth = "md",subTitle 
         },
       }}
     >
-      <DialogTitle
-        className="flex justify-between items-center"
-        style={{
-          padding: "24px",
-          paddingBottom: "16px",
-          borderBottom: "1px solid var(--color-border)",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <div>
-          <span className="text-xl font-bold">{title}</span>
-          {subTitle && <p className="text-zinc-500 text-sm">{subTitle}</p>}
-        </div>
-        <IconButton
-          onClick={onClose}
-          size="small"
-          style={{ color: "var(--color-text-secondary)" }}
-          className="hover:text-white transition-colors"
+      {title && (
+        <DialogTitle
+          className="flex justify-between items-center"
+          style={{
+            padding: "24px",
+            paddingBottom: "16px",
+            borderBottom: "1px solid var(--color-border)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          <X className="w-5 h-5" />
-        </IconButton>
-      </DialogTitle>
+          <div>
+            <span className="text-xl font-bold">{title}</span>
+            {subTitle && <p className="text-[var(--color-text-secondary)] text-sm">{subTitle}</p>}
+          </div>
+          <IconButton
+            onClick={onClose}
+            size="small"
+            style={{ color: "var(--color-text-secondary)" }}
+            className="hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </IconButton>
+        </DialogTitle>
+      )}
       <DialogContent style={{ padding: "24px" }}>{children}</DialogContent>
     </Dialog>
   );

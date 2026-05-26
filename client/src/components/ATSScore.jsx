@@ -55,7 +55,7 @@ const ATSScore = ({ overallScore }) => {
               <span className="text-4xl font-black text-white">
                 {overallScore}
               </span>
-              <span className="text-xs text-zinc-500 tracking-widest">
+              <span className="text-xs text-[var(--color-text-secondary)] tracking-widest">
                 / 100
               </span>
             </div>

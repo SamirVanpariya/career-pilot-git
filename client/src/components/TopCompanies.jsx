@@ -20,7 +20,7 @@ const TopCompanies = ({ topCompanies }) => {
                 </div>
                 <div>
                   <p className="text-white text-sm font-semibold">{co.name}</p>
-                  <p className="text-zinc-500 text-xs">
+                  <p className="text-[var(--color-text-secondary)] text-xs">
                     {co.applied} application{co.applied > 1 ? "s" : ""}
                   </p>
                 </div>

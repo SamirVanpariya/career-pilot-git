@@ -103,7 +103,7 @@ export default function RegisterComponent() {
             {[{ v: "50K+", l: "Users" }, { v: "3.2x", l: "Faster" }, { v: "4.9★", l: "Rating" }].map((s) => (
               <div key={s.l} className="glass-card rounded-xl p-3 text-center">
                 <p className="text-lg font-black gradient-text">{s.v}</p>
-                <p className="text-zinc-500 text-xs">{s.l}</p>
+                <p className="text-[var(--color-text-secondary)] text-xs">{s.l}</p>
               </div>
             ))}
           </div>
@@ -124,7 +124,7 @@ export default function RegisterComponent() {
 
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Create your account</h1>
-            <p className="text-zinc-500 text-sm">Start your AI-powered career journey — free forever</p>
+            <p className="text-[var(--color-text-secondary)] text-sm">Start your AI-powered career journey — free forever</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 mb-6">
@@ -171,7 +171,7 @@ export default function RegisterComponent() {
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="Create a strong password" icon={<Lock size={16} />} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors mt-0.5">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-zinc-300 transition-colors mt-0.5">
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
@@ -198,7 +198,7 @@ export default function RegisterComponent() {
             </form>
           )}
 
-          <p className="text-zinc-500 text-sm text-center mt-6">
+          <p className="text-[var(--color-text-secondary)] text-sm text-center mt-6">
             Already have an account?{" "}
             <Link href="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>Sign in</Link>
           </p>

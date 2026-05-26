@@ -137,7 +137,7 @@ export default function ResetPWComponent() {
             <>
               <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Reset password</h1>
-                <p className="text-zinc-500 text-sm">Create a new secure password for your account.</p>
+                <p className="text-[var(--color-text-secondary)] text-sm">Create a new secure password for your account.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -149,7 +149,7 @@ export default function ResetPWComponent() {
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       placeholder="Create a strong password" icon={<Lock size={16} />} />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-zinc-300 transition-colors">
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -164,7 +164,7 @@ export default function ResetPWComponent() {
                       onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                       placeholder="Repeat your password" icon={<Lock size={16} />} />
                     <button type="button" onClick={() => setShowConfirm(!showConfirm)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors">
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-zinc-300 transition-colors">
                       {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
@@ -179,7 +179,7 @@ export default function ResetPWComponent() {
             </>
           )}
 
-          <p className="text-zinc-500 text-sm text-center mt-6">
+          <p className="text-[var(--color-text-secondary)] text-sm text-center mt-6">
             Back to{" "}
             <Link href="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>
               Sign in

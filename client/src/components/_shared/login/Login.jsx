@@ -80,7 +80,7 @@ export default function Login() {
               </div>
               <div>
                 <p className="text-white text-xs font-semibold">Sarah Chen</p>
-                <p className="text-zinc-500 text-xs">Software Engineer @ Stripe</p>
+                <p className="text-[var(--color-text-secondary)] text-xs">Software Engineer @ Stripe</p>
               </div>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function Login() {
 
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Welcome back</h1>
-            <p className="text-zinc-500 text-sm">Sign in to continue your career journey</p>
+            <p className="text-[var(--color-text-secondary)] text-sm">Sign in to continue your career journey</p>
           </div>
 
           {/* Social */}
@@ -138,7 +138,7 @@ export default function Login() {
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Enter your password" icon={<Lock size={16} />} />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors mt-0.5">
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-zinc-300 transition-colors mt-0.5">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
@@ -163,7 +163,7 @@ export default function Login() {
             </div>
           )}
 
-          <p className="text-zinc-500 text-sm text-center mt-6">
+          <p className="text-[var(--color-text-secondary)] text-sm text-center mt-6">
             Don't have an account?{" "}
             <Link href="/register" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>
               Create one free

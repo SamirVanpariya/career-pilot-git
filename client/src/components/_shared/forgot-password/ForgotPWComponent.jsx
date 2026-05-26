@@ -75,7 +75,7 @@ export default function ForgotPWComponent() {
               </div>
               <div>
                 <p className="text-white text-xs font-semibold">Marcus Johnson</p>
-                <p className="text-zinc-500 text-xs">Product Manager @ Vercel</p>
+                <p className="text-[var(--color-text-secondary)] text-xs">Product Manager @ Vercel</p>
               </div>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default function ForgotPWComponent() {
               <h3 className="text-white font-black text-xl mb-2">Check your inbox</h3>
               <p className="text-zinc-400 text-sm mb-2">We sent a reset link to</p>
               <p className="font-semibold text-sm mb-6" style={{ color: "var(--color-orange)" }}>{email}</p>
-              <p className="text-zinc-500 text-xs mb-6">Didn't receive it? Check your spam folder or try again.</p>
+              <p className="text-[var(--color-text-secondary)] text-xs mb-6">Didn't receive it? Check your spam folder or try again.</p>
               <button onClick={() => setSubmitted(false)} className="btn-secondary !w-full !justify-center">
                 Try again
               </button>
@@ -112,7 +112,7 @@ export default function ForgotPWComponent() {
             <>
               <div className="mb-8">
                 <h1 className="text-2xl sm:text-3xl font-black text-white mb-1">Forgot password?</h1>
-                <p className="text-zinc-500 text-sm">No worries — we'll send you a reset link.</p>
+                <p className="text-[var(--color-text-secondary)] text-sm">No worries — we'll send you a reset link.</p>
               </div>
 
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -131,7 +131,7 @@ export default function ForgotPWComponent() {
             </>
           )}
 
-          <p className="text-zinc-500 text-sm text-center mt-6">
+          <p className="text-[var(--color-text-secondary)] text-sm text-center mt-6">
             Remember your password?{" "}
             <Link href="/login" className="font-semibold transition-colors hover:opacity-80" style={{ color: "var(--color-orange)" }}>
               Sign in

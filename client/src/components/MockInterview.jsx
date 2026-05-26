@@ -34,7 +34,7 @@ const MockInterview = () => {
               <h3 className="text-white font-black text-lg">
                 AI Mock Interview
               </h3>
-              <p className="text-zinc-500 text-sm mt-0.5">
+              <p className="text-[var(--color-text-secondary)] text-sm mt-0.5">
                 Practice with our AI interviewer and get instant feedback on
                 your answers.
               </p>

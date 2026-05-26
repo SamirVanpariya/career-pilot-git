@@ -33,7 +33,7 @@ const PastInterviews = ({ past }) => {
                 <p className="text-white text-sm font-semibold truncate">
                   {item.company}
                 </p>
-                <p className="text-zinc-500 text-xs mt-0.5">
+                <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
                   {item.date} · {item.type}
                 </p>
               </div>
