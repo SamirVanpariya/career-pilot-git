@@ -1,44 +1,16 @@
 import express from "express";
-import prisma from "./db/prisma.js";
+import dotenv from "dotenv";
+import cors from "cors";
+import authRoutes from "./routes/auth.routes.js";
+
+dotenv.config();
 
 const app = express();
 
-// Middleware (optional but good practice)
+app.use(cors());
 app.use(express.json());
 
-// Routes
-app.get("/", (req, res) => {
-  res.send("Hello World !!");
-});
-
-// Routes for users - Create a new user--- try in POSTMAN
-app.post("/users", async (req, res) => {
-  const user = await prisma.user.create({
-    data: req.body,
-  });
-
-  res.json(user);
-});
-
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
-
-// Routes for jobs - Create a new job--- try in POSTMAN
-app.post("/jobs", async (req, res) => {
-  const jobs = await prisma.jobs.create({
-    data: req.body,
-  });
-
-  res.json(jobs);
-});
-
-app.get("/jobs", async (req, res) => {
-  const jobs = await prisma.jobs.findMany();
-  res.json(jobs);
-});
-
+app.use("/api/auth", authRoutes);
 
 export default app;
 

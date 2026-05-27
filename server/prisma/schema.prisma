@@ -7,24 +7,9 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  name  String
-  email String @unique
-  createdAt DateTime @default(now())
-}
-
-model Jobs {
-  id          String   @id @default(cuid())
-  title       String
-  companyName String
-  description String?
-  experience  Int
-  salaryMin    Int?
-  salaryMax    Int?
-  location    String?
-  skills      String?  
-  isRemote    Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  fullName   String?
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
 }
