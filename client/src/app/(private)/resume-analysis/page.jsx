@@ -5,6 +5,7 @@ import ATSScore from "@/components/ATSScore";
 import ScoreBreakdown from "@/components/ScoreBreakdown";
 import AISuggestions from "@/components/AISuggestions";
 import SkillGap from "@/components/SkillGap";
+import ResumeHistory from "@/components/ResumeHistory";
 
 const scoreSections = [
   { label: "Formatting & Structure", score: 90, status: "good" },
@@ -82,6 +83,7 @@ export default function ResumeAnalysisPage() {
         <Grid container spacing={3}>
           <AISuggestions suggestions={suggestions} />
           <SkillGap skillGap={skillGap} />
+          <ResumeHistory />
         </Grid>
       </div>
     </div>

@@ -397,7 +397,7 @@ const JobDetailClient = ({ id }) => {
       </div>
 
       {/* Main Glassmorphic Header Card */}
-      <div className="glass-card relative rounded-2xl p-6 md:p-8 overflow-hidden glow-sm">
+      <div className="glass-card relative rounded-2xl p-6 md:p-8 overflow-hidden ">
         {/* Glow backdrop decorator */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-orange-500/10 to-transparent blur-3xl pointer-events-none" />
 

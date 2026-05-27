@@ -13,6 +13,7 @@ import StatsCards from "@/components/StatsCards";
 import CardWrp from "@/components/CardWrp";
 import QuickActions from "@/components/QuickActions";
 import ActivityInsights from "@/components/ActivityInsights";
+import ResumeHistory from "@/components/ResumeHistory";
 import CareerScore from "@/components/CareerScore";
 
 /* ─── Quick Action Cards ─────────────────────────────────────── */
@@ -150,11 +151,13 @@ export default function DashboardPage() {
       </CardWrp>
 
       {/* Activity + Insights row */}
-
       <ActivityInsights
         recentActivity={recentActivity}
         aiInsights={aiInsights}
       />
+
+      {/* Resume History List */}
+      <ResumeHistory />
 
       {/* Career Score Breakdown */}
       <CardWrp>
