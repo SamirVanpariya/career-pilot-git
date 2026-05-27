@@ -8,6 +8,7 @@ SERVER SIDE DATA FETCHING (TanStack Query): https://tanstack.com
 
 API CALLING (Axios): https://axios-http.com/docs/intro
 
+FORM SUBMISSION AND VALIDATION (React Hook Form + yup for validation): https://react-hook-form.com/
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
