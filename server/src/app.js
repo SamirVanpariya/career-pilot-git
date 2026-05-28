@@ -7,9 +7,11 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+// Middleware
+app.use(cors()); // >>>> it allows the frontend to make requests to the backend
+app.use(express.json()); // >>>> it parse the incoming json data from the body of the request
 
+// Routes
 app.use("/api/auth", authRoutes);
 
 export default app;

@@ -65,7 +65,7 @@ export default function ForgotPWComponent() {
             })}
           </div>
 
-          <div className="glass-card rounded-2xl p-5">
+          <div className="glass-card rounded-2xl p-5 !h-auto">
             <p className="text-zinc-300 text-sm leading-relaxed mb-3">
               "Reset took 30 seconds. I was back to my job search immediately."
             </p>

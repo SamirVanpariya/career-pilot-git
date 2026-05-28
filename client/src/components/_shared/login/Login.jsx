@@ -70,7 +70,7 @@ export default function Login() {
           </div>
 
           {/* Testimonial */}
-          <div className="glass-card rounded-2xl p-5">
+          <div className="glass-card rounded-2xl p-5 !h-auto">
             <p className="text-zinc-300 text-sm leading-relaxed mb-4">
               "CareerPilot helped me go from 8% to 34% callback rate. Landed my dream job at Stripe in 6 weeks."
             </p>

@@ -2,8 +2,11 @@ import prisma from "../db/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-
-// REGISTER
+// ├── REGISTER
+// │   ├── Validate
+// │   ├── Check Email
+// │   ├── Hash Password
+// │   └── Save User
 export const registerUser = async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -15,7 +18,7 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Check existing user
+    // Check existing user by email
     const existingUser = await prisma.user.findUnique({
       where: {
         email,
@@ -53,9 +56,12 @@ export const registerUser = async (req, res) => {
   }
 };
 
+// ├── LOGIN
+// │   ├── Find User
+// │   ├── Compare Password
+// │   ├── Generate JWT
+// │   └── Set secure cookie (httpOnly)
 
-
-// LOGIN
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -74,10 +80,7 @@ export const loginUser = async (req, res) => {
     }
 
     // Compare password
-    const isMatch = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(400).json({
@@ -93,12 +96,19 @@ export const loginUser = async (req, res) => {
       process.env.JWT_SECRET,
       {
         expiresIn: "7d",
-      }
+      },
     );
+    // Set secure cookie (httpOnly)
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(200).json({
       message: "Login successful",
-      token,
+      // token,
       user,
     });
   } catch (error) {
