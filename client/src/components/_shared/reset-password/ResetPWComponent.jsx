@@ -53,7 +53,7 @@ export default function ResetPWComponent() {
   const mismatch = formData.confirmPassword && formData.password !== formData.confirmPassword;
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)] text-white flex">
+    <div className="max-w-[1400px] w-full mx-auto min-h-screen bg-[var(--color-bg)] text-white flex">
       {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 relative overflow-hidden border-r border-[var(--color-border)]">
         <div className="absolute inset-0 pointer-events-none">
