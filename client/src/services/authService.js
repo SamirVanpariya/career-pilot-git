@@ -22,8 +22,4 @@ export const getMe = async () => {
 //   return res.data;
 // };
 
-// // Get current user
-// export const getCurrentUser = async () => {
-//   const res = await api.get("/auth/me");
-//   return res.data;
-// };
+

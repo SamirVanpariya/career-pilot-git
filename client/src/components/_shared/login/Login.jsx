@@ -46,20 +46,15 @@ export default function Login() {
   });
 
   // React-quey mutation >>>>>>>>>>>>
-  const { mutateAsync: loginUser, isPending } = useMutation({
+  const loginMutation = useMutation({
     mutationFn: loginUserAPI,
 
     onSuccess: async () => {
       try {
         // 🔥 fetch real authenticated user
         const user = await getMe();
-
         toast.success("Login successful!");
-
-        // 🔥 IMPORTANT: refresh /me instead of manually calling it
-        await queryClient.invalidateQueries({ queryKey: ["me"] });
-
-        router.push("/dashboard");
+        await router.push("/dashboard");
         console.log("User/me >>>> ", user);
       } catch (err) {
         toast.error("Session error. Please login again.");
@@ -72,12 +67,8 @@ export default function Login() {
   });
 
   // Submit handler >>>>>>>>>>>>
-  const handleLoginSubmit = async (data) => {
-    try {
-      await loginUser(data);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleLoginSubmit = (data) => {
+    loginMutation.mutate(data);
   };
 
   return (
@@ -274,10 +265,12 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={isPending}
-              className="btn-primary w-full justify-center h-11 mt-1"
+              disabled={loginMutation.isPending}
+              className={`btn-primary w-full justify-center h-11 mt-1 ${
+                loginMutation.isPending ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              {isPending ? (
+              {loginMutation.isPending ? (
                 "Signing in..."
               ) : (
                 <>

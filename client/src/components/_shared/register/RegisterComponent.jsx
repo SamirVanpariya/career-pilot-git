@@ -18,15 +18,14 @@ export default function RegisterComponent() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(registerSchema),
   });
 
   // React-quey mutation >>>>>>>>>>>>
-  const { mutateAsync: registerUser, isPending } = useMutation({
+  const registerMutation = useMutation({
     mutationFn: registerUserAPI,
-
     onSuccess: (data) => {
       toast.success(data.message || "Registration successful!");
       router.push("/login");
@@ -38,13 +37,8 @@ export default function RegisterComponent() {
   });
 
   // Submit handler >>>>>>>>>>>>
-  const handleRegisterSubmit = async (data) => {
-    try {
-      await registerUser(data);
-      console.log(data);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleRegisterSubmit = (data) => {
+    registerMutation.mutate(data);
   };
 
   return (
@@ -240,12 +234,14 @@ export default function RegisterComponent() {
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={registerMutation.isPending}
               className={`btn-primary !w-full !justify-center !h-11 mt-1 ${
-                isPending ? "opacity-50 cursor-not-allowed" : ""
+                registerMutation.isPending
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
               }`}
             >
-              {isPending ? (
+              {registerMutation.isPending ? (
                 "Creating account..."
               ) : (
                 <>
