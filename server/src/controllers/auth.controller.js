@@ -157,3 +157,20 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
+
+// ├── LOGOUT
+
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token");
+
+    res.json({
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};

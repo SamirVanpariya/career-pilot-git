@@ -4,6 +4,7 @@ import {
   loginUser,
   getAllUsers,
   getMe,
+  logoutUser,
 } from "../controllers/auth.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -13,5 +14,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.get("/users", getAllUsers);
 router.get("/me", protect, getMe); // session
+router.post("/logout", logoutUser);
 
 export default router;

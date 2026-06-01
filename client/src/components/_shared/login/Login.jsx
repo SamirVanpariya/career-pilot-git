@@ -53,8 +53,10 @@ export default function Login() {
       try {
         // 🔥 fetch real authenticated user
         const user = await getMe();
+        // 👇 IMPORTANT: update React Query cache
+        queryClient.setQueryData(["me"], user);
         toast.success("Login successful!");
-        await router.push("/dashboard");
+        router.push("/dashboard");
         console.log("User/me >>>> ", user);
       } catch (err) {
         toast.error("Session error. Please login again.");

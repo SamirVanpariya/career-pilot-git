@@ -16,10 +16,10 @@ export const getMe = async () => {
   const res = await api.get("/auth/me");
   return res.data.user;
 };
-// // Logout
-// export const logoutUser = async () => {
-//   const res = await api.post("/auth/logout");
-//   return res.data;
-// };
+// Logout
+export const logoutUser = async () => {
+  const res = await api.post("/auth/logout");
+  return res.data;
+};
 
 

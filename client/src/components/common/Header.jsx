@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Zap } from "lucide-react";
+import { useMe } from "@/services/useMe";
 
 const navLinks = [
-  { name: "Dashboard", href: "/dashboard" },
   { name: "Features", href: "#features" },
   { name: "Pricing", href: "#pricing" },
   { name: "Testimonials", href: "#testimonials" },
@@ -21,7 +21,8 @@ export default function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
+  const { isLoggedIn, user, isLoading } = useMe();
+  console.log("user", user);
   return (
     <>
       <header
@@ -58,18 +59,29 @@ export default function Header() {
 
             {/* CTA */}
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                href="/login"
-                className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="btn-primary !h-9 !px-5 !text-sm"
-              >
-                Get Started Free
-              </Link>
+              {isLoading ? null : isLoggedIn ? (
+                <Link
+                  href="/dashboard"
+                  className="btn-primary !h-9 !px-5 !text-sm"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-semibold text-zinc-300 hover:text-white transition-colors"
+                >
+                  Sign in
+                </Link>
+              )}
+              {!isLoggedIn && (
+                <Link
+                  href="/register"
+                  className="btn-primary !h-9 !px-5 !text-sm"
+                >
+                  Get Started Free
+                </Link>
+              )}
             </div>
 
             {/* Mobile toggle */}
@@ -127,20 +139,32 @@ export default function Header() {
           </nav>
 
           <div className="flex flex-col gap-3">
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="btn-secondary !w-full !justify-center"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMobileOpen(false)}
-              className="btn-primary !w-full !justify-center"
-            >
-              Get Started Free
-            </Link>
+            {isLoading ? null : isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="btn-primary !w-full !justify-center"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="btn-secondary !w-full !justify-center"
+              >
+                Sign in
+              </Link>
+            )}
+            {!isLoggedIn && (
+              <Link
+                href="/register"
+                onClick={() => setMobileOpen(false)}
+                className="btn-primary !w-full !justify-center"
+              >
+                Get Started Free
+              </Link>
+            )}
           </div>
         </div>
       </div>
