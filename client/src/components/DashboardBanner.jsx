@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Star,
 } from "lucide-react";
+import { useMe } from "@/services/useMe";
 
 function StatPill({ icon: Icon, label, value, color, bg }) {
   return (
@@ -189,6 +190,7 @@ export default function DashboardBanner() {
     },
   ];
 
+  const { data: user } = useMe();
   return (
     <div className="w-full animate-fade-in-up">
       <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl glass-card">
@@ -249,8 +251,12 @@ export default function DashboardBanner() {
               </div>
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-white leading-[1.1] tracking-tight mb-3">
-                Welcome back, <span className="gradient-text">Alex</span> 👋
+                Welcome back,{" "}
+                <span className="gradient-text">{user?.fullName}</span> 👋
               </h1>
+              <span className="text-zinc-400 text-sm sm:text-base leading-relaxed block mb-2 max-w-lg">
+                {user?.email}
+              </span>
 
               <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-lg">
                 Your resume ranks in the{" "}

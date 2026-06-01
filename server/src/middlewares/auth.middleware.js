@@ -1,29 +1,43 @@
 import jwt from "jsonwebtoken";
+import prisma from "../db/prisma.js";
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   try {
-    const token = req.headers.authorization;
+    const token = req.cookies.token;
 
     if (!token) {
       return res.status(401).json({
-        message: "No token provided",
+        message: "Not authenticated",
       });
     }
 
-    // Verify token
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    // verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded;
+    // fetch user
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        agreeToTerms: true,
+        createdAt: true,
+      },
+    });
 
+    if (!user) {
+      return res.status(401).json({
+        message: "User not found",
+      });
+    }
+
+    req.user = user;
     next();
   } catch (error) {
+    console.log(error);
     return res.status(401).json({
-      message: "Invalid token",
+      message: "Invalid or expired token",
     });
   }
 };
-
-export default protect;

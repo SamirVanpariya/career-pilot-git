@@ -8,7 +8,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors()); // >>>> it allows the frontend to make requests to the backend
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  }),
+); // >>>> it allows the frontend to make requests to the backend
 app.use(express.json()); // >>>> it parse the incoming json data from the body of the request
 app.use(cookieParser()); // >>> it helps to read the cookies from the browser
 app.use(express.static("public")); // >>> it serves the static files from the public folder

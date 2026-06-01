@@ -9,10 +9,10 @@ import jwt from "jsonwebtoken";
 // │   └── Save User
 export const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password, agreeToTerms } = req.body;
 
     // Validation
-    if (!fullName || !email || !password) {
+    if (!fullName || !email || !password || !agreeToTerms) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -40,6 +40,7 @@ export const registerUser = async (req, res) => {
         fullName,
         email,
         password: hashedPassword,
+        agreeToTerms,
       },
     });
 
@@ -66,11 +67,16 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check user
+    // 1. Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
+    // 2. Find user
     const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
+      where: { email },
     });
 
     if (!user) {
@@ -79,7 +85,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Compare password
+    // 3. Check password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
@@ -88,32 +94,64 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // Generate token
-    const token = jwt.sign(
-      {
-        userId: user.id,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      },
-    );
-    // Set secure cookie (httpOnly)
+    // 4. Create JWT
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // 5. Set cookie (session)
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Login successful",
-      // token,
-      user,
     });
   } catch (error) {
     console.log(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+// ├── GET LOGGED IN USER (ME)
 
+export const getMe = async (req, res) => {
+  try {
+    return res.status(200).json({
+      user: req.user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+// ├── GET ALL USERS
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        agreeToTerms: true,
+        createdAt: true,
+        // ❌ do NOT include password
+      },
+    });
+
+    res.status(200).json({
+      message: "Users fetched successfully",
+      users,
+    });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Server Error",
     });
