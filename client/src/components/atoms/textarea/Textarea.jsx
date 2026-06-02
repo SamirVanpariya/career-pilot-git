@@ -7,6 +7,7 @@ const Textarea = ({
   placeholder = "",
   className = "",
   rows = 4,
+  ...props
 }) => {
   return (
     <textarea
@@ -24,6 +25,7 @@ const Textarea = ({
         (e.target.style.borderColor = "var(--color-orange-light)")
       }
       onBlur={(e) => (e.target.style.borderColor = "var(--color-border)")}
+      {...props}
     />
   );
 };

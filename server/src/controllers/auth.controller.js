@@ -152,34 +152,42 @@ export const getMe = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { phoneNumber, location, jobTitle, website, bio, avatar } = req.body;
-    console.log(req.body);
-    const profile = await prisma.userProfile.upsert({
+    const { fullName, email, profile } = req.body;
+
+    const user = await prisma.user.update({
       where: {
-        userId: req.user.id,
+        id: req.user.id,
       },
-      update: {
-        phoneNumber,
-        location,
-        jobTitle,
-        website,
-        bio,
-        avatar,
+      data: {
+        fullName,
+        email,
+        profile: {
+          upsert: {
+            update: {
+              phoneNumber: profile.phoneNumber,
+              location: profile.location,
+              jobTitle: profile.jobTitle,
+              website: profile.website,
+              bio: profile.bio,
+            },
+            create: {
+              phoneNumber: profile.phoneNumber,
+              location: profile.location,
+              jobTitle: profile.jobTitle,
+              website: profile.website,
+              bio: profile.bio,
+            },
+          },
+        },
       },
-      create: {
-        userId: req.user.id,
-        phoneNumber,
-        location,
-        jobTitle,
-        website,
-        bio,
-        avatar,
+      include: {
+        profile: true,
       },
     });
 
     return res.status(200).json({
-      message: "Profile updated",
-      profile,
+      message: "Profile updated successfully",
+      user,
     });
   } catch (error) {
     console.log(error);
