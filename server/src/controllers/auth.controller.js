@@ -34,13 +34,20 @@ export const registerUser = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user + empty profile
     const user = await prisma.user.create({
       data: {
         fullName,
         email,
         password: hashedPassword,
         agreeToTerms,
+
+        profile: {
+          create: {},
+        },
+      },
+      include: {
+        profile: true,
       },
     });
 
@@ -121,8 +128,17 @@ export const loginUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+      include: {
+        profile: true,
+      },
+    });
+
     return res.status(200).json({
-      user: req.user,
+      user,
     });
   } catch (error) {
     console.log(error);
@@ -132,6 +148,47 @@ export const getMe = async (req, res) => {
   }
 };
 
+// ├── UPDATE PROFILE
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { phoneNumber, location, jobTitle, website, bio, avatar } = req.body;
+    console.log(req.body);
+    const profile = await prisma.userProfile.upsert({
+      where: {
+        userId: req.user.id,
+      },
+      update: {
+        phoneNumber,
+        location,
+        jobTitle,
+        website,
+        bio,
+        avatar,
+      },
+      create: {
+        userId: req.user.id,
+        phoneNumber,
+        location,
+        jobTitle,
+        website,
+        bio,
+        avatar,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Profile updated",
+      profile,
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      message: "Server Error",
+    });
+  }
+};
 // ├── GET ALL USERS
 export const getAllUsers = async (req, res) => {
   try {
@@ -143,6 +200,16 @@ export const getAllUsers = async (req, res) => {
         agreeToTerms: true,
         createdAt: true,
         // ❌ do NOT include password
+        profile: {
+          select: {
+            phoneNumber: true,
+            location: true,
+            jobTitle: true,
+            website: true,
+            bio: true,
+            avatar: true,
+          },
+        },
       },
     });
 
