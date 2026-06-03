@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Menu, X, Zap } from "lucide-react";
 import { useMe } from "@/services/useMe";
+import Image from "next/image";
 
 const navLinks = [
   { name: "Features", href: "#features" },
@@ -60,11 +61,22 @@ export default function Header() {
             {/* CTA */}
             <div className="hidden md:flex items-center gap-3">
               {isLoading ? null : isLoggedIn ? (
-                <Link
-                  href="/dashboard"
-                  className="btn-primary !h-9 !px-5 !text-sm"
-                >
-                  Dashboard
+                <Link href="/dashboard" className="h-[45px] w-[45px]">
+                  <div className="relative w-[45px] h-[45px]">
+                    {/* Animated border */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 animate-spin [animation-duration:3s]" />
+
+                    {/* Inner content */}
+                    <div className="absolute inset-[2px] rounded-full bg-black flex items-center justify-center">
+                      <Image
+                        src={user?.profile?.avatar}
+                        alt="avatar"
+                        width={41}
+                        height={41}
+                        className="rounded-full object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
                 </Link>
               ) : (
                 <Link
@@ -103,7 +115,7 @@ export default function Header() {
       {/* Mobile Menu */}
       <div
         className={`fixed inset-0 z-40 md:hidden transition-all duration-300 ${
-          mobileOpen ? "visible opacity-100" : "invisible opacity-0"
+          mobileOpen ? "visible opacity-100 z-[99]" : "invisible opacity-0"
         }`}
       >
         <div
@@ -143,9 +155,24 @@ export default function Header() {
               <Link
                 href="/dashboard"
                 onClick={() => setMobileOpen(false)}
-                className="btn-primary !w-full !justify-center"
+                className="btn-secondary !w-full !justify-center"
               >
-                Dashboard
+                 <div className="relative w-[30px] h-[30px]">
+                    {/* Animated border */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 via-orange-300 to-orange-500 animate-spin [animation-duration:3s]" />
+
+                    {/* Inner content */}
+                    <div className="absolute inset-[1px] rounded-full bg-black flex items-center justify-center">
+                      <Image
+                        src={user?.profile?.avatar}
+                        alt="avatar"
+                        width={30}
+                        height={30}
+                        className="rounded-full object-cover w-full h-full"
+                      />
+                    </div>
+                  </div>
+                  Dashboard
               </Link>
             ) : (
               <Link

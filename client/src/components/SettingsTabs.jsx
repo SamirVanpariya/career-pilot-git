@@ -16,7 +16,6 @@ import Notifications from "./Notifications";
 import Passwords from "./Passwords";
 import Appearance from "./Appearance";
 import Integrations from "./Integrations";
-import ProfileAvatar from "./ProfileAvatar";
 
 /* ─── Sidebar Tabs ───────────────────────────────────────────── */
 const tabs = [
@@ -90,8 +89,6 @@ const SettingsTabs = () => {
         {/* ── PROFILE ── */}
         {activeTab === "profile" && (
           <div className="flex flex-col gap-6">
-            {/* Avatar */}
-            <ProfileAvatar />
             {/* Personal Info */}
             <PersonalInfo />
           </div>

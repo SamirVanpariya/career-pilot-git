@@ -152,7 +152,7 @@ export const getMe = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { fullName, email, profile } = req.body;
+    const { fullName, email, profile={} } = req.body;
 
     const user = await prisma.user.update({
       where: {
@@ -169,6 +169,7 @@ export const updateProfile = async (req, res) => {
               jobTitle: profile.jobTitle,
               website: profile.website,
               bio: profile.bio,
+              avatar: profile.avatar,
             },
             create: {
               phoneNumber: profile.phoneNumber,
@@ -176,6 +177,7 @@ export const updateProfile = async (req, res) => {
               jobTitle: profile.jobTitle,
               website: profile.website,
               bio: profile.bio,
+              avatar: profile.avatar,
             },
           },
         },

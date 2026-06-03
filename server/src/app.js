@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
+import uploadRoutes from "./routes/upload.routes.js";
 dotenv.config();
 
 const app = express();
@@ -20,7 +21,7 @@ app.use(express.static("public")); // >>> it serves the static files from the pu
 
 // Routes
 app.use("/api/auth", authRoutes);
-
+app.use("/api", uploadRoutes);
 // Debug Route - just for checking the request object
 app.get("/debug", (req, res) => {
   res.json({

@@ -15,12 +15,11 @@ import { useMe } from "@/services/useMe";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateUser } from "@/services/userService";
 import toast from "react-hot-toast";
+import ProfileAvatar from "./ProfileAvatar";
 
 const PersonalInfo = () => {
   const [isEditable, setIsEditable] = useState(false);
 
-  const { data: myProfile, isError, isLoading } = useMe();
-  const queryClient = useQueryClient();
   const [existingProfileInfo, setExistingProfileInfo] = useState({
     fullName: "",
     email: "",
@@ -29,7 +28,12 @@ const PersonalInfo = () => {
     jobTitle: "",
     website: "",
     bio: "",
+    avatar: "",
   });
+  const { data: myProfile, isError, isLoading } = useMe();
+  const [profileAvatar, setProfileAvatar] = useState(myProfile?.profile?.avatar);
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (myProfile) {
@@ -41,6 +45,7 @@ const PersonalInfo = () => {
         jobTitle: myProfile.profile?.jobTitle || "",
         website: myProfile.profile?.website || "",
         bio: myProfile.profile?.bio || "",
+        avatar: myProfile.profile?.avatar || "",
       });
     }
   }, [myProfile]);
@@ -65,6 +70,7 @@ const PersonalInfo = () => {
           jobTitle: existingProfileInfo.jobTitle,
           website: existingProfileInfo.website,
           bio: existingProfileInfo.bio,
+          avatar: profileAvatar,
         },
       }),
     onSuccess: () => {
@@ -152,70 +158,78 @@ const PersonalInfo = () => {
       </div>
     );
   }
-
+  console.log("profileAvatar from child >>>> ", profileAvatar);
   return (
-    <CardWrp className="mt-0">
-      <h2 className="text-base font-bold text-white mb-5">
-        Personal Information
-      </h2>
+    <>
+      <CardWrp className="mt-0">
+        <ProfileAvatar
+          myProfile={myProfile}
+          isEditable={isEditable}
+          setProfileAvatar={setProfileAvatar}
+        />
 
-      <Grid container spacing={3}>
-        {fields.map((field) => {
-          const Icon = field.icon;
+        <h2 className="text-base font-bold text-white my-5">
+          Personal Information
+        </h2>
 
-          return (
-            <Grid key={field.key} size={{ xs: 12, sm: 6 }}>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
-                  {field.label}
-                </span>
+        <Grid container spacing={3}>
+          {fields.map((field) => {
+            const Icon = field.icon;
 
-                <Input
-                  type="text"
-                  name={field.key}
-                  value={existingProfileInfo[field.key]}
-                  onChange={handleOnChange}
-                  placeholder={field.label}
-                  icon={<Icon size={16} />}
-                  readOnly={!isEditable}
-                  disabled={!isEditable}
-                  className={!isEditable ? "cursor-not-allowed" : ""}
-                />
-              </label>
-            </Grid>
-          );
-        })}
+            return (
+              <Grid key={field.key} size={{ xs: 12, sm: 6 }}>
+                <label className="flex flex-col gap-1.5">
+                  <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
+                    {field.label}
+                  </span>
 
-        <Grid size={{ xs: 12 }}>
-          <label className="flex flex-col gap-1.5">
-            <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
-              Bio
-            </span>
+                  <Input
+                    type="text"
+                    name={field.key}
+                    value={existingProfileInfo[field.key]}
+                    onChange={handleOnChange}
+                    placeholder={field.label}
+                    icon={<Icon size={16} />}
+                    readOnly={!isEditable}
+                    disabled={!isEditable}
+                    className={!isEditable ? "cursor-not-allowed" : ""}
+                  />
+                </label>
+              </Grid>
+            );
+          })}
 
-            <Textarea
-              name="bio"
-              rows={4}
-              value={existingProfileInfo.bio}
-              onChange={handleOnChange}
-              placeholder="Tell about yourself..."
-              readOnly={!isEditable}
-              disabled={!isEditable}
-              className={!isEditable ? "cursor-not-allowed" : ""}
-            />
-          </label>
+          <Grid size={{ xs: 12 }}>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
+                Bio
+              </span>
+
+              <Textarea
+                name="bio"
+                rows={4}
+                value={existingProfileInfo.bio}
+                onChange={handleOnChange}
+                placeholder="Tell about yourself..."
+                readOnly={!isEditable}
+                disabled={!isEditable}
+                className={!isEditable ? "cursor-not-allowed" : ""}
+              />
+            </label>
+          </Grid>
         </Grid>
-      </Grid>
 
-      <div className="flex justify-end gap-3 mt-5">
-        {isEditable && (
-          <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
-        )}
+        <div className="flex justify-end gap-3 mt-5">
+          {isEditable && (
+            <SecondaryButton onClick={handleCancel}>Cancel</SecondaryButton>
+          )}
 
-        <PrimaryButton onClick={handleEdit} disabled={isProfileUpdating}>
-          {isEditable ? "Save Changes" : "Edit"}
-        </PrimaryButton>
-      </div>
-    </CardWrp>
+          <PrimaryButton onClick={handleEdit} disabled={isProfileUpdating}>
+            {isEditable ? "Save Changes" : "Edit"}
+          </PrimaryButton>
+        </div>
+      </CardWrp>
+    </>
   );
 };
 
