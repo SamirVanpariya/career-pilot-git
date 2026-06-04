@@ -10,6 +10,7 @@ import {
 import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
+// router.method("/path", Controller);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
