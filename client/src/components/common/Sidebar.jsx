@@ -21,6 +21,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "@/services/authService";
 import toast from "react-hot-toast";
+import LogoutModal from "../LogoutModal";
 
 const navItems = [
   { text: "Dashboard", icon: LayoutDashboard, idx: 0 },
@@ -34,6 +35,7 @@ const navItems = [
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const isMobile = useMediaQuery("(max-width: 767px)");
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -159,8 +161,7 @@ export default function Sidebar() {
           placement="right"
         >
           <button
-            onClick={() => logoutMutate.mutate()}
-            disabled={logoutMutate.isPending}
+            onClick={() => setOpenLogoutModal(true)}
             className={`cursor-pointer justify-center bg-red-700 flex items-center gap-3 h-10 w-full rounded-xl px-3 hover:bg-red-800 transition-all ${collapsed && !isMobile ? "justify-center" : ""}`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
@@ -211,6 +212,11 @@ export default function Sidebar() {
       <div className="hidden md:block sticky top-0 h-screen shrink-0">
         <SidebarContent />
       </div>
+      <LogoutModal
+        open={openLogoutModal}
+        onClose={() => setOpenLogoutModal(false)}
+        onLogout={() => logoutMutate.mutate()}
+      />
     </>
   );
 }
