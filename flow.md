@@ -16,3 +16,19 @@
 
 ⭐ Step 7: You send that URL back to frontend or save in DB
 
+<<<<<<<<<<<< Mail (Nodemailer) >>>>>>>>>>>>>>>>
+    ⭐Step 1: User requests password reset
+
+    ⭐Step 2: Server generates a unique token
+
+    ⭐Step 3: Token is stored in database with user
+
+    ⭐Step 4: Email sent with reset link containing the token
+
+    ⭐Step 5: User clicks link → frontend displays reset form
+
+    ⭐Step 6: User submits new password
+
+    ⭐Step 7: Server verifies token → hashes password → updates user
+    
+    ⭐Step 8: Send confirmation email → done

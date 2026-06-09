@@ -1,7 +1,8 @@
 import prisma from "../db/prisma.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
+import { sendMail } from "../utils/sendMail.js";
+import * as crypto from "crypto";
 // ├── REGISTER
 // │   ├── Validate
 // │   ├── Check Email
@@ -152,7 +153,7 @@ export const getMe = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { fullName, email, profile={} } = req.body;
+    const { fullName, email, profile = {} } = req.body;
 
     const user = await prisma.user.update({
       where: {
@@ -249,5 +250,130 @@ export const logoutUser = async (req, res) => {
     res.status(500).json({
       message: "Server Error",
     });
+  }
+};
+
+// ├── FORGOT PASSWORD
+// │   ├── Validate email
+// │   ├── Check if user exists (security)
+// │   ├── Generate secure token
+// │   ├── Hash token (store in DB)
+// │   ├── Send email with reset link
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // SECURITY: Don't reveal if user exists
+    if (!user) {
+      return res.status(200).json({
+        message: "If email exists, reset link will be sent",
+      });
+    }
+
+    // 1. Generate secure token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // 2. Hash token before saving (IMPORTANT)
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // 3. Save hashed token + expiry
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken: hashedToken,
+        resetTokenExpiry: new Date(Date.now() + 10 * 60 * 1000), // 10 min
+      },
+    });
+
+    // 4. Create reset URL
+    const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+
+    // 5. Send email
+    await sendMail({
+      to: user.email,
+      subject: "Reset Your Password - CareerPilot",
+      html: `
+        <h2>Password Reset</h2>
+        <p>Click below link to reset your password. This link expires in 10 minutes.</p>
+        <a href="${resetURL}" target="_blank">Reset Password</a>
+      `,
+    });
+
+    return res.status(200).json({
+      message: "Reset link sent to email",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// ├── RESET PASSWORD
+// │   ├── Validate token + password
+// │   ├── Hash incoming token
+// │   ├── Find valid user (token + not expired)
+// │   ├── Hash new password
+// │   ├── Update password
+// │   ├── Clear reset fields
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    const passwordStr = String(password);
+    if (!token || !password) {
+      return res.status(400).json({
+        message: "Token and password are required",
+      });
+    }
+
+    // 1. Hash incoming token (same method as stored)
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // 2. Find valid user
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: hashedToken,
+        resetTokenExpiry: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Invalid or expired reset token",
+      });
+    }
+
+    // 3. Hash new password
+    const hashedPassword = await bcrypt.hash(passwordStr, 10);
+
+    // 4. Update password + clear reset fields
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Password reset successful",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
