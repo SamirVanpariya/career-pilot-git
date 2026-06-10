@@ -16,6 +16,7 @@ model User {
 
   resetToken        String?
   resetTokenExpiry  DateTime?
+  refreshToken      String?
 
   profile        UserProfile?
 }

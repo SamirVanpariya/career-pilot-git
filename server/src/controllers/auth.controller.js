@@ -3,6 +3,22 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendMail } from "../utils/sendMail.js";
 import * as crypto from "crypto";
+
+const generateAccessToken = (userId) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "15m",
+  });
+};
+
+const generateRefreshToken = (userId) => {
+  return jwt.sign(
+    { userId },
+    process.env.REFRESH_TOKEN_SECRET || process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    },
+  );
+};
 // ├── REGISTER
 // │   ├── Validate
 // │   ├── Check Email
@@ -102,17 +118,34 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 4. Create JWT
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    // 4. Create Access and Refresh tokens
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    // Hash refresh token to store in DB
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: hashedRefreshToken },
     });
 
-    // 5. Set cookie (session)
-    res.cookie("token", token, {
+    // 5. Set secure cookies (httpOnly)
+    res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000, // 15 mins
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return res.status(200).json({
@@ -240,7 +273,30 @@ export const getAllUsers = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    res.clearCookie("token");
+    const refreshToken = req.cookies.refreshToken;
+    if (refreshToken) {
+      const hashedRefreshToken = crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+
+      await prisma.user.updateMany({
+        where: { refreshToken: hashedRefreshToken },
+        data: { refreshToken: null },
+      });
+    }
+
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
 
     res.json({
       message: "Logout successful",
@@ -372,6 +428,87 @@ export const resetPassword = async (req, res) => {
     return res.status(200).json({
       message: "Password reset successful",
     });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(401).json({ message: "Refresh token is missing" });
+    }
+
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // Find user with this refresh token
+    const user = await prisma.user.findFirst({
+      where: { refreshToken: hashedRefreshToken },
+    });
+
+    if (!user) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    // Verify refresh token
+    jwt.verify(
+      token,
+      process.env.REFRESH_TOKEN_SECRET || process.env.JWT_SECRET,
+      async (err, decoded) => {
+        if (err || decoded.userId !== user.id) {
+          // Token expired or invalid, clear DB
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshToken: null },
+          });
+          res.clearCookie("accessToken");
+          res.clearCookie("refreshToken");
+          return res
+            .status(403)
+            .json({ message: "Refresh token is invalid or expired" });
+        }
+
+        // Generate new access & refresh tokens
+        const newAccessToken = generateAccessToken(user.id);
+        const newRefreshToken = generateRefreshToken(user.id);
+
+        // Save new hashed refresh token in DB
+        const newHashedRefreshToken = crypto
+          .createHash("sha256")
+          .update(newRefreshToken)
+          .digest("hex");
+
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { refreshToken: newHashedRefreshToken },
+        });
+
+        // Set cookies
+        res.cookie("accessToken", newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 15 * 60 * 1000,
+        });
+
+        res.cookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return res.status(200).json({
+          message: "Tokens refreshed successfully",
+        });
+      },
+    );
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
