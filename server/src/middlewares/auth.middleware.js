@@ -32,7 +32,7 @@ export const protect = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.user = user; // Now any controller can access:
     next();
   } catch (error) {
     console.log(error);

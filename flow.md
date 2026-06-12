@@ -1,22 +1,22 @@
-<<<<<<<<<<<< File Upload to Cloudinary (Express + Multer) >>>>>>>>>>>>>>>>
+## File Upload to Cloudinary (Express + Multer) >>>>>>>>>>>>>>>>
 
-🧠 High-level flow
 
-⭐ Step 1 : User selects file in frontend
+    ⭐ Step 1 : User selects file in frontend
 
-⭐ Step 2: Frontend sends file using FormData
+    ⭐ Step 2: Frontend sends file using FormData
 
-⭐ Step 3: Express receives file via multer
+    ⭐ Step 3: Express receives file via multer
 
-⭐ Step 4: File is temporarily stored in memory (or disk)
+    ⭐ Step 4: File is temporarily stored in memory (or disk)
 
-⭐ Step 5: Server uploads file to Cloudinary
+    ⭐ Step 5: Server uploads file to Cloudinary
 
-⭐ Step 6: Cloudinary returns a hosted URL
+    ⭐ Step 6: Cloudinary returns a hosted URL
 
-⭐ Step 7: You send that URL back to frontend or save in DB
+    ⭐ Step 7: You send that URL back to frontend or save in DB
 
-<<<<<<<<<<<< Mail (Nodemailer) >>>>>>>>>>>>>>>>
+## Mail (Nodemailer) / SMTP >>>>>>>>>>>>>>>>
+
     ⭐Step 1: User requests password reset
 
     ⭐Step 2: Server generates a unique token
@@ -32,3 +32,50 @@
     ⭐Step 7: Server verifies token → hashes password → updates user
     
     ⭐Step 8: Send confirmation email → done
+
+## CryptoGraphy,Hashing and Encryption >>>>>>>>>
+
+    👉🏼 bcrypt hash>>> for password  - Cannot get original data back. / One-way process.
+
+    👉🏼 jwt token>>> for session
+
+    👉🏼 Encryption >>> Used when you need the original data later. / Two-way process.
+
+    👉🏼 crypto >>> for encryption, decryption & Generate Random tokens (not for password hashing)
+
+  
+## Which Tool Should I Use?
+
+| Scenario                 | Recommended Tool   |
+| ------------------------ | ------------------ |
+| User password            | bcrypt             |
+| Login verification       | bcrypt.compare     |
+| Email verification token | crypto.randomBytes |
+| Password reset token     | crypto.randomBytes |
+| Sensitive data storage   | AES Encryption     |
+| API secrets              | AES Encryption     |
+| Authentication           | JWT                |
+| File integrity           | SHA256             |
+
+
+## Express.js authentication flow >>>>>>>>>
+
+        Signup
+          ↓
+        bcrypt.hash(password)
+          ↓
+        Store hash in DB
+
+        Login
+          ↓
+        bcrypt.compare(password, hash)
+          ↓
+        Create JWT
+          ↓
+        Send token to client
+
+        Protected Route
+         ↓
+        Verify JWT
+         ↓
+        Allow access
