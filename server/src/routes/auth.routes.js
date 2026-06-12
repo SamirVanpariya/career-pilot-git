@@ -9,6 +9,7 @@ import {
   forgotPassword,
   resetPassword,
   refreshToken,
+  googleLogin,
 } from "../controllers/auth.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
+router.post("/google", googleLogin);
 router.get("/users", getAllUsers);
 router.get("/me", protect, getMe); // session
 router.put("/profile", protect, updateProfile);

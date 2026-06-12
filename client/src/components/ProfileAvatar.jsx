@@ -103,7 +103,7 @@ const ProfileAvatar = ({ myProfile, isEditable, setProfileAvatar }) => {
             }}
           >
             <Image
-              src={avatar || "/images/profile.png"}
+              src={avatar || "/images/profile-defualt.jpg"}
               alt="Profile"
               width={100}
               height={100}

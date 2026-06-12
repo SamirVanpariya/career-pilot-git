@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { sendMail } from "../utils/sendMail.js";
 import * as crypto from "crypto";
+import { verifyGoogleToken } from "../services/google.service.js";
 
 const generateAccessToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -512,5 +513,146 @@ export const refreshToken = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// GOOGLE SIGNIN
+export const googleLogin = async (
+  req,
+  res
+) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        message: "Google token required",
+      });
+    }
+
+    const payload =
+      await verifyGoogleToken(token);
+
+    const {
+      sub,
+      email,
+      name,
+    } = payload;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Email not found",
+      });
+    }
+
+    let user =
+      await prisma.user.findUnique({
+        where: {
+          email,
+        },
+        include: {
+          profile: true,
+        },
+      });
+
+    /*
+      Existing user?
+      Login user.
+    */
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          fullName: name,
+          email,
+          googleId: sub,
+          provider: "google",
+
+          profile: {
+            create: {},
+          },
+        },
+
+        include: {
+          profile: true,
+        },
+      });
+    }
+
+    const accessToken =
+      generateAccessToken(user.id);
+
+    const refreshToken =
+      generateRefreshToken(user.id);
+
+    const hashedRefreshToken =
+      crypto
+        .createHash("sha256")
+        .update(refreshToken)
+        .digest("hex");
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        refreshToken:
+          hashedRefreshToken,
+      },
+    });
+
+    res.cookie(
+      "accessToken",
+      accessToken,
+      {
+        httpOnly: true,
+        secure:
+          process.env.NODE_ENV ===
+          "production",
+
+        sameSite: "strict",
+
+        maxAge:
+          15 * 60 * 1000,
+      }
+    );
+
+    res.cookie(
+      "refreshToken",
+      refreshToken,
+      {
+        httpOnly: true,
+        secure:
+          process.env.NODE_ENV ===
+          "production",
+
+        sameSite: "strict",
+
+        maxAge:
+          7 *
+          24 *
+          60 *
+          60 *
+          1000,
+      }
+    );
+
+    return res.status(200).json({
+      message:
+        "Google login successful",
+
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(401).json({
+      message:
+        "Google authentication failed",
+    });
   }
 };

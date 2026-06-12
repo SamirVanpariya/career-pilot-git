@@ -22,6 +22,7 @@ import { loginUserAPI, getMe } from "@/services/authService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
 
 const highlights = [
   { icon: TrendingUp, text: "3x faster job search with AI" },
@@ -71,6 +72,29 @@ export default function Login() {
   // Submit handler >>>>>>>>>>>>
   const handleLoginSubmit = (data) => {
     loginMutation.mutate(data);
+  };
+
+  // Google login handler >>>>>>>>>>>>
+  const handleGoogleLogin = async (response) => {
+    const token = response.credential;
+
+    const res = await fetch("http://localhost:5000/api/auth/google", {
+      method: "POST",
+
+      credentials: "include",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        token,
+      }),
+    });
+
+    const data = await res.json();
+
+    console.log(data);
   };
 
   return (
@@ -186,7 +210,7 @@ export default function Login() {
           </div>
 
           {/* Social */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* <div className="grid grid-cols-2 gap-3 mb-6">
             {["Google", "GitHub"].map((provider) => (
               <button
                 key={provider}
@@ -195,8 +219,11 @@ export default function Login() {
                 {provider}
               </button>
             ))}
-          </div>
-
+          </div> */}
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => console.log("Failed")}
+          />
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-[var(--color-border)]" />
             <span className="text-zinc-600 text-xs">
