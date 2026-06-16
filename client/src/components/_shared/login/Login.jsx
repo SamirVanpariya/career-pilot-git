@@ -8,7 +8,6 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  CheckCircle2,
   Zap,
   TrendingUp,
   Users,
@@ -76,25 +75,26 @@ export default function Login() {
 
   // Google login handler >>>>>>>>>>>>
   const handleGoogleLogin = async (response) => {
-    const token = response.credential;
+    const token = response.credential; // Google JWT
 
     const res = await fetch("http://localhost:5000/api/auth/google", {
       method: "POST",
-
       credentials: "include",
-
       headers: {
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify({
         token,
       }),
     });
-
     const data = await res.json();
+    console.log("Google login response >>>> ", data);
+    toast.success(data?.message || "Google login successful!");
+    router.refresh();
+  };
 
-    console.log(data);
+  const handleGoogleLoginFailed = () => {
+    toast.error("Google login failed");
   };
 
   return (
@@ -220,10 +220,13 @@ export default function Login() {
               </button>
             ))}
           </div> */}
-          <GoogleLogin
-            onSuccess={handleGoogleLogin}
-            onError={() => console.log("Failed")}
-          />
+          <div className="mb-5">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={handleGoogleLoginFailed}
+              text="continue_with"
+            />
+          </div>
           <div className="flex items-center gap-3 mb-6">
             <div className="flex-1 h-px bg-[var(--color-border)]" />
             <span className="text-zinc-600 text-xs">

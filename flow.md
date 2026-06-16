@@ -79,3 +79,47 @@
         Verify JWT
          ↓
         Allow access
+
+## GOOGLE authentication flow >>>>>>>>>
+    User Clicks Google Button
+              │
+              ▼
+    Google Popup Opens
+              │
+              ▼
+    User Selects Google Account
+              │
+              ▼
+    Google Returns JWT Credential Token
+              │
+              ▼
+    Frontend Sends Token To Backend
+              │
+              ▼
+    Backend Verifies Token With Google
+              │
+              ▼
+    Extract User Information
+    (email, name, googleId)
+              │
+              ▼
+    Check User Exists?
+        ┌─────────────┐
+        │             │
+        YES           NO
+        │             │
+        ▼             ▼
+    Login User    Create User
+        │             │
+        └──────┬──────┘
+                ▼
+    Generate JWT Tokens
+                │
+                ▼
+    Save Refresh Token
+                │
+                ▼
+    Set Cookies
+                │
+                ▼
+    Return Success Response

@@ -517,10 +517,7 @@ export const refreshToken = async (req, res) => {
 };
 
 // GOOGLE SIGNIN
-export const googleLogin = async (
-  req,
-  res
-) => {
+export const googleLogin = async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -530,13 +527,16 @@ export const googleLogin = async (
       });
     }
 
-    const payload =
-      await verifyGoogleToken(token);
+    const payload = await verifyGoogleToken(token);
 
     const {
       sub,
       email,
       name,
+      picture,
+      given_name,
+      family_name,
+      email_verified,
     } = payload;
 
     if (!email) {
@@ -545,21 +545,16 @@ export const googleLogin = async (
       });
     }
 
-    let user =
-      await prisma.user.findUnique({
-        where: {
-          email,
-        },
-        include: {
-          profile: true,
-        },
-      });
+    let user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+      include: {
+        profile: true,
+      },
+    });
 
-    /*
-      Existing user?
-      Login user.
-    */
-
+    // Create new Google user
     if (!user) {
       user = await prisma.user.create({
         data: {
@@ -569,90 +564,106 @@ export const googleLogin = async (
           provider: "google",
 
           profile: {
-            create: {},
+            create: {
+              avatar: picture || null,
+            },
           },
         },
+        include: {
+          profile: true,
+        },
+      });
+    } else {
+      // Update existing user's Google info
+      user = await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          fullName: name,
+          googleId: sub,
 
+          profile: {
+            upsert: {
+              update: {
+                avatar: picture || null,
+              },
+              create: {
+                avatar: picture || null,
+              },
+            },
+          },
+        },
         include: {
           profile: true,
         },
       });
     }
 
-    const accessToken =
-      generateAccessToken(user.id);
+    // Generate tokens
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
 
-    const refreshToken =
-      generateRefreshToken(user.id);
-
-    const hashedRefreshToken =
-      crypto
-        .createHash("sha256")
-        .update(refreshToken)
-        .digest("hex");
+    const hashedRefreshToken = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
 
     await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        refreshToken:
-          hashedRefreshToken,
+        refreshToken: hashedRefreshToken,
       },
     });
 
-    res.cookie(
-      "accessToken",
-      accessToken,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV ===
-          "production",
+    // Set cookies
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000,
+    });
 
-        sameSite: "strict",
-
-        maxAge:
-          15 * 60 * 1000,
-      }
-    );
-
-    res.cookie(
-      "refreshToken",
-      refreshToken,
-      {
-        httpOnly: true,
-        secure:
-          process.env.NODE_ENV ===
-          "production",
-
-        sameSite: "strict",
-
-        maxAge:
-          7 *
-          24 *
-          60 *
-          60 *
-          1000,
-      }
-    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
-      message:
-        "Google login successful",
-
+      message: "Google login successful",
       user: {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
+        provider: user.provider,
+        googleId: user.googleId,
+
+        profile: {
+          avatar: user.profile?.avatar,
+          phoneNumber: user.profile?.phoneNumber,
+          location: user.profile?.location,
+          jobTitle: user.profile?.jobTitle,
+          website: user.profile?.website,
+          bio: user.profile?.bio,
+        },
+
+        google: {
+          givenName: given_name,
+          familyName: family_name,
+          emailVerified: email_verified,
+          picture,
+        },
       },
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     return res.status(401).json({
-      message:
-        "Google authentication failed",
+      message: "Google authentication failed",
     });
   }
 };
