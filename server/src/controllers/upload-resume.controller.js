@@ -12,11 +12,12 @@ export const uploadResumeFile = async (req, res) => {
 
     const result = await cloudinary.uploader.upload(fileBase64, {
       folder: "uploads/resumes",
+      resource_type: "auto",
     });
 
     return res.json({
       message: "Upload successful",
-      result: result, 
+      result: result,
       url: result.secure_url,
       public_id: result.public_id,
     });
