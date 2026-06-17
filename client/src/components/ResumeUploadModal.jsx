@@ -1,11 +1,27 @@
 import React, { useState, useRef } from "react";
 import { Grid } from "@mui/material";
-import { Upload, File, X, CheckCircle } from "lucide-react";
+import {
+  Upload,
+  File,
+  X,
+  CheckCircle,
+  Save,
+  UploadCloud,
+  Loader2,
+} from "lucide-react";
 import CommonModal from "./common/modal/CommonModal";
 import PrimaryButton from "./atoms/buttons/PrimaryButton";
 import Input from "./atoms/input/Input";
 import Select from "./atoms/select/Select";
 import Textarea from "./atoms/textarea/Textarea";
+import { Controller, useForm } from "react-hook-form";
+import { resumeSchema } from "@/lib/validation/resumeSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
+import SecondaryButton from "./atoms/buttons/SecondaryButton";
+import { useMutation } from "@tanstack/react-query";
+import { uploadResume } from "@/services/upload";
+import toast from "react-hot-toast";
+import { uploadResumeAPI } from "@/services/resumeService";
 
 const EXPERIENCE_LEVELS = [
   "Entry Level (0-2 years)",
@@ -18,22 +34,9 @@ const MAX_FILE_SIZE_MB = 5;
 
 const ResumeUploadModal = ({ open, onClose }) => {
   const [file, setFile] = useState(null);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [cloudinaryResponse, setCloudinaryResponse] = useState(null);
   const [dragActive, setDragActive] = useState(false);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [formData, setFormData] = useState({
-    title: "",
-    name: "",
-    email: "",
-    phone: "",
-    skills: "",
-    experience: "",
-    linkedin: "",
-    portfolio: "",
-    notes: "",
-  });
-
   const fileInputRef = useRef(null);
 
   const handleDrag = (e) => {
@@ -62,7 +65,6 @@ const ResumeUploadModal = ({ open, onClose }) => {
   };
 
   const handleFile = (selectedFile) => {
-    setError("");
     const validTypes = [
       "application/pdf",
       "application/msword",
@@ -70,54 +72,86 @@ const ResumeUploadModal = ({ open, onClose }) => {
     ];
 
     if (!validTypes.includes(selectedFile.type)) {
-      setError("Please upload a PDF, DOC, or DOCX file.");
+      console.log("Please upload a PDF, DOC, or DOCX file.");
       return;
     }
 
     if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      setError(`File size must be less than ${MAX_FILE_SIZE_MB}MB.`);
+      console.log(`File size must be less than ${MAX_FILE_SIZE_MB}MB.`);
       return;
     }
-
     setFile(selectedFile);
   };
 
   const removeFile = () => {
     setFile(null);
+    setIsUploaded(false);
+
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: "",
+      name: "",
+      email: "",
+      phone: "",
+      skills: "",
+      experience: "",
+      linkedin: "",
+      portfolio: "",
+      notes: "",
+    },
+    resolver: yupResolver(resumeSchema),
+  });
+
+  //   Resume Upload Mutation --- cloudinary
+  const { mutate, isPending } = useMutation({
+    mutationFn: uploadResume,
+    onSuccess: (data) => {
+      setIsUploaded(true);
+      setCloudinaryResponse(data);
+      console.log("Cloudinary Response:", data);
+      toast.success("File uploaded successfully");
+    },
+
+    onError: (error) => {
+      toast.error(error?.message || "Failed to upload resume.");
+    },
+  });
+
+  const handleUploadOnCloudinary = () => {
+    mutate(file);
   };
+  //    Upload Mutation --- database
+  const { mutate: uploadOnDb, isPending: uploadOnDbLoading } = useMutation({
+    mutationFn: uploadResumeAPI,
+    onSuccess: (data) => {
+      toast.success("Resume saved successfully");
+      reset();
+      onClose();
+    },
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      setError("Please upload a resume file.");
-      return;
-    }
+    onError: (error) => {
+      toast.error(error?.message || "Failed to save resume.");
+    },
+  });
 
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onClose(); // Close modal on success
-      // Reset form
-      setFile(null);
-      setFormData({
-        title: "",
-        name: "",
-        email: "",
-        phone: "",
-        skills: "",
-        experience: "",
-        linkedin: "",
-        portfolio: "",
-        notes: "",
-      });
-    }, 1500);
+  const handleUploadOnDatabase = async (data) => {
+    const payload = {
+      ...data,
+      file: cloudinaryResponse,
+    };
+
+    console.log(payload);
+    uploadOnDb(payload);
+    reset();
   };
 
   return (
@@ -127,7 +161,10 @@ const ResumeUploadModal = ({ open, onClose }) => {
       title="Upload New Resume"
       maxWidth="md"
     >
-      <form onSubmit={handleSubmit} className="space-y-6 text-white">
+      <form
+        onSubmit={handleSubmit(handleUploadOnDatabase)}
+        className="space-y-6 text-white"
+      >
         {/* Upload Section */}
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -172,38 +209,46 @@ const ResumeUploadModal = ({ open, onClose }) => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-between p-4 bg-[#111111] border border-gray-700 rounded-[var(--radius-lg)]">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
-                  <File className="w-5 h-5" />
-                </div>
+            <div className="flex items-center  gap-2">
+              <div className="w-max flex items-center justify-between p-4 bg-[#111111] border border-gray-700 rounded-[var(--radius-lg)]">
+                <div className="flex items-center space-x-3 pr-2">
+                  <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg">
+                    <File className="w-5 h-5" />
+                  </div>
 
-                <div>
-                  <p className="text-sm font-medium text-white truncate max-w-[200px] sm:max-w-xs">
-                    {file.name}
-                  </p>
+                  <div>
+                    <p className="text-sm font-medium text-white truncate max-w-[200px] sm:max-w-xs">
+                      {file.name}
+                    </p>
 
-                  <p className="text-xs text-gray-400">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </p>
+                    <p className="text-xs text-gray-400">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={removeFile}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-[#1f1f1f] rounded-lg transition-colors"
+                  aria-label="Remove file"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-
-              <button
+              <SecondaryButton
                 type="button"
-                onClick={removeFile}
-                className="p-2 text-gray-400 hover:text-white hover:bg-[#1f1f1f] rounded-lg transition-colors"
-                aria-label="Remove file"
+                onClick={handleUploadOnCloudinary}
+                className=" rounded-lg transition-colors"
+                disabled={isUploaded || isPending}
               >
-                <X className="w-4 h-4" />
-              </button>
+                {isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <UploadCloud className="w-4 h-4" />
+                )}
+                Upload
+              </SecondaryButton>
             </div>
-          )}
-
-          {error && (
-            <p className="text-red-400 text-xs mt-2 flex items-center gap-1">
-              <X className="w-3 h-3" /> {error}
-            </p>
           )}
         </div>
 
@@ -213,14 +258,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
               Resume Title *
             </label>
-
             <Input
-              name="title"
-              value={formData.title}
-              onChange={handleInputChange}
               placeholder="e.g. Frontend Developer - 2026"
-              required
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("title")}
+              error={errors.title?.message}
             />
           </Grid>
 
@@ -230,12 +272,10 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
               placeholder="John Doe"
-              required
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("name")}
+              error={errors.name?.message}
             />
           </Grid>
 
@@ -245,13 +285,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="email"
               type="email"
-              value={formData.email}
-              onChange={handleInputChange}
               placeholder="john@example.com"
-              required
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("email")}
+              error={errors.email?.message}
             />
           </Grid>
 
@@ -261,12 +299,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="phone"
               type="tel"
-              value={formData.phone}
-              onChange={handleInputChange}
               placeholder="+1 (555) 000-0000"
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("phone")}
+              error={errors.phone?.message}
             />
           </Grid>
 
@@ -274,12 +311,27 @@ const ResumeUploadModal = ({ open, onClose }) => {
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
               Experience Level
             </label>
-            <Select
+
+            <Controller
               name="experience"
-              value={formData.experience}
-              onChange={handleInputChange}
-              options={EXPERIENCE_LEVELS}
-              placeholder="Select level"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={EXPERIENCE_LEVELS}
+                    placeholder="Select level"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
+
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
             />
           </Grid>
 
@@ -289,11 +341,10 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="skills"
-              value={formData.skills}
-              onChange={handleInputChange}
               placeholder="React, TypeScript, Next.js, Node.js"
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("skills")}
+              error={errors.skills?.message}
             />
           </Grid>
 
@@ -303,12 +354,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="linkedin"
               type="url"
-              value={formData.linkedin}
-              onChange={handleInputChange}
               placeholder="https://linkedin.com/in/username"
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("linkedin")}
+              error={errors.linkedin?.message}
             />
           </Grid>
 
@@ -318,12 +368,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             </label>
 
             <Input
-              name="portfolio"
               type="url"
-              value={formData.portfolio}
-              onChange={handleInputChange}
               placeholder="https://yourwebsite.com"
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+              {...register("portfolio")}
+              error={errors.portfolio?.message}
             />
           </Grid>
 
@@ -331,12 +380,11 @@ const ResumeUploadModal = ({ open, onClose }) => {
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
               Additional Notes
             </label>
-            <Textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleInputChange}
+            <Input
               placeholder="Any specific instructions or focus areas for the analysis..."
               className={`bg-[#111111] border-gray-700 text-white placeholder:text-gray-500`}
+              {...register("notes")}
+              error={errors.notes?.message}
             />
           </Grid>
         </Grid>
@@ -354,15 +402,9 @@ const ResumeUploadModal = ({ open, onClose }) => {
             Cancel
           </button>
 
-          <PrimaryButton
-            type="submit"
-            loading={isSubmitting}
-            disabled={
-              !file || !formData.title || !formData.name || !formData.email
-            }
-          >
-            {isSubmitting ? (
-              "Uploading..."
+          <PrimaryButton type="submit" disabled={uploadOnDbLoading}>
+            {uploadOnDbLoading ? (
+              "Saving..."
             ) : (
               <>
                 <CheckCircle className="w-4 h-4" />

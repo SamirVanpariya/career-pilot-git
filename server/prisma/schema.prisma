@@ -1,6 +1,7 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -14,29 +15,53 @@ model User {
   agreeToTerms Boolean  @default(false)
   createdAt    DateTime @default(now())
 
-  resetToken        String?
-  resetTokenExpiry  DateTime?
-  refreshToken      String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  refreshToken     String?
 
-  profile        UserProfile?
+  profile UserProfile?
 
-  googleId String? @unique
-  provider String @default("local")
+  googleId String?  @unique
+  provider String   @default("local")
+  resumes  Resume[]
 }
 
 model UserProfile {
-  id           Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  userId       Int      @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  phoneNumber  String?
-  location     String?
-  jobTitle     String?
-  website      String?
-  bio          String?
-  avatar       String?
+  phoneNumber String?
+  location    String?
+  jobTitle    String?
+  website     String?
+  bio         String?
+  avatar      String?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Resume {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  file  String
+  title String
+  name  String
+  email String
+  phone String
+
+  skills     String[] // PostgreSQL array
+  experience String?
+
+  linkedin  String?
+  portfolio String?
+  notes     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

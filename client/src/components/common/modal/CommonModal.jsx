@@ -1,6 +1,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogTitle, IconButton } from "@mui/material";
-import { Subtitles, X } from "lucide-react";
+import {  X } from "lucide-react";
 
 const CommonModal = ({
   open,

@@ -6,12 +6,21 @@ import {
   XCircle,
   MessageSquare,
   Star,
+  Bookmark,
 } from "lucide-react";
 import JobTrackerHead from "@/components/JobTrackerHead";
 import JobStates from "@/components/JobStates";
 import ApplicationBoard from "@/components/ApplicationBoard";
 
 const columns = [
+  {
+    id: "saved",
+    label: "Saved",
+    icon: Bookmark,
+    color: "text-blue-400",
+    bg: "bg-blue-400/10",
+    border: "border-blue-400/20",
+  },
   {
     id: "applied",
     label: "Applied",

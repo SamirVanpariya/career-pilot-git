@@ -6,7 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { DollarSign, EditIcon, MapPin, Trash2, GripVertical } from "lucide-react";
+import {
+  DollarSign,
+  EditIcon,
+  MapPin,
+  Trash2,
+  GripVertical,
+} from "lucide-react";
 import CardWrp from "./CardWrp";
 import Select from "./atoms/select/Select";
 import Textarea from "./atoms/textarea/Textarea";
@@ -52,9 +58,9 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
 
   const handleDrop = (e, targetStatus) => {
     e.preventDefault();
-    
+
     let draggedJobData = draggedJob;
-    
+
     // If for some reason draggedJob is null, try to get from dataTransfer
     if (!draggedJobData) {
       try {
@@ -64,17 +70,15 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
         return;
       }
     }
-    
+
     if (!draggedJobData) return;
-    
+
     // Update job status
     if (draggedJobData.status !== targetStatus) {
       setJobs((prevJobs) =>
         prevJobs.map((job) =>
-          job.id === draggedJobData.id
-            ? { ...job, status: targetStatus }
-            : job
-        )
+          job.id === draggedJobData.id ? { ...job, status: targetStatus } : job,
+        ),
       );
     }
   };
@@ -82,34 +86,38 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
   // Reorder jobs within the same column
   const handleDropReorder = (e, targetJob, targetStatus) => {
     e.preventDefault();
-    
+
     if (!draggedJob) return;
-    
+
     if (draggedJob.id === targetJob.id) return;
-    
+
     // If dropping in the same status column, reorder
     if (draggedJob.status === targetStatus) {
       setJobs((prevJobs) => {
-        const jobsInColumn = prevJobs.filter(job => job.status === targetStatus);
-        const otherJobs = prevJobs.filter(job => job.status !== targetStatus);
-        
-        const oldIndex = jobsInColumn.findIndex(job => job.id === draggedJob.id);
-        const newIndex = jobsInColumn.findIndex(job => job.id === targetJob.id);
-        
+        const jobsInColumn = prevJobs.filter(
+          (job) => job.status === targetStatus,
+        );
+        const otherJobs = prevJobs.filter((job) => job.status !== targetStatus);
+
+        const oldIndex = jobsInColumn.findIndex(
+          (job) => job.id === draggedJob.id,
+        );
+        const newIndex = jobsInColumn.findIndex(
+          (job) => job.id === targetJob.id,
+        );
+
         const reorderedColumn = [...jobsInColumn];
         const [removed] = reorderedColumn.splice(oldIndex, 1);
         reorderedColumn.splice(newIndex, 0, removed);
-        
+
         return [...otherJobs, ...reorderedColumn];
       });
     } else {
       // If dropping in different column, just change status
       setJobs((prevJobs) =>
         prevJobs.map((job) =>
-          job.id === draggedJob.id
-            ? { ...job, status: targetStatus }
-            : job
-        )
+          job.id === draggedJob.id ? { ...job, status: targetStatus } : job,
+        ),
       );
     }
   };
@@ -214,16 +222,16 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
           opacity: 0.7;
           cursor: grabbing;
         }
-        
+
         .column-drop-zone.drag-over {
           background: rgba(255, 165, 0, 0.1);
           border: 2px dashed orange;
         }
-        
+
         .job-card {
           cursor: grab;
         }
-        
+
         .job-card:active {
           cursor: grabbing;
         }
@@ -234,20 +242,20 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
           Application Board - (Kanban view with Drag & Drop)
         </h2>
 
-        <Grid container spacing={3}>
+        {/* <Grid container spacing={2}> */}
+        <div className="flex  gap-4 overflow-x-auto w-full">
           {columns.map((col) => {
             const ColIcon = col.icon;
             const colJobs = jobs.filter((job) => job.status === col.id);
 
             return (
-              <Grid 
-                key={col.id} 
-                size={{ xs: 12, sm: 6, xl: 3 }}
+              <div
+                key={col.id}
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, col.id)}
-                className="column-drop-zone transition-all duration-200 rounded-xl"
+                className="flex-shrink-0 w-[310px] column-drop-zone transition-all duration-200 rounded-xl "
               >
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-5">
                   {/* column header */}
                   <div
                     className={`flex items-center justify-between px-3 py-2 rounded-xl border ${col.border} ${col.bg}`}
@@ -268,7 +276,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                   </div>
 
                   {/* jobs */}
-                  <div className="flex flex-col gap-4 min-h-[120px]">
+                  <div className="flex flex-col gap-4 min-h-[120px] ">
                     {colJobs.map((job, index) => {
                       return (
                         <div
@@ -408,7 +416,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                               </button>
                             </>
                           )}
-                          
+
                           {/* view details */}
                           <Link
                             href={`/job-tracker/${job.id}`}
@@ -421,10 +429,11 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                     })}
                   </div>
                 </div>
-              </Grid>
+              </div>
             );
           })}
-        </Grid>
+        </div>
+        {/* </Grid> */}
       </CardWrp>
 
       {/* global menu */}

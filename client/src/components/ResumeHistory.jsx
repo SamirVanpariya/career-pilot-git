@@ -17,6 +17,9 @@ import {
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
+import { getResumesAPI } from "@/services/resumeService";
+import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 
 const MOCK_INITIAL_RESUMES = [
   {
@@ -89,6 +92,7 @@ const ResumeHistory = () => {
   const handleDeleteClick = (resume, e) => {
     e.stopPropagation();
     setResumeToDelete(resume);
+    alert("functionality pending...");
   };
 
   const handleConfirmDelete = () => {
@@ -121,6 +125,28 @@ const ResumeHistory = () => {
     return "text-orange-400 bg-orange-500/10 border-orange-500/20";
   };
 
+  // fetching all resumes of the user
+  const {
+    data: resumesData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["resumes"],
+    queryFn: () => getResumesAPI(),
+    onSuccess: (data) => {
+      console.log("Resumes loaded successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Failed to load resumes:", error);
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (isError) return <p>Error: {error?.message}</p>;
+  console.log("resumesData", resumesData);
+
   return (
     <CardWrp className="w-full">
       <div className="flex flex-col gap-4">
@@ -151,7 +177,7 @@ const ResumeHistory = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {resumes.map((resume) => (
+            {resumesData.map((resume) => (
               <div
                 key={resume.id}
                 className="glass-card border border-white/5 hover:border-orange-500/20 bg-zinc-900/40 rounded-xl p-4 flex flex-col justify-between gap-4 transition-all duration-200 group relative overflow-hidden"
@@ -164,22 +190,22 @@ const ResumeHistory = () => {
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-white text-sm font-bold truncate group-hover:text-orange-400 transition-colors">
-                        {resume.title}
+                        {resume?.title}
                       </h3>
                       <p className="text-zinc-400 text-xs font-medium truncate mt-0.5">
-                        Candidate: {resume.name}
+                        Candidate: {resume?.name}
                       </p>
                     </div>
                   </div>
 
-                  {resume.score && (
-                    <div
-                      className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${getScoreColor(resume.score)}`}
-                    >
-                      <Award className="w-3 h-3" />
-                      <span>{resume.score} ATS</span>
-                    </div>
-                  )}
+                  {/* {resume?.score && ( */}
+                  <div
+                    className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${getScoreColor(resume?.score)}`}
+                  >
+                    <Award className="w-3 h-3" />
+                    <span>{resume?.score} Static ATS as of now</span>
+                  </div>
+                  {/* )} */}
                 </div>
 
                 {/* Details grid */}
@@ -187,13 +213,13 @@ const ResumeHistory = () => {
                   <div className="flex items-center gap-1.5 min-w-0">
                     <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                     <span className="truncate">
-                      {formatDate(resume.createdAt)}
+                      {formatDate(resume?.createdAt)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 min-w-0">
                     <HardDrive className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
                     <span className="truncate">
-                      {resume.fileSize || "Unknown size"}
+                      {resume?.fileSize || "Unknown size"}
                     </span>
                   </div>
                 </div>
@@ -202,7 +228,7 @@ const ResumeHistory = () => {
                 <div className="flex items-center gap-2 mt-1 pt-3 border-t border-white/5">
                   <button
                     onClick={() => setSelectedResume(resume)}
-                    className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors border border-zinc-700"
+                    className="flex-1 cursor-pointer flex items-center justify-center gap-1.5 h-9 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors border border-zinc-700"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Details</span>
@@ -238,24 +264,24 @@ const ResumeHistory = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    {selectedResume.title}
+                    {selectedResume?.title}
                   </h3>
                   <p className="text-zinc-400 text-xs mt-0.5">
-                    Uploaded {formatDate(selectedResume.createdAt)}
+                    Uploaded {formatDate(selectedResume?.createdAt)}
                   </p>
                 </div>
               </div>
-              {selectedResume.score && (
-                <div className="flex items-center gap-2 self-start sm:self-center">
-                  <span className="text-zinc-400 text-xs">AI Evaluation:</span>
-                  <div
-                    className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${getScoreColor(selectedResume.score)}`}
-                  >
-                    <Award className="w-4 h-4" />
-                    <span>{selectedResume.score} / 100 ATS Score</span>
-                  </div>
+              {/* {selectedResume?.score && ( */}
+              <div className="flex items-center gap-2 self-start sm:self-center">
+                <span className="text-zinc-400 text-xs">AI Evaluation:</span>
+                <div
+                  className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${getScoreColor(selectedResume?.score)}`}
+                >
+                  <Award className="w-4 h-4" />
+                  <span>{selectedResume?.score} 50/ 100 ATS Score</span>
                 </div>
-              )}
+              </div>
+              {/* )} */}
             </div>
 
             {/* Profile Grid */}
@@ -274,7 +300,7 @@ const ResumeHistory = () => {
                         Name
                       </p>
                       <p className="font-semibold text-zinc-200">
-                        {selectedResume.name}
+                        {selectedResume?.name}
                       </p>
                     </div>
                   </div>
@@ -286,12 +312,12 @@ const ResumeHistory = () => {
                         Email
                       </p>
                       <p className="font-semibold text-zinc-200 truncate">
-                        {selectedResume.email}
+                        {selectedResume?.email}
                       </p>
                     </div>
                   </div>
 
-                  {selectedResume.phone && (
+                  {selectedResume?.phone && (
                     <div className="flex items-center gap-3 text-sm border-t border-zinc-800/60 pt-2.5">
                       <Phone className="w-4.5 h-4.5 text-orange-400 shrink-0" />
                       <div>
@@ -299,7 +325,7 @@ const ResumeHistory = () => {
                           Phone
                         </p>
                         <p className="font-semibold text-zinc-200">
-                          {selectedResume.phone}
+                          {selectedResume?.phone}
                         </p>
                       </div>
                     </div>
@@ -313,7 +339,7 @@ const ResumeHistory = () => {
                           Experience Level
                         </p>
                         <p className="font-semibold text-zinc-200">
-                          {selectedResume.experience}
+                          {selectedResume?.experience}
                         </p>
                       </div>
                     </div>
@@ -334,18 +360,22 @@ const ResumeHistory = () => {
                       <p className="text-[10px] text-zinc-500 uppercase">
                         Uploaded Document
                       </p>
-                      <p className="font-semibold text-zinc-200 truncate">
-                        {selectedResume.fileName || "unknown_file"}
-                      </p>
-                      <p className="text-[10px] text-zinc-400">
-                        {selectedResume.fileSize || ""}
-                      </p>
+                      <Link
+                        href={selectedResume?.file}
+                        target="_blank"
+                        className="w-[95%] truncate font-semibold text-blue-500 block"
+                      >
+                        {selectedResume?.file || "unknown_file"}
+                      </Link>
+                      {/* <p className="text-[10px] text-zinc-400">
+                        {selectedResume?.file || "unknown_file"}
+                      </p> */}
                     </div>
                   </div>
 
-                  {(selectedResume.linkedin || selectedResume.portfolio) && (
+                  {(selectedResume?.linkedin || selectedResume?.portfolio) && (
                     <div className="border-t border-zinc-800/60 pt-2.5 space-y-2">
-                      {selectedResume.linkedin && (
+                      {selectedResume?.linkedin && (
                         <div className="flex items-center gap-3 text-sm">
                           <LinkIcon className="w-4 h-4 text-orange-300 shrink-0" />
                           <div className="min-w-0">
@@ -353,18 +383,18 @@ const ResumeHistory = () => {
                               LinkedIn
                             </p>
                             <a
-                              href={selectedResume.linkedin}
+                              href={selectedResume?.linkedin}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs text-orange-400 hover:underline truncate block"
                             >
-                              {selectedResume.linkedin}
+                              {selectedResume?.linkedin}
                             </a>
                           </div>
                         </div>
                       )}
 
-                      {selectedResume.portfolio && (
+                      {selectedResume?.portfolio && (
                         <div className="flex items-center gap-3 text-sm pt-1">
                           <LinkIcon className="w-4 h-4 text-orange-300 shrink-0" />
                           <div className="min-w-0">
@@ -372,12 +402,12 @@ const ResumeHistory = () => {
                               Portfolio
                             </p>
                             <a
-                              href={selectedResume.portfolio}
+                              href={selectedResume?.portfolio}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs text-orange-400 hover:underline truncate block"
                             >
-                              {selectedResume.portfolio}
+                              {selectedResume?.portfolio}
                             </a>
                           </div>
                         </div>
@@ -395,31 +425,31 @@ const ResumeHistory = () => {
               </h4>
 
               <div className="space-y-4 bg-[#111] p-5 rounded-xl border border-zinc-800/80">
-                {selectedResume.skills && (
+                {selectedResume?.skills && (
                   <div>
                     <p className="text-[10px] text-zinc-500 uppercase mb-2 font-semibold">
-                      Parsed Skills
+                      Skills
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {selectedResume.skills.split(",").map((skill, index) => (
+                      {selectedResume?.skills?.map((skill, index) => (
                         <span
                           key={index}
                           className="text-xs px-2.5 py-1 rounded bg-zinc-800 text-zinc-200 border border-zinc-700/60 font-medium"
                         >
-                          {skill.trim()}
+                          {skill?.trim()}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {selectedResume.notes && (
+                {selectedResume?.notes && (
                   <div className="border-t border-zinc-800/60 pt-4">
                     <p className="text-[10px] text-zinc-500 uppercase mb-1 font-semibold">
                       User Notes
                     </p>
                     <p className="text-sm text-zinc-300 leading-relaxed italic bg-black/20 p-3 rounded-lg border border-zinc-800/40">
-                      "{selectedResume.notes}"
+                      "{selectedResume?.notes}"
                     </p>
                   </div>
                 )}
