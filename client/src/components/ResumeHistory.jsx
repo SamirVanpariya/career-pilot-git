@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   FileText,
   Eye,
@@ -20,81 +20,12 @@ import CommonModal from "./common/modal/CommonModal";
 import { deleteResumeAPI, getResumesAPI } from "@/services/resumeService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import LoadingWrp from "./common/LoadingWrp";
 import toast from "react-hot-toast";
-
-const MOCK_INITIAL_RESUMES = [
-  {
-    id: "res_mock1",
-    title: "Senior Frontend Engineer Resume",
-    name: "Samir Patel",
-    email: "samir.patel@example.com",
-    phone: "+1 (555) 019-2834",
-    skills: "React, Next.js, TypeScript, TailwindCSS, Node.js, GraphQL",
-    experience: "Senior Level (5-8 years)",
-    linkedin: "https://linkedin.com/in/samirpatel",
-    portfolio: "https://samirpatel.dev",
-    notes:
-      "Focused on React performance tuning and team leadership experiences.",
-    fileName: "Samir_Patel_Resume_2026.pdf",
-    fileSize: "1.24 MB",
-    createdAt: "2026-05-25T14:32:00.000Z",
-    score: 85,
-  },
-  {
-    id: "res_mock2",
-    title: "Fullstack Web Developer",
-    name: "Samir Patel",
-    email: "samir.patel@example.com",
-    phone: "+1 (555) 019-2834",
-    skills: "Vue.js, Express, Postgres, Docker, AWS, CI/CD",
-    experience: "Mid Level (3-5 years)",
-    linkedin: "https://linkedin.com/in/samirpatel",
-    portfolio: "https://samirpatel.dev",
-    notes: "Version for backend/devops focused roles.",
-    fileName: "Samir_Patel_Fullstack_Resume.pdf",
-    fileSize: "1.85 MB",
-    createdAt: "2026-05-18T09:15:00.000Z",
-    score: 72,
-  },
-];
-
+import LoadingWrpNew from "./common/LoadingWrpNew";
 const ResumeHistory = () => {
-  const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState(null);
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const queryClient = useQueryClient();
-  const loadResumes = () => {
-    try {
-      const stored = localStorage.getItem("uploaded_resumes");
-      if (stored) {
-        setResumes(JSON.parse(stored));
-      } else {
-        localStorage.setItem(
-          "uploaded_resumes",
-          JSON.stringify(MOCK_INITIAL_RESUMES),
-        );
-        setResumes(MOCK_INITIAL_RESUMES);
-      }
-    } catch (err) {
-      console.error("Failed to load resumes", err);
-    }
-  };
-
-  useEffect(() => {
-    loadResumes();
-
-    // Listen to uploads from ResumeUploadModal
-    window.addEventListener("resume-updated", loadResumes);
-    return () => {
-      window.removeEventListener("resume-updated", loadResumes);
-    };
-  }, []);
-
-  const handleDeleteClick = (resume, e) => {
-    e.stopPropagation();
-    setResumeToDelete(resume);
-  };
 
   const formatDate = (isoString) => {
     if (!isoString) return "";
@@ -131,7 +62,17 @@ const ResumeHistory = () => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-  //   Resume Delete Mutation --- database
+
+  const handleDeleteClick = (resume, e) => {
+    e.stopPropagation();
+    setResumeToDelete(resume);
+  };
+
+  const handleConfirmDelete = (resumeId) => {
+    if (!resumeId) return;
+    deleteResume(resumeId);
+  };
+  //   Resume Delete Mutation
   const { mutate: deleteResume, isPending: deleteResumeLoading } = useMutation({
     mutationFn: deleteResumeAPI,
     mutationKey: ["resumes"],
@@ -144,18 +85,7 @@ const ResumeHistory = () => {
       toast.error(error?.message || "Failed to delete resume.");
     },
   });
-  const handleConfirmDelete = (resumeId) => {
-    if (!resumeId) return;
-    deleteResume(resumeId);
-  };
-  if (isLoading)
-    return (
-      <LoadingWrp
-        title="Loading..."
-        height="400px"
-        style={{ margin: "20px auto" }}
-      />
-    );
+  if (isLoading) return <LoadingWrpNew />;
   if (isError) return <p>Error: {error?.message}</p>;
 
   return (
@@ -516,7 +446,14 @@ const ResumeHistory = () => {
                 onClick={() => handleConfirmDelete(resumeToDelete?.id)}
                 className="px-4 h-9 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600 transition-all border border-red-500"
               >
-                Confirm Delete
+                {deleteResumeLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Deleting...</span>
+                  </div>
+                ) : (
+                  "Confirm Delete"
+                )}
               </button>
             </div>
           </div>

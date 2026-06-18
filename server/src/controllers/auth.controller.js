@@ -169,6 +169,7 @@ export const getMe = async (req, res) => {
       },
       include: {
         profile: true,
+        resumes: true,
       },
     });
 
@@ -255,6 +256,7 @@ export const getAllUsers = async (req, res) => {
             avatar: true,
           },
         },
+        resumes: true,
       },
     });
 
