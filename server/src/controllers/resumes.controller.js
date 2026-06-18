@@ -57,3 +57,47 @@ export const getResumes = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteResume = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({
+        message: "Unauthorized: user not found",
+      });
+    }
+
+    const resume = await prisma.resume.findFirst({
+      where: {
+        id: Number(req.params.resumeId),
+        userId: req.user.id,
+      },
+    });
+
+    if (!resume) {
+      return res.status(404).json({
+        message: "Resume not found",
+      });
+    }
+
+    await prisma.resume.delete({
+      where: {
+        id: resume.id,
+      },
+    });
+
+    if (resume.count === 0) {
+      return res.status(404).json({
+        message: "Resume not found",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Resume deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error in deleteResume:", error);
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};

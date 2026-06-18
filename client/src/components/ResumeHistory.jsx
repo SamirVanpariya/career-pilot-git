@@ -17,9 +17,11 @@ import {
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
-import { getResumesAPI } from "@/services/resumeService";
-import { useQuery } from "@tanstack/react-query";
+import { deleteResumeAPI, getResumesAPI } from "@/services/resumeService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import LoadingWrp from "./common/LoadingWrp";
+import toast from "react-hot-toast";
 
 const MOCK_INITIAL_RESUMES = [
   {
@@ -61,7 +63,7 @@ const ResumeHistory = () => {
   const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState(null);
   const [resumeToDelete, setResumeToDelete] = useState(null);
-
+  const queryClient = useQueryClient();
   const loadResumes = () => {
     try {
       const stored = localStorage.getItem("uploaded_resumes");
@@ -92,19 +94,6 @@ const ResumeHistory = () => {
   const handleDeleteClick = (resume, e) => {
     e.stopPropagation();
     setResumeToDelete(resume);
-    alert("functionality pending...");
-  };
-
-  const handleConfirmDelete = () => {
-    if (!resumeToDelete) return;
-    try {
-      const updated = resumes.filter((r) => r.id !== resumeToDelete.id);
-      localStorage.setItem("uploaded_resumes", JSON.stringify(updated));
-      setResumes(updated);
-      setResumeToDelete(null);
-    } catch (err) {
-      console.error("Failed to delete resume", err);
-    }
   };
 
   const formatDate = (isoString) => {
@@ -142,10 +131,32 @@ const ResumeHistory = () => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-
-  if (isLoading) return <p>Loading...</p>;
+  //   Resume Delete Mutation --- database
+  const { mutate: deleteResume, isPending: deleteResumeLoading } = useMutation({
+    mutationFn: deleteResumeAPI,
+    mutationKey: ["resumes"],
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast.success("Resume deleted successfully");
+      setResumeToDelete(null);
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to delete resume.");
+    },
+  });
+  const handleConfirmDelete = (resumeId) => {
+    if (!resumeId) return;
+    deleteResume(resumeId);
+  };
+  if (isLoading)
+    return (
+      <LoadingWrp
+        title="Loading..."
+        height="400px"
+        style={{ margin: "20px auto" }}
+      />
+    );
   if (isError) return <p>Error: {error?.message}</p>;
-  console.log("resumesData", resumesData);
 
   return (
     <CardWrp className="w-full">
@@ -160,11 +171,11 @@ const ResumeHistory = () => {
             </p>
           </div>
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
-            {resumes.length} Total
+            {resumesData.length} Total
           </span>
         </div>
 
-        {resumes.length === 0 ? (
+        {resumesData.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 border border-dashed border-zinc-800 rounded-xl bg-black/20 text-center">
             <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 mb-3">
               <FileText className="w-6 h-6" />
@@ -255,7 +266,7 @@ const ResumeHistory = () => {
           title="Resume Profile & Metadata"
           maxWidth="md"
         >
-          <div className="space-y-6 text-white max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-6 text-white max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             {/* Header info card */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#141414] border border-zinc-800 rounded-xl">
               <div className="flex items-center gap-3">
@@ -455,17 +466,16 @@ const ResumeHistory = () => {
                 )}
               </div>
             </div>
-
-            {/* Footer */}
-            <div className="flex items-center justify-end pt-4 border-t border-zinc-800 mt-6">
-              <button
-                type="button"
-                onClick={() => setSelectedResume(null)}
-                className="px-6 h-[40px] rounded-lg text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-colors focus:outline-none"
-              >
-                Close Profile
-              </button>
-            </div>
+          </div>
+          {/* Footer */}
+          <div className="flex items-center justify-end pt-4 border-t border-zinc-800 mt-6">
+            <button
+              type="button"
+              onClick={() => setSelectedResume(null)}
+              className="px-6 h-[40px] rounded-lg text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-colors focus:outline-none"
+            >
+              Close Profile
+            </button>
           </div>
         </CommonModal>
       )}
@@ -503,7 +513,7 @@ const ResumeHistory = () => {
               </button>
               <button
                 type="button"
-                onClick={handleConfirmDelete}
+                onClick={() => handleConfirmDelete(resumeToDelete?.id)}
                 className="px-4 h-9 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600 transition-all border border-red-500"
               >
                 Confirm Delete

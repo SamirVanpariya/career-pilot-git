@@ -24,7 +24,7 @@ const options = ["edit", "delete"];
 const ITEM_HEIGHT = 48;
 
 const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
-  const STATUS = ["applied", "interview", "offer", "rejected"];
+  const STATUS = ["saved", "applied", "interview", "offer", "rejected"];
   const [jobs, setJobs] = useState(initialJobs || []);
   const [openNoteJobId, setOpenNoteJobId] = useState(null);
   const [tempNotes, setTempNotes] = useState({});

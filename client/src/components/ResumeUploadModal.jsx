@@ -18,7 +18,7 @@ import { Controller, useForm } from "react-hook-form";
 import { resumeSchema } from "@/lib/validation/resumeSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SecondaryButton from "./atoms/buttons/SecondaryButton";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadResume } from "@/services/upload";
 import toast from "react-hot-toast";
 import { uploadResumeAPI } from "@/services/resumeService";
@@ -38,7 +38,7 @@ const ResumeUploadModal = ({ open, onClose }) => {
   const [cloudinaryResponse, setCloudinaryResponse] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef(null);
-
+  const queryClient = useQueryClient();
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -132,7 +132,9 @@ const ResumeUploadModal = ({ open, onClose }) => {
   //    Upload Mutation --- database
   const { mutate: uploadOnDb, isPending: uploadOnDbLoading } = useMutation({
     mutationFn: uploadResumeAPI,
+    mutationKey: ["resumes"],
     onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
       toast.success("Resume saved successfully");
       reset();
       onClose();

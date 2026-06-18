@@ -4,10 +4,14 @@ const LoadingWrp = ({
   title = "Loading",
   text = "Please wait...",
   height = "400px",
+  ...props
 }) => {
   return (
-    <div className={`flex min-h-[${height}] items-center justify-center`}>
-      <div className="relative flex flex-col items-center">
+    <div
+      className={`flex min-h-[${height}] items-center justify-center bg-transparent`}
+      {...props}
+    >
+      <div className="relative flex flex-col items-center" {...props}>
         {/* Glow */}
         <div className="absolute h-32 w-32 rounded-full bg-[var(--color-orange-glow)] blur-3xl animate-pulse" />
 
