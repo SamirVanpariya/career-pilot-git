@@ -62,30 +62,26 @@ export const deleteResume = async (req, res) => {
   try {
     if (!req.user?.id) {
       return res.status(401).json({
-        message: "Unauthorized: user not found",
+        message: "Unauthorized: User not found",
       });
     }
 
-    const resume = await prisma.resume.findFirst({
+    const resumeId = Number(req.params.resumeId);
+
+    if (Number.isNaN(resumeId)) {
+      return res.status(400).json({
+        message: "Invalid resume ID",
+      });
+    }
+
+    const { count } = await prisma.resume.deleteMany({
       where: {
-        id: Number(req.params.resumeId),
+        id: resumeId,
         userId: req.user.id,
       },
     });
 
-    if (!resume) {
-      return res.status(404).json({
-        message: "Resume not found",
-      });
-    }
-
-    await prisma.resume.delete({
-      where: {
-        id: resume.id,
-      },
-    });
-
-    if (resume.count === 0) {
+    if (count === 0) {
       return res.status(404).json({
         message: "Resume not found",
       });
@@ -96,8 +92,9 @@ export const deleteResume = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in deleteResume:", error);
+
     return res.status(500).json({
-      message: error.message,
+      message: error.message || "Internal server error",
     });
   }
 };

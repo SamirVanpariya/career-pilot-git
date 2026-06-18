@@ -5,7 +5,6 @@ import {
   File,
   X,
   CheckCircle,
-  Save,
   UploadCloud,
   Loader2,
 } from "lucide-react";
@@ -13,7 +12,6 @@ import CommonModal from "./common/modal/CommonModal";
 import PrimaryButton from "./atoms/buttons/PrimaryButton";
 import Input from "./atoms/input/Input";
 import Select from "./atoms/select/Select";
-import Textarea from "./atoms/textarea/Textarea";
 import { Controller, useForm } from "react-hook-form";
 import { resumeSchema } from "@/lib/validation/resumeSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -72,12 +70,12 @@ const ResumeUploadModal = ({ open, onClose }) => {
     ];
 
     if (!validTypes.includes(selectedFile.type)) {
-      console.log("Please upload a PDF, DOC, or DOCX file.");
+      toast.error("Please upload a PDF, DOC, or DOCX file.");
       return;
     }
 
     if (selectedFile.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      console.log(`File size must be less than ${MAX_FILE_SIZE_MB}MB.`);
+      toast.error(`File size must be less than ${MAX_FILE_SIZE_MB}MB.`);
       return;
     }
     setFile(selectedFile);
