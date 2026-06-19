@@ -19,3 +19,25 @@ export const formatFileSize = (bytes, decimals = 2) => {
     Number.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
   );
 };
+
+export const JOB_OPTIONS = {
+  EXPERIENCE_LEVELS: [
+    "Entry Level (0-2 years)",
+    "Mid Level (3-5 years)",
+    "Senior Level (5-8 years)",
+    "Expert (8+ years)",
+  ],
+  JOB_TYPE: ["FullTime", "PartTime", "Contract", "Freelance", "Internship"],
+  WORK_MODE: ["Remote", "Hybrid", "On-site"],
+  PRIORITY: ["LOW", "MEDIUM", "HIGH"],
+  JOB_STATUS: [
+    "saved",
+    "applied",
+    "screening",
+    "interview",
+    "offer",
+    "rejected",
+    "withdrawn",
+    "joined",
+  ],
+};

@@ -6,188 +6,454 @@ import PrimaryButton from "./atoms/buttons/PrimaryButton";
 import Input from "./atoms/input/Input";
 import Select from "./atoms/select/Select";
 import Textarea from "./atoms/textarea/Textarea";
-
-const PLATFORM = ["LinkedIn", "Indeed", "Company website", "Other"];
-const JOB_TYPE = ["Full-time", "Part-time", "Contract"];
-const LOCATION = ["need to add locations API here"];
-const ROLES = ["Front-end Developer", "need to add roles API here"];
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Controller, useForm } from "react-hook-form";
+import { jobSchema } from "@/lib/validation/jobSchema";
+import { JOB_OPTIONS } from "@/utils/constants";
+import CustomDateTimePicker from "./atoms/date-picker/CustomDateTimePicker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { jobCreateAPI } from "@/services/jobService";
 
 const AddJobModal = ({ open, onClose }) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+  const formatDateTime = (isoString) => {
+    if (!isoString) return "";
 
-  const [formData, setFormData] = useState({
-    companyName: "",
-    salary: "",
-    email: "",
-    url: "",
-    platform: "",
-    description: "",
-    roles: "",
-    location: "",
-    jobType: "",
+    const date = new Date(isoString);
+
+    const dd = String(date.getDate()).padStart(2, "0");
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const yyyy = date.getFullYear();
+
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+
+    return `${dd}-${mm}-${yyyy} time: ${hh}:${min}`;
+  };
+  const {
+    handleSubmit,
+    control,
+    register,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(jobSchema),
+    defaultValues: {
+      companyName: "",
+      jobTitle: "",
+      role: "",
+      location: "",
+      experience: "",
+      jobType: "",
+      workMode: "",
+      platform: "",
+      jobUrl: "",
+      companyWebsite: "",
+      recruiterName: "",
+      recruiterEmail: "",
+      expectedSalary: "",
+      offeredSalary: "",
+      currency: "",
+      applicationDate: "",
+      interviewDate: "",
+      followUpDate: "",
+      status: "",
+      priority: "",
+      jobDescription: "",
+      note: "",
+      feedback: "",
+    },
   });
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const {
+    mutate: createJobMutation,
+    isPending: isCreatingJob,
+    error: jobCreationError,
+    isError: isJobCreationError,
+  } = useMutation({
+    mutationFn: jobCreateAPI,
+    onSuccess: () => {
+      toast.success("Job created successfully");
+      reset();
+      onClose();
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to create job");
+    },
+  });
+  const onSubmitJobForm = (data) => {
+    const formattedData = {
+      ...data,
+      applicationDate: formatDateTime(data.applicationDate),
+      interviewDate: formatDateTime(data.interviewDate),
+      followUpDate: formatDateTime(data.followUpDate),
+    };
+    createJobMutation(formattedData);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      onClose(); // Close modal on success
-      // Reset form
-      setFormData({
-        companyName: "",
-        salary: "",
-        email: "",
-        url: "",
-        platform: "",
-        description: "",
-        roles: "",
-        location: "",
-        jobType: "",
-      });
-    }, 1500);
-  };
+  console.log(jobCreationError);
 
   return (
     <CommonModal
       open={open}
       onClose={onClose}
       title="Add New Job"
-      subTitle={`You can search jobs on LinkedIn/Indeed/Company websites (OUTSIDE app) then add them here. >> make sure add only jobs which you have applied already`}
+      subTitle={`You can search jobs on LinkedIn/Indeed/Company websites (OUTSIDE app)`}
       maxWidth="md"
     >
-      <form onSubmit={handleSubmit} className="space-y-6 text-white">
-        <Grid container spacing={3} className="max-h-[300px] overflow-y-scroll">
-          <Grid size={{ xs: 12 }}>
+      <form
+        onSubmit={handleSubmit(onSubmitJobForm)}
+        className="space-y-6 text-white"
+      >
+        <Grid container spacing={3} className="max-h-[450px] overflow-y-scroll">
+          <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Company Name *
+              Company Name
             </label>
 
             <Input
-              name="companyName"
-              value={formData.companyName}
-              onChange={handleInputChange}
+              {...register("companyName")}
+              error={errors?.companyName?.message}
               placeholder="e.g. Frontend Developer - 2026"
-              required
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              salary
+              Job title
             </label>
 
             <Input
-              name="salary"
-              value={formData.salary}
-              onChange={handleInputChange}
-              placeholder="100000"
-              required
+              {...register("jobTitle")}
+              error={errors?.jobTitle?.message}
+              placeholder="e.g. Frontend Developer"
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Email Address *
+              Role
             </label>
 
             <Input
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleInputChange}
               placeholder="tech@company.com"
-              required
+              {...register("role")}
+              error={errors?.role?.message}
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              URL
+              Location
             </label>
 
             <Input
-              name="url"
-              type="url"
-              value={formData.url}
-              onChange={handleInputChange}
-              placeholder="https://link"
+              placeholder="Ahmedabad,Gujarat"
+              {...register("location")}
+              error={errors?.location?.message}
               className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Platform *
+              Job Type
             </label>
-            <Select
-              name="platform"
-              value={formData.platform}
-              onChange={handleInputChange}
-              options={PLATFORM}
-              placeholder="Select Platform"
-            />
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6 }}>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Job Type *
-            </label>
-            <Select
+            <Controller
               name="jobType"
-              value={formData.jobType}
-              onChange={handleInputChange}
-              options={JOB_TYPE}
-              placeholder="Select Job Type"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={JOB_OPTIONS.JOB_TYPE}
+                    placeholder="Select job type"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
+
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Location *
+              Experience Level
             </label>
-            <Select
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              options={LOCATION}
-              placeholder="Select Location"
+            <Controller
+              name="experience"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={JOB_OPTIONS.EXPERIENCE_LEVELS}
+                    placeholder="Select level"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
+
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
             />
           </Grid>
-
           <Grid size={{ xs: 12, sm: 6 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
-              Roles *
+              Work Mode
             </label>
-            <Select
-              name="roles"
-              value={formData.roles}
-              onChange={handleInputChange}
-              options={ROLES}
-              placeholder="Select Roles"
+            <Controller
+              name="workMode"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={JOB_OPTIONS.WORK_MODE}
+                    placeholder="Select job type"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
+
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
             />
           </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Job Status
+            </label>
+            <Controller
+              name="status"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={JOB_OPTIONS.JOB_STATUS}
+                    placeholder="Select job status"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
 
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Priority
+            </label>
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <Select
+                    options={JOB_OPTIONS.PRIORITY}
+                    placeholder="Select priority"
+                    value={field.value || ""} // ✅ important
+                    onChange={(val) => field.onChange(val)} // safer
+                    onBlur={field.onBlur}
+                  />
+
+                  {fieldState.error && (
+                    <p className="!text-red-500 text-xs mt-2">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Platform
+            </label>
+
+            <Input
+              placeholder="linkdin, Naukri, Indeed,Referral,from company"
+              {...register("platform")}
+              error={errors?.platform?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Job URL
+            </label>
+
+            <Input
+              placeholder="https://linkdin.com"
+              {...register("jobUrl")}
+              error={errors?.jobUrl?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Company Website
+            </label>
+
+            <Input
+              placeholder="https://microsoft.com"
+              {...register("companyWebsite")}
+              error={errors?.companyWebsite?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Recruiter Name
+            </label>
+
+            <Input
+              placeholder="Enter Recruiter name"
+              {...register("recruiterName")}
+              error={errors?.recruiterName?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Recruiter Email
+            </label>
+
+            <Input
+              placeholder="Enter Recruiter email"
+              {...register("recruiterEmail")}
+              error={errors?.recruiterEmail?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Expected Salary
+            </label>
+
+            <Input
+              placeholder="Enter Expected Salary"
+              {...register("expectedSalary")}
+              error={errors?.expectedSalary?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Company's Offered Salary
+            </label>
+
+            <Input
+              placeholder="Enter Company's Offered Salary"
+              {...register("offeredSalary")}
+              error={errors?.offeredSalary?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Currency
+            </label>
+
+            <Input
+              placeholder="Enter currency ex: INR, USD"
+              {...register("currency")}
+              error={errors?.currency?.message}
+              className="bg-[#111111] border-gray-700 text-white placeholder:text-gray-500"
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="applicationDate"
+              control={control}
+              render={({ field, fieldState }) => (
+                <CustomDateTimePicker
+                  label="Application Date"
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState?.error?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="interviewDate"
+              control={control}
+              render={({ field, fieldState }) => (
+                <CustomDateTimePicker
+                  label="Interview Date"
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState?.error?.message}
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              name="followUpDate"
+              control={control}
+              render={({ field, fieldState }) => (
+                <CustomDateTimePicker
+                  label="Follow Up Date"
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={fieldState?.error?.message}
+                />
+              )}
+            />
+          </Grid>
           <Grid size={{ xs: 12 }}>
             <label className="block text-sm font-medium text-gray-300 mb-1.5">
               Job description
             </label>
-            <Textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              placeholder="Paste job description here..."
-              className={`bg-[#111111] border-gray-700 text-white placeholder:text-gray-500`}
+            <Controller
+              control={control}
+              name="jobDescription"
+              render={({ field, fieldState }) => (
+                <Textarea
+                  {...field}
+                  placeholder="Paste job description here..."
+                  className={`bg-[#111111] border-gray-700 text-white placeholder:text-gray-500`}
+                />
+              )}
+            />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Note
+            </label>
+            <Controller
+              control={control}
+              name="note"
+              render={({ field, fieldState }) => (
+                <Textarea
+                  {...field}
+                  placeholder="Write note here..."
+                  className={`bg-[#111111] border-gray-700 text-white placeholder:text-gray-500`}
+                />
+              )}
             />
           </Grid>
         </Grid>
@@ -205,8 +471,8 @@ const AddJobModal = ({ open, onClose }) => {
             Cancel
           </button>
 
-          <PrimaryButton type="submit" loading={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add Job"}
+          <PrimaryButton type="submit" disabled={isCreatingJob}>
+            {isCreatingJob ? "Adding..." : "Add Job"}
           </PrimaryButton>
         </div>
       </form>
