@@ -37,17 +37,28 @@ export const getJobById = async (req, res) => {
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized: user not found" });
     }
+
+    const id = Number(req.params.id);
+
+    if (!id || Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid job id" });
+    }
+
     const job = await prisma.job.findUnique({
-      where: { id: Number(req.params.id) },
+      where: { id ,userId:req.user?.id },
     });
 
-    res.status(200).json({
+    if (!job) {
+      return res.status(404).json({ message: "Job not found" });
+    }
+
+    return res.status(200).json({
       message: "Job fetched successfully",
       job,
     });
   } catch (error) {
     console.error("Error in getJobById:", error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 // UPDATE JOB
