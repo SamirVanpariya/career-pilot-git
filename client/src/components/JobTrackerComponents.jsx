@@ -12,17 +12,20 @@ import {
   TvMinimalPlay,
   BanknoteArrowDown,
   Check,
+  EyeIcon,
 } from "lucide-react";
 import JobTrackerHead from "@/components/JobTrackerHead";
 import JobStates from "@/components/JobStates";
 import ApplicationBoard from "@/components/ApplicationBoard";
 import { useQuery } from "@tanstack/react-query";
 import { getJobsAPI } from "@/services/jobService";
+import Image from "next/image";
+import { useState } from "react";
 
 const columns = [
   {
     id: "saved",
-    label: "Saved",
+    label: "Saved (interested)",
     icon: Bookmark,
     color: "text-blue-400",
     bg: "bg-blue-400/10",
@@ -37,6 +40,14 @@ const columns = [
     border: "border-amber-400/20",
   },
   {
+    id: "screening",
+    label: "Screening",
+    icon: TvMinimalPlay,
+    color: "text-yellow-400",
+    bg: "bg-yellow-400/10",
+    border: "border-yellow-400/20",
+  },
+  {
     id: "interview",
     label: "Interview",
     icon: MessageSquare,
@@ -44,6 +55,7 @@ const columns = [
     bg: "bg-orange-400/10",
     border: "border-orange-400/20",
   },
+
   {
     id: "offer",
     label: "Offer",
@@ -53,6 +65,14 @@ const columns = [
     border: "border-emerald-500/20",
   },
   {
+    id: "joined",
+    label: "Joined",
+    icon: Check,
+    color: "text-green-400",
+    bg: "bg-green-400/10",
+    border: "border-green-400/20",
+  },
+  {
     id: "rejected",
     label: "Rejected",
     icon: XCircle,
@@ -60,14 +80,7 @@ const columns = [
     bg: "bg-red-400/10",
     border: "border-red-400/20",
   },
-  {
-    id: "screening",
-    label: "Screening",
-    icon: TvMinimalPlay,
-    color: "text-yellow-400",
-    bg: "bg-yellow-400/10",
-    border: "border-yellow-400/20",
-  },
+
   {
     id: "withdrawn",
     label: "Withdrawn",
@@ -75,14 +88,6 @@ const columns = [
     color: "text-red-400",
     bg: "bg-red-400/10",
     border: "border-red-400/20",
-  },
-  {
-    id: "joined",
-    label: "Joined",
-    icon: Check,
-    color: "text-green-400",
-    bg: "bg-green-400/10",
-    border: "border-green-400/20",
   },
 ];
 
@@ -176,6 +181,10 @@ const priorityStyles = {
 };
 
 const JobTrackerComponents = () => {
+  const [showProcessDiagram, setShowProcessDiagram] = useState(false);
+  const handleShowProcessDiagram = () => {
+    setShowProcessDiagram(!showProcessDiagram);
+  };
   const {
     data: jobsData,
     isLoading: jobsLoading,
@@ -222,14 +231,40 @@ const JobTrackerComponents = () => {
       <JobTrackerHead />
       <div className="flex flex-col gap-[20px] md:gap-[30px]  ">
         <JobStates summaryStats={summaryStats} />
+        <div className="text-right ml-auto">
+          <button
+            onClick={handleShowProcessDiagram}
+            className="text-primary text-sm flex items-center gap-2 font-semibold hover:underline transition cursor-pointer"
+          >
+            {showProcessDiagram ? (
+              <>
+                <XCircleIcon className="w-4 h-4 text-red-500" /> Hide Process
+                Diagram
+              </>
+            ) : (
+              <>
+                <EyeIcon className="w-4 h-4 text-emerald-500" /> Show Process
+                Diagram
+              </>
+            )}
+          </button>
+        </div>
 
+        {showProcessDiagram && (
+          <div className="w-[70%] m-[0_auto_30px_auto] transition-all ease-in-out">
+            <Image
+              src={"/images/jobs-pipline.png"}
+              alt="job"
+              width={500}
+              height={300}
+              className="w-full object-contain"
+              priority
+              unoptimized
+            />
+          </div>
+        )}
         <ApplicationBoard
           columns={columns}
-          jobs={jobs}
-          jobsData={jobsData}
-          jobsLoading={jobsLoading}
-          jobsError={jobsError}
-          priorityStyles={priorityStyles}
         />
       </div>
     </div>

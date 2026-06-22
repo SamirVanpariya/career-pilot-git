@@ -27,3 +27,32 @@ export const getJobByIdAPI = async (jobId) => {
     throw error;
   }
 };
+
+export const updateJobStatusAPI = async ({ jobId, status }) => {
+  const res = await api.patch(`/job/${jobId}`, {
+    status,
+  });
+  return res.data;
+};
+
+// UPDATE/EDIT
+export const updateJobAPI = async ({ jobId, data }) => {
+  try {
+    const res = await api.patch(`/job/${jobId}`, data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating job:", error);
+    throw error;
+  }
+};
+
+// DELETE
+export const deleteJobAPI = async (jobId) => {
+  try {
+    const res = await api.delete(`/job/${jobId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    throw error;
+  }
+};

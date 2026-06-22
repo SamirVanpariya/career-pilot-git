@@ -5,7 +5,7 @@ import { LogOutIcon } from "lucide-react";
 
 const LogoutModal = ({ open, onClose, onLogout, loading = false }) => {
   return (
-    <CommonModal open={open} onClose={onClose} maxWidth="sm">
+    <CommonModal open={open} onClose={onClose} maxWidth="xs">
       {/* Body */}
       <div className="py-4">
         {/* Warning Icon */}

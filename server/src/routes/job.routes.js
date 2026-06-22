@@ -1,8 +1,10 @@
 import express from "express";
 import {
   createJob,
+  deleteJob,
   getAllJobs,
   getJobById,
+  updateJob,
 } from "../controllers/job.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -17,10 +19,10 @@ router.get("/job", protect, getAllJobs);
 // // Get single job by id
 router.get("/job/:id", protect, getJobById);
 
-// // Update a job
-// router.patch("/job/:id");
+// Update a job
+router.patch("/job/:id",protect,updateJob);
 
-// // Delete a job
-// router.delete("/job/:id");
+// Delete a job
+router.delete("/job/:id",protect,deleteJob);
 
 export default router;

@@ -1,38 +1,30 @@
 "use client";
 import * as React from "react";
 import { useState } from "react";
-import { Grid } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import {
-  DollarSign,
-  EditIcon,
-  MapPin,
-  Trash2,
-  GripVertical,
-} from "lucide-react";
+import { EditIcon, MapPin, Trash2 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import Select from "./atoms/select/Select";
-import Textarea from "./atoms/textarea/Textarea";
 import EditJobModal from "./EditJobModal";
 import DeleteJobModal from "./DeleteJobModal";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { getJobsAPI } from "@/services/jobService";
 import LoadingWrpNew from "./common/LoadingWrpNew";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import {
+  deleteJobAPI,
+  getJobsAPI,
+  updateJobStatusAPI,
+} from "@/services/jobService";
 
 const options = ["edit", "delete"];
-const ITEM_HEIGHT = 48;
 
-const ApplicationBoard = ({
-  columns,
-  jobs: initialJobs,
-  jobsData,
-  jobsLoading,
-  jobsError,
-}) => {
+const ApplicationBoard = ({ columns }) => {
+  const queryClient = useQueryClient();
+
   const STATUS = [
     "saved",
     "applied",
@@ -43,166 +35,80 @@ const ApplicationBoard = ({
     "withdrawn",
     "joined",
   ];
-  const [jobs, setJobs] = useState(initialJobs || []);
-  const [openNoteJobId, setOpenNoteJobId] = useState(null);
-  const [tempNotes, setTempNotes] = useState({});
+
+  // ======================
+  // FETCH JOBS (SINGLE SOURCE OF TRUTH)
+  // ======================
+  const {
+    data: jobs = [],
+    isLoading: jobsLoading,
+    error: jobsError,
+  } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: getJobsAPI,
+  });
+
+  // ======================
+  // MODALS STATE
+  // ======================
   const [editJobID, setEditJobID] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [draggedJob, setDraggedJob] = useState(null);
 
-  // menu state
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedJobId, setSelectedJobId] = useState(null);
+
+  // MENU
+  const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
-  // Drag and Drop Handlers
-  const handleDragStart = (e, job) => {
-    setDraggedJob(job);
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", JSON.stringify(job));
-    e.target.classList.add("dragging");
-  };
+  // ======================
+  // STATUS UPDATE (OPTIMISTIC)
+  // ======================
+  const { mutate: updateStatus } = useMutation({
+    mutationFn: updateJobStatusAPI,
 
-  const handleDragEnd = (e) => {
-    e.target.classList.remove("dragging");
-    setDraggedJob(null);
-  };
+    onMutate: async ({ jobId, status }) => {
+      await queryClient.cancelQueries({ queryKey: ["jobs"] });
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-  };
+      const previousJobs = queryClient.getQueryData(["jobs"]);
 
-  const handleDrop = (e, targetStatus) => {
-    e.preventDefault();
-
-    let draggedJobData = draggedJob;
-
-    // If for some reason draggedJob is null, try to get from dataTransfer
-    if (!draggedJobData) {
-      try {
-        draggedJobData = JSON.parse(e.dataTransfer.getData("text/plain"));
-      } catch (error) {
-        console.error("Failed to parse drag data:", error);
-        return;
-      }
-    }
-
-    if (!draggedJobData) return;
-
-    // Update job status
-    if (draggedJobData.status !== targetStatus) {
-      setJobs((prevJobs) =>
-        prevJobs.map((job) =>
-          job.id === draggedJobData.id ? { ...job, status: targetStatus } : job,
-        ),
+      queryClient.setQueryData(["jobs"], (old = []) =>
+        old.map((job) => (job.id === jobId ? { ...job, status } : job)),
       );
-    }
-  };
 
-  // Reorder jobs within the same column
-  const handleDropReorder = (e, targetJob, targetStatus) => {
-    e.preventDefault();
+      return { previousJobs };
+    },
 
-    if (!draggedJob) return;
+    onSuccess: (_, variables) => {
+      toast.success(`Status updated to "${variables.status}"`);
+      queryClient.invalidateQueries({ queryKey: ["jobs"] });
+    },
 
-    if (draggedJob.id === targetJob.id) return;
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(["jobs"], context?.previousJobs);
 
-    // If dropping in the same status column, reorder
-    if (draggedJob.status === targetStatus) {
-      setJobs((prevJobs) => {
-        const jobsInColumn = prevJobs.filter(
-          (job) => job.status === targetStatus,
-        );
-        const otherJobs = prevJobs.filter((job) => job.status !== targetStatus);
+      toast.error(err?.response?.data?.message || "Failed to update status");
+    },
+  });
 
-        const oldIndex = jobsInColumn.findIndex(
-          (job) => job.id === draggedJob.id,
-        );
-        const newIndex = jobsInColumn.findIndex(
-          (job) => job.id === targetJob.id,
-        );
-
-        const reorderedColumn = [...jobsInColumn];
-        const [removed] = reorderedColumn.splice(oldIndex, 1);
-        reorderedColumn.splice(newIndex, 0, removed);
-
-        return [...otherJobs, ...reorderedColumn];
-      });
-    } else {
-      // If dropping in different column, just change status
-      setJobs((prevJobs) =>
-        prevJobs.map((job) =>
-          job.id === draggedJob.id ? { ...job, status: targetStatus } : job,
-        ),
-      );
-    }
-  };
-
-  // change status
   const handleChangeStatus = (jobId, newStatus) => {
-    setJobs((prev) =>
-      prev.map((job) =>
-        job.id === jobId
-          ? {
-              ...job,
-              status: newStatus,
-            }
-          : job,
-      ),
-    );
+    updateStatus({ jobId, status: newStatus });
   };
 
-  // note toggle
-  const handleAddNote = (jobId) => {
-    const job = jobs.find((j) => j.id === jobId);
-
-    setTempNotes((prev) => ({
-      ...prev,
-      [jobId]: job?.notes || "",
-    }));
-
-    setOpenNoteJobId((prev) => (prev === jobId ? null : jobId));
-  };
-
-  // note change
-  const handleNoteChange = (jobId, value) => {
-    setTempNotes((prev) => ({
-      ...prev,
-      [jobId]: value,
-    }));
-  };
-
-  // note save
-  const handleSaveNote = (jobId) => {
-    setJobs((prev) =>
-      prev.map((job) =>
-        job.id === jobId
-          ? {
-              ...job,
-              notes: tempNotes[jobId],
-            }
-          : job,
-      ),
-    );
-
-    setOpenNoteJobId(null);
-  };
-
-  // menu open
+  // ======================
+  // MENU HANDLERS
+  // ======================
   const handleClick = (event, jobId) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
     setSelectedJobId(jobId);
   };
 
-  // menu close
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const handleClose = () => setAnchorEl(null);
 
-  // edit modal
+  // ======================
+  // MODALS
+  // ======================
   const handleEditModalOpen = (jobId) => {
     setEditJobID(jobId);
     setIsEditModalOpen(true);
@@ -213,17 +119,30 @@ const ApplicationBoard = ({
     setIsEditModalOpen(false);
     setEditJobID(null);
   };
+  // ======================
+  // DELETE JOB BY ID
+  // ======================
+  const { mutate: deleteJob } = useMutation({
+    mutationFn: deleteJobAPI,
+    onSuccess: () => {
+      toast.success(`Job deleted successfully`);
+      queryClient.invalidateQueries({ queryKey: ["jobs"], exact: false });
+    },
 
-  // delete job
+    onError: (err) => {
+      toast.error(err.message || "Failed to update status");
+    },
+  });
   const handleDeleteJob = (jobId) => {
-    setIsDeleteModalOpen(true);
-    setSelectedJobId(jobId);
+    deleteJob(jobId);
     handleClose();
   };
 
-  // delete job confirm
   const handleDeleteConfirm = (jobId) => {
-    setJobs((prev) => prev.filter((job) => job.id !== jobId));
+    queryClient.setQueryData(["jobs"], (old = []) =>
+      old.filter((job) => job.id !== jobId),
+    );
+
     setIsDeleteModalOpen(false);
     setSelectedJobId(null);
   };
@@ -233,63 +152,41 @@ const ApplicationBoard = ({
     setSelectedJobId(null);
   };
 
+  // ======================
+  // LOADING / ERROR
+  // ======================
   if (jobsLoading) return <LoadingWrpNew />;
+
   if (jobsError)
     return (
       <div className="text-white text-2xl">
         {jobsError.message || "Something went wrong"}
       </div>
     );
-  console.log(" jobsData >>>>", jobsData);
 
+  // ======================
+  // RENDER
+  // ======================
   return (
     <>
-      <style jsx global>{`
-        .job-card.dragging {
-          opacity: 0.7;
-          cursor: grabbing;
-        }
-
-        .column-drop-zone.drag-over {
-          background: rgba(255, 165, 0, 0.1);
-          border: 2px dashed orange;
-        }
-
-        .job-card {
-          cursor: grab;
-        }
-
-        .job-card:active {
-          cursor: grabbing;
-        }
-      `}</style>
-
       <CardWrp>
-        <h2 className="text-lg font-bold text-white mb-5">
-          Application Board - (Kanban view with Drag & Drop)
-        </h2>
+        <h2 className="text-lg font-bold text-white mb-5">Application Board</h2>
 
-        {/* <Grid container spacing={2}> */}
-        <div className="flex  gap-4 overflow-x-auto w-full">
+        <div className="flex gap-4 overflow-x-auto w-full">
           {columns.map((col) => {
             const ColIcon = col.icon;
-            const colJobs = jobsData.filter((job) => job.status === col.id);
+
+            const colJobs = jobs.filter((job) => job.status === col.id);
 
             return (
-              <div
-                key={col.id}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, col.id)}
-                className="flex-shrink-0 w-[310px] column-drop-zone transition-all duration-200 rounded-xl "
-              >
+              <div key={col.id} className="flex-shrink-0 w-[310px] rounded-xl">
                 <div className="flex flex-col gap-5">
-                  {/* column header */}
+                  {/* HEADER */}
                   <div
                     className={`flex items-center justify-between px-3 py-2 rounded-xl border ${col.border} ${col.bg}`}
                   >
                     <div className="flex items-center gap-2">
                       <ColIcon className={`w-4 h-4 ${col.color}`} />
-
                       <span className={`text-sm font-bold ${col.color}`}>
                         {col.label}
                       </span>
@@ -302,186 +199,98 @@ const ApplicationBoard = ({
                     </span>
                   </div>
 
-                  {/* jobs */}
-                  <div className="flex flex-col gap-4 min-h-[120px] ">
-                    {colJobs.map((job) => {
-                      return (
-                        <div
-                          key={job.id}
-                          draggable={true}
-                          onDragStart={(e) => handleDragStart(e, job)}
-                          onDragEnd={handleDragEnd}
-                          onDragOver={handleDragOver}
-                          onDrop={(e) => handleDropReorder(e, job, col.id)}
-                          className="glass-card rounded-xl p-4 flex flex-col gap-3 hover:border-orange-500/25 hover:translate-y-[-1px] transition-all duration-200 job-card group"
-                        >
-                          {/* drag handle indicator */}
-                          <div className="absolute left-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <GripVertical className="w-4 h-4 text-white/40" />
-                          </div>
-
-                          {/* top section */}
-                          <div className="flex items-start justify-between gap-2 pl-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                                <span className="text-white text-xs font-bold">
-                                  {job?.companyName.slice(0, 1)}
-                                </span>
-                              </div>
-
-                              <span className="text-white text-sm font-bold truncate">
-                                {job?.companyName}
+                  {/* JOBS */}
+                  <div className="flex flex-col gap-4 min-h-[120px]">
+                    {colJobs.map((job) => (
+                      <div
+                        key={job.id}
+                        className="glass-card rounded-xl p-4 flex flex-col gap-3"
+                      >
+                        {/* TOP */}
+                        <div className="flex items-start justify-between gap-2 pl-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                              <span className="text-white text-xs font-bold">
+                                {job?.companyName?.slice(0, 1) || "?"}
                               </span>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                              {/* status select */}
-                              <Select
-                                name="status"
-                                value={job?.status}
-                                onChange={(e) =>
-                                  handleChangeStatus(job.id, e.target.value)
-                                }
-                                options={STATUS}
-                                placeholder="Move to..."
-                                className="!w-[100px] !h-[30px]"
-                              />
-
-                              {/* menu */}
-                              <div>
-                                <IconButton
-                                  aria-label="more"
-                                  id={`long-button-${job.id}`}
-                                  aria-controls={open ? "long-menu" : undefined}
-                                  aria-expanded={open ? "true" : undefined}
-                                  aria-haspopup="true"
-                                  onClick={(event) =>
-                                    handleClick(event, job.id)
-                                  }
-                                  sx={{
-                                    "&.MuiButtonBase-root": {
-                                      width: "30px",
-                                      height: "30px",
-                                    },
-                                  }}
-                                >
-                                  <MoreVertIcon sx={{ color: "#fff" }} />
-                                </IconButton>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* role */}
-                          <p className="!text-white italic font-medium text-sm leading-relaxed pl-6">
-                            {job?.role}
-                          </p>
-
-                          {/* location + salary */}
-                          <div className="flex flex-col gap-1 pl-6">
-                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
-                              <MapPin className="w-3 h-3 shrink-0" />
-
-                              <span className="truncate font-medium text-white">
-                                {job?.location}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
-                              <h5>Offered :</h5>
-                              <span className="font-medium text-white">
-                                {job?.currency}
-                              </span>
-                              <span className="font-medium text-white">
-                                {job?.offeredSalary}
-                              </span>
-                            </div>
-
-                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
-                              <h5>Expected : </h5>
-                              <span className="font-medium text-white">
-                                {job?.currency}
-                              </span>
-                              <span className="font-medium text-white">
-                                {job?.expectedSalary}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* date */}
-                          <div className="pt-2 border-t border-white/5 pl-6">
-                            <span className="text-[var(--color-text-secondary)] text-xs">
-                              Applied {job?.applicationDate}
+                            <span className="text-white text-sm font-bold">
+                              {job?.companyName || "Unknown"}
                             </span>
                           </div>
 
-                          {/* view details */}
-                          <Link
-                            href={`/job-tracker/${job?.id}`}
-                            className="px-4 py-2 text-center border border-dashed border-green-500/50 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
-                          >
-                            View Details
-                          </Link>
+                          <div className="flex items-center gap-2">
+                            <Select
+                              value={job.status}
+                              onChange={(e) =>
+                                handleChangeStatus(job.id, e.target.value)
+                              }
+                              options={STATUS}
+                              className="!w-[100px] !h-[30px]"
+                            />
+
+                            <IconButton onClick={(e) => handleClick(e, job.id)}>
+                              <MoreVertIcon sx={{ color: "#fff" }} />
+                            </IconButton>
+                          </div>
                         </div>
-                      );
-                    })}
+
+                        {/* ROLE */}
+                        <p className="text-white text-sm pl-6">
+                          {job?.role || "-"}
+                        </p>
+
+                        {/* LOCATION */}
+                        <div className="pl-6 text-xs text-white">
+                          <MapPin className="w-3 h-3 inline mr-1" />
+                          {job?.location || "-"}
+                        </div>
+
+                        {/* VIEW */}
+                        <Link
+                          href={`/job-tracker/${job.id}`}
+                          className="px-4 py-2 text-center border border-dashed border-green-500/50 w-full rounded-full text-white text-xs font-bold"
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-        {/* </Grid> */}
       </CardWrp>
 
-      {/* global menu */}
-      <Menu
-        id="long-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        slotProps={{
-          paper: {
-            style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
-              width: "10ch",
-            },
-          },
-          list: {
-            "aria-labelledby": "long-button",
-          },
-        }}
-      >
+      {/* MENU */}
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {options.map((option) => (
           <MenuItem
             key={option}
             onClick={() => {
               if (option === "edit") {
                 handleEditModalOpen(selectedJobId);
-              }
-
-              if (option === "delete") {
+              } else {
                 handleDeleteJob(selectedJobId);
               }
             }}
           >
-            <div className="flex items-center gap-2">
-              {option === "edit" ? (
-                <>
-                  <EditIcon size={20} />
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </>
-              ) : (
-                <>
-                  <Trash2 size={20} />
-                  {option.charAt(0).toUpperCase() + option.slice(1)}
-                </>
-              )}
-            </div>
+            {option === "edit" ? (
+              <>
+                <EditIcon size={20} /> Edit
+              </>
+            ) : (
+              <>
+                <Trash2 size={20} /> Delete
+              </>
+            )}
           </MenuItem>
         ))}
       </Menu>
 
-      {/* modals */}
+      {/* MODALS */}
       <EditJobModal
         open={isEditModalOpen}
         onClose={handleEditModalClose}

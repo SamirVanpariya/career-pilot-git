@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid } from "@mui/material";
-import { CheckCircle } from "lucide-react";
 import CommonModal from "./common/modal/CommonModal";
 import PrimaryButton from "./atoms/buttons/PrimaryButton";
 import Input from "./atoms/input/Input";
