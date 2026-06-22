@@ -7,10 +7,17 @@ import {
   MessageSquare,
   Star,
   Bookmark,
+  XCircleIcon,
+  LucideXCircle,
+  TvMinimalPlay,
+  BanknoteArrowDown,
+  Check,
 } from "lucide-react";
 import JobTrackerHead from "@/components/JobTrackerHead";
 import JobStates from "@/components/JobStates";
 import ApplicationBoard from "@/components/ApplicationBoard";
+import { useQuery } from "@tanstack/react-query";
+import { getJobsAPI } from "@/services/jobService";
 
 const columns = [
   {
@@ -41,9 +48,9 @@ const columns = [
     id: "offer",
     label: "Offer",
     icon: Star,
-    color: "text-emerald-400",
-    bg: "bg-emerald-400/10",
-    border: "border-emerald-400/20",
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
   },
   {
     id: "rejected",
@@ -52,6 +59,30 @@ const columns = [
     color: "text-red-400",
     bg: "bg-red-400/10",
     border: "border-red-400/20",
+  },
+  {
+    id: "screening",
+    label: "Screening",
+    icon: TvMinimalPlay,
+    color: "text-yellow-400",
+    bg: "bg-yellow-400/10",
+    border: "border-yellow-400/20",
+  },
+  {
+    id: "withdrawn",
+    label: "Withdrawn",
+    icon: BanknoteArrowDown,
+    color: "text-red-400",
+    bg: "bg-red-400/10",
+    border: "border-red-400/20",
+  },
+  {
+    id: "joined",
+    label: "Joined",
+    icon: Check,
+    color: "text-green-400",
+    bg: "bg-green-400/10",
+    border: "border-green-400/20",
   },
 ];
 
@@ -144,37 +175,48 @@ const priorityStyles = {
   low: { label: "Low", color: "text-zinc-400", bg: "bg-zinc-400/10" },
 };
 
-const summaryStats = [
-  {
-    label: "Total Tracked",
-    value: "8",
-    icon: Briefcase,
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-  },
-  {
-    label: "Active",
-    value: "5",
-    icon: CheckCircle,
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    label: "Interviews",
-    value: "2",
-    icon: MessageSquare,
-    color: "text-orange-300",
-    bg: "bg-orange-400/10",
-  },
-  {
-    label: "Offers",
-    value: "1",
-    icon: Star,
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-  },
-];
 const JobTrackerComponents = () => {
+  const {
+    data: jobsData,
+    isLoading: jobsLoading,
+    error: jobsError,
+  } = useQuery({
+    queryKey: ["job"],
+    queryFn: getJobsAPI,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+  });
+  const summaryStats = [
+    {
+      label: "Total Tracked",
+      value: jobsData?.length || 0,
+      icon: Briefcase,
+      color: "text-orange-400",
+      bg: "bg-orange-500/10",
+    },
+    {
+      label: "Applied",
+      value: jobsData?.filter((job) => job.status === "applied")?.length,
+      icon: CheckCircle,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+    },
+    {
+      label: "Interviews",
+      value: jobsData?.filter((job) => job.status === "interview")?.length,
+      icon: MessageSquare,
+      color: "text-orange-300",
+      bg: "bg-orange-400/10",
+    },
+    {
+      label: "Offers",
+      value: jobsData?.filter((job) => job.status === "offer")?.length,
+      icon: Star,
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+    },
+  ];
+
   return (
     <div className="animate-fade-in-up">
       <JobTrackerHead />
@@ -184,6 +226,9 @@ const JobTrackerComponents = () => {
         <ApplicationBoard
           columns={columns}
           jobs={jobs}
+          jobsData={jobsData}
+          jobsLoading={jobsLoading}
+          jobsError={jobsError}
           priorityStyles={priorityStyles}
         />
       </div>

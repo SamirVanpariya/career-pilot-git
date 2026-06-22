@@ -21,7 +21,7 @@ export const jobSchema = yup.object({
 
   jobType: yup
     .string()
-    .oneOf(["Full-time", "Part-time", "Contract", "Freelance", "Internship"])
+    .oneOf(["FullTime", "PartTime", "Contract", "Freelance", "Internship"])
     .required(),
 
   workMode: yup.string().oneOf(["Remote", "Hybrid", "On-site"]).required(),
@@ -52,7 +52,16 @@ export const jobSchema = yup.object({
 
   status: yup
     .string()
-    .oneOf(["saved", "applied", "screening", "interview", "offer", "reject"])
+    .oneOf([
+      "saved",
+      "applied",
+      "interview",
+      "offer",
+      "rejected",
+      "screening",
+      "withdrawn",
+      "joined",
+    ])
     .default("saved"),
 
   priority: yup.string().oneOf(["LOW", "MEDIUM", "HIGH"]).default("MEDIUM"),

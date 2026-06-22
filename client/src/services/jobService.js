@@ -8,6 +8,22 @@ export const jobCreateAPI = async (jobData) => {
 
 // GET
 export const getJobsAPI = async () => {
-  const res = await api.get("/job");
-  return res.data;
+  try {
+    const res = await api.get("/job");
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    throw error;
+  }
+};
+
+// GET by ID
+export const getJobByIdAPI = async (jobId) => {
+  try {
+    const res = await api.get(`/job/${jobId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    throw error;
+  }
 };

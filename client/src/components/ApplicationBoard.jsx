@@ -19,12 +19,30 @@ import Textarea from "./atoms/textarea/Textarea";
 import EditJobModal from "./EditJobModal";
 import DeleteJobModal from "./DeleteJobModal";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { getJobsAPI } from "@/services/jobService";
+import LoadingWrpNew from "./common/LoadingWrpNew";
 
 const options = ["edit", "delete"];
 const ITEM_HEIGHT = 48;
 
-const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
-  const STATUS = ["saved", "applied", "interview", "offer", "rejected"];
+const ApplicationBoard = ({
+  columns,
+  jobs: initialJobs,
+  jobsData,
+  jobsLoading,
+  jobsError,
+}) => {
+  const STATUS = [
+    "saved",
+    "applied",
+    "screening",
+    "interview",
+    "offer",
+    "rejected",
+    "withdrawn",
+    "joined",
+  ];
   const [jobs, setJobs] = useState(initialJobs || []);
   const [openNoteJobId, setOpenNoteJobId] = useState(null);
   const [tempNotes, setTempNotes] = useState({});
@@ -215,6 +233,15 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
     setSelectedJobId(null);
   };
 
+  if (jobsLoading) return <LoadingWrpNew />;
+  if (jobsError)
+    return (
+      <div className="text-white text-2xl">
+        {jobsError.message || "Something went wrong"}
+      </div>
+    );
+  console.log(" jobsData >>>>", jobsData);
+
   return (
     <>
       <style jsx global>{`
@@ -246,7 +273,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
         <div className="flex  gap-4 overflow-x-auto w-full">
           {columns.map((col) => {
             const ColIcon = col.icon;
-            const colJobs = jobs.filter((job) => job.status === col.id);
+            const colJobs = jobsData.filter((job) => job.status === col.id);
 
             return (
               <div
@@ -277,7 +304,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
 
                   {/* jobs */}
                   <div className="flex flex-col gap-4 min-h-[120px] ">
-                    {colJobs.map((job, index) => {
+                    {colJobs.map((job) => {
                       return (
                         <div
                           key={job.id}
@@ -294,16 +321,16 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                           </div>
 
                           {/* top section */}
-                          <div className="flex items-start justify-between gap-2 pl-6">
+                          <div className="flex items-start justify-between gap-2 pl-4">
                             <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
                                 <span className="text-white text-xs font-bold">
-                                  {job.company?.[0]}
+                                  {job?.companyName.slice(0, 1)}
                                 </span>
                               </div>
 
                               <span className="text-white text-sm font-bold truncate">
-                                {job.company}
+                                {job?.companyName}
                               </span>
                             </div>
 
@@ -311,7 +338,7 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                               {/* status select */}
                               <Select
                                 name="status"
-                                value={job.status}
+                                value={job?.status}
                                 onChange={(e) =>
                                   handleChangeStatus(job.id, e.target.value)
                                 }
@@ -345,8 +372,8 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                           </div>
 
                           {/* role */}
-                          <p className="text-zinc-300 text-xs leading-relaxed pl-6">
-                            {job.role}
+                          <p className="!text-white italic font-medium text-sm leading-relaxed pl-6">
+                            {job?.role}
                           </p>
 
                           {/* location + salary */}
@@ -354,72 +381,42 @@ const ApplicationBoard = ({ columns, jobs: initialJobs }) => {
                             <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
                               <MapPin className="w-3 h-3 shrink-0" />
 
-                              <span className="truncate">{job.location}</span>
+                              <span className="truncate font-medium text-white">
+                                {job?.location}
+                              </span>
                             </div>
 
                             <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
-                              <DollarSign className="w-3 h-3 shrink-0" />
+                              <h5>Offered :</h5>
+                              <span className="font-medium text-white">
+                                {job?.currency}
+                              </span>
+                              <span className="font-medium text-white">
+                                {job?.offeredSalary}
+                              </span>
+                            </div>
 
-                              <span>{job.salary}</span>
+                            <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-xs">
+                              <h5>Expected : </h5>
+                              <span className="font-medium text-white">
+                                {job?.currency}
+                              </span>
+                              <span className="font-medium text-white">
+                                {job?.expectedSalary}
+                              </span>
                             </div>
                           </div>
 
                           {/* date */}
                           <div className="pt-2 border-t border-white/5 pl-6">
-                            <span className="text-zinc-600 text-xs">
-                              Applied {job.date}
+                            <span className="text-[var(--color-text-secondary)] text-xs">
+                              Applied {job?.applicationDate}
                             </span>
                           </div>
 
-                          {/* notes */}
-                          {openNoteJobId === job.id ? (
-                            <>
-                              <Textarea
-                                name="notes"
-                                value={tempNotes[job.id] || ""}
-                                onChange={(e) =>
-                                  handleNoteChange(job.id, e.target.value)
-                                }
-                                placeholder="e.g. Applied via LinkedIn on May 10, referral from Rahul, follow up in 1 week, strong match for React skills"
-                              />
-
-                              <div className="flex items-center justify-end gap-2">
-                                <button
-                                  onClick={() => setOpenNoteJobId(null)}
-                                  className="px-2 py-1 text-[12px] w-fit rounded-[25px] bg-red-700 text-white cursor-pointer"
-                                >
-                                  Cancel
-                                </button>
-
-                                <button
-                                  onClick={() => handleSaveNote(job.id)}
-                                  className="px-2 py-1 text-[12px] w-fit rounded-[25px] bg-green-700 text-white cursor-pointer"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              {job?.notes && (
-                                <p className="text-zinc-300 text-sm pl-6">
-                                  <span className="text-white">Note:</span>{" "}
-                                  {job?.notes}
-                                </p>
-                              )}
-
-                              <button
-                                onClick={() => handleAddNote(job.id)}
-                                className="px-4 py-2 border border-dashed border-white/30 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
-                              >
-                                {job?.notes ? "Edit Note" : "Add Note"}
-                              </button>
-                            </>
-                          )}
-
                           {/* view details */}
                           <Link
-                            href={`/job-tracker/${job.id}`}
+                            href={`/job-tracker/${job?.id}`}
                             className="px-4 py-2 text-center border border-dashed border-green-500/50 hover:border-orange-500/50 cursor-pointer w-full rounded-full text-white text-xs font-bold transition-colors duration-200"
                           >
                             View Details

@@ -2,8 +2,8 @@ import prisma from "../db/prisma.js";
 
 export const createJob = async (req, res) => {
   try {
-    const jobData  = req.body;
-    console.log("JD",jobData)
+    const jobData = req.body;
+    console.log("JD", jobData);
     const userId = req.user.id;
     await prisma.job.create({
       data: {
@@ -29,5 +29,24 @@ export const getAllJobs = async (req, res) => {
   } catch (error) {
     console.log("Error in getAllJobs", error);
     return res.json({ message: "error", error: error.message });
+  }
+};
+// GET JOB BY ID
+export const getJobById = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+    const job = await prisma.job.findUnique({
+      where: { id: Number(req.params.id) },
+    });
+
+    res.status(200).json({
+      message: "Job fetched successfully",
+      job,
+    });
+  } catch (error) {
+    console.error("Error in getJobById:", error);
+    res.status(500).json({ message: error.message });
   }
 };

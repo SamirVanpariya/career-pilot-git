@@ -14,7 +14,6 @@ const ROLES = ["Front-end Developer", "need to add roles API here"];
 
 const EditJobModal = ({ open, onClose, jobId }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [formData, setFormData] = useState({
     companyName: "",
     salary: "",

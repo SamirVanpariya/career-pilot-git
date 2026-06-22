@@ -94,7 +94,7 @@ model Job {
 
   expectedSalary  Decimal?  @db.Decimal(12, 2)
   offeredSalary   Decimal?  @db.Decimal(12, 2)
-  currency        String    @default("INR") @db.VarChar(10)
+  currency        String    @default("INR")
 
   applicationDate String
   interviewDate   String?

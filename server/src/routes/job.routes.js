@@ -1,5 +1,9 @@
 import express from "express";
-import { createJob, getAllJobs } from "../controllers/job.controller.js";
+import {
+  createJob,
+  getAllJobs,
+  getJobById,
+} from "../controllers/job.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -11,7 +15,7 @@ router.post("/job", protect, createJob);
 router.get("/job", protect, getAllJobs);
 
 // // Get single job by id
-// router.get("/job/:id");
+router.get("/job/:id", protect, getJobById);
 
 // // Update a job
 // router.patch("/job/:id");
