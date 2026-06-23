@@ -6,53 +6,24 @@ export const scheduleInterviewAPI = async (interviewData) => {
   return res.data;
 };
 
-// // GET
-// export const getJobsAPI = async () => {
-//   try {
-//     const res = await api.get("/job");
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error fetching jobs:", error);
-//     throw error;
-//   }
-// };
+// GET UPCOMING INTERVIEWS
+export const getUpcomingInterviewsAPI = async () => {
+  try {
+    const res = await api.get("/interview/upcoming");
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching upcoming interviews:", error);
+    throw error;
+  }
+};
 
-// // GET by ID
-// export const getJobByIdAPI = async (jobId) => {
-//   try {
-//     const res = await api.get(`/job/${jobId}`);
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error fetching jobs:", error);
-//     throw error;
-//   }
-// };
-
-// export const updateJobStatusAPI = async ({ jobId, status }) => {
-//   const res = await api.patch(`/job/${jobId}`, {
-//     status,
-//   });
-//   return res.data;
-// };
-
-// // UPDATE/EDIT
-// export const updateJobAPI = async ({ jobId, data }) => {
-//   try {
-//     const res = await api.patch(`/job/${jobId}`, data);
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error updating job:", error);
-//     throw error;
-//   }
-// };
-
-// // DELETE
-// export const deleteJobAPI = async (jobId) => {
-//   try {
-//     const res = await api.delete(`/job/${jobId}`);
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error deleting job:", error);
-//     throw error;
-//   }
-// };
+// GET PAST INTERVIEWS
+export const getPastInterviewsAPI = async () => {
+  try {
+    const res = await api.get("/interview/past");
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching past interviews:", error);
+    throw error;
+  }
+};

@@ -92,13 +92,7 @@ export const getUpcoming = async (req, res) => {
         scheduledDate: { gt: now },
       },
       include: {
-        application: {
-          select: {
-            company: true,
-            jobTitle: true,
-            status: true,
-          },
-        },
+        application: true,
       },
       orderBy: { scheduledDate: "asc" },
     });
@@ -124,12 +118,7 @@ export const getPast = async (req, res) => {
         scheduledDate: { lt: now },
       },
       include: {
-        application: {
-          select: {
-            company: true,
-            jobTitle: true,
-          },
-        },
+        application: true,
       },
       orderBy: { scheduledDate: "desc" },
     });

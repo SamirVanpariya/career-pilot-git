@@ -99,7 +99,6 @@ const ScheduleInterviewModal = ({ open, onClose }) => {
     const formattedData = {
       ...data,
       applicationId: Number(data.applicationId),
-      scheduledDate: formatDateTime(data.scheduledDate),
     };
     console.log("formattedData DATA:", formattedData);
 

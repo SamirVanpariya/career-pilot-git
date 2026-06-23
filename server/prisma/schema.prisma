@@ -139,7 +139,7 @@ model Interview {
   applicationId Int
   application   Job @relation(fields: [applicationId], references: [id])
   stage         String    // e.g., "Phone Screen", "Technical", "System Design", "Behavioural", "Onsite"
-  scheduledDate String  // date + time
+  scheduledDate DateTime     // date + time
   interviewer   String?
   duration      Int?
   score         Int?      // 0-100

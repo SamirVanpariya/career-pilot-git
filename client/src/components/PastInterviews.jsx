@@ -1,11 +1,13 @@
 import { Grid } from "@mui/material";
 import CardWrp from "./CardWrp";
 import { CheckCircle } from "lucide-react";
+import LoadingWrpNew from "./common/LoadingWrpNew";
 
-const PastInterviews = ({ past }) => {
+const PastInterviews = ({ pastInterviews, isPastLoading }) => {
+  console.log("pastInterviews", pastInterviews);
   return (
     <Grid size={{ xs: 12, lg: 6 }}>
-      <CardWrp className="mt-0 h-full">
+      <CardWrp className="relative mt-0 h-full">
         <div className="flex items-center gap-2 mb-5">
           <div
             className="w-7 h-7 rounded-lg flex items-center justify-center"
@@ -17,34 +19,50 @@ const PastInterviews = ({ past }) => {
             />
           </div>
           <h2 className="text-lg font-bold text-white">Past Interviews</h2>
+          <span className="absolute z-[-1] top-[-20px] leading-[100%] right-4 text-amber-100 ml-auto text-[220px] opacity-[0.05] font-bold rounded-full">
+            {pastInterviews?.length}
+          </span>
         </div>
+
         <div className="flex flex-col gap-3">
-          {past.map((item, idx) => (
+          {isPastLoading && <LoadingWrpNew />}
+
+          {pastInterviews?.length === 0 && (
+            <p className="text-center text-[var(--color-text-secondary)]">
+              No past interviews
+            </p>
+          )}
+          {pastInterviews?.map((item) => (
             <div
-              key={idx}
+              key={item?.id}
               className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
             >
               <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
                 <span className="text-white text-sm font-black">
-                  {item.company[0]}
+                  {item?.application?.companyName[0]}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white text-sm font-semibold truncate">
-                  {item.company}
+                  {item?.application?.companyName}
                 </p>
                 <p className="text-[var(--color-text-secondary)] text-xs mt-0.5">
-                  {item.date} · {item.type}
+                  {item?.scheduledDate
+                    ? new Date(item.scheduledDate).toDateString()
+                    : "TBD"}{" "}
+                  <span className="text-green-400 flex items-center gap-1.5 text-sm capitalize">
+                    <p className="text-white">Stage :</p> {item?.stage}
+                  </span>
                 </p>
               </div>
               <div className="text-right shrink-0">
                 <span
                   className={`text-xs font-bold px-2 py-0.5 rounded-full ${item.outcomeBg} ${item.outcomeColor}`}
                 >
-                  {item.outcome}
+                  {item?.result || "not given yet"}
                 </span>
                 <p className="text-zinc-600 text-xs mt-1">
-                  Score: {item.score}%
+                  Score: {item?.score || "not given yet"}%
                 </p>
               </div>
             </div>
