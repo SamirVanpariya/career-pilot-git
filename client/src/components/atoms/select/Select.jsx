@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 
 const Select = ({
@@ -38,14 +38,14 @@ const Select = ({
 
         {options.map((item) => (
           <option
-            key={item}
-            value={item}
+            key={typeof item === "object" ? item.value : item}
+            value={typeof item === "object" ? item.value : item}
             style={{
               backgroundColor: "#111111",
               color: "#ffffff",
             }}
           >
-            {item}
+            {typeof item === "object" ? item.label : item}
           </option>
         ))}
       </select>

@@ -41,3 +41,16 @@ export const JOB_OPTIONS = {
     "joined",
   ],
 };
+
+export const INTERVIEW_OPTIONS = {
+  STAGE: [
+    "phone_screen",
+    "technical_interview",
+    "behavioral_interview",
+    "case_study",
+    "final_interview",
+    "panel_interview",
+    "group_interview",
+    "technical_assessment",
+  ],
+};

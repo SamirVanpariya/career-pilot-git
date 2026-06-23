@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import uploadRoutes from "./routes/upload.routes.js";
 import resumeRoutes from "./routes/resume.routes.js";
 import jobRoutes from "./routes/job.routes.js";
+import interviewRoutes from "./routes/interview.routes.js";
 dotenv.config();
 
 const app = express();
@@ -26,6 +27,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", uploadRoutes);
 app.use("/api", resumeRoutes);
 app.use("/api", jobRoutes);
+app.use("/api", interviewRoutes);
 // Debug Route - just for checking the request object
 app.get("/debug", (req, res) => {
   res.json({
