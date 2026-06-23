@@ -24,7 +24,7 @@ const options = ["edit", "delete"];
 
 const ApplicationBoard = ({ columns }) => {
   const queryClient = useQueryClient();
-
+  const [view, setView] = useState("board");
   const STATUS = [
     "saved",
     "applied",
@@ -169,101 +169,215 @@ const ApplicationBoard = ({ columns }) => {
   // ======================
   return (
     <>
-      <CardWrp>
-        <h2 className="text-lg font-bold text-white mb-5">Application Board</h2>
+      <div className="flex justify-end mb-4 gap-2">
+        <button
+          onClick={() => setView("board")}
+          className={`px-4 py-2 rounded-[12px] ${
+            view === "board"
+              ? "!bg-[var(--color-white)] text-black"
+              : "bg-white/10 text-white"
+          }`}
+        >
+          Board View
+        </button>
 
-        <div className="flex gap-4 overflow-x-auto w-full">
-          {columns.map((col) => {
-            const ColIcon = col.icon;
+        <button
+          onClick={() => setView("table")}
+          className={`px-4 py-2 rounded-[12px] ${
+            view === "table"
+              ? "!bg-[var(--color-white)] text-black"
+              : "bg-white/10 text-white"
+          }`}
+        >
+          Table View
+        </button>
+      </div>
+      {view === "board" && (
+        <CardWrp>
+          <h2 className="text-lg font-bold text-white mb-5">
+            Application Board
+          </h2>
 
-            const colJobs = jobs.filter((job) => job.status === col.id);
+          <div className="flex gap-4 overflow-x-auto w-full">
+            {columns.map((col) => {
+              const ColIcon = col.icon;
 
-            return (
-              <div key={col.id} className="flex-shrink-0 w-[310px] rounded-xl">
-                <div className="flex flex-col gap-5">
-                  {/* HEADER */}
-                  <div
-                    className={`flex items-center justify-between px-3 py-2 rounded-xl border ${col.border} ${col.bg}`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ColIcon className={`w-4 h-4 ${col.color}`} />
-                      <span className={`text-sm font-bold ${col.color}`}>
-                        {col.label}
+              const colJobs = jobs.filter((job) => job.status === col.id);
+
+              return (
+                <div
+                  key={col.id}
+                  className="flex-shrink-0 w-[310px] rounded-xl"
+                >
+                  <div className="flex flex-col gap-5">
+                    {/* HEADER */}
+                    <div
+                      className={`flex items-center justify-between px-3 py-2 rounded-xl border ${col.border} ${col.bg}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <ColIcon className={`w-4 h-4 ${col.color}`} />
+                        <span className={`text-sm font-bold ${col.color}`}>
+                          {col.label}
+                        </span>
+                      </div>
+
+                      <span
+                        className={`text-xs font-bold px-2 py-0.5 rounded-full bg-black/20 ${col.color}`}
+                      >
+                        {colJobs.length}
                       </span>
                     </div>
 
-                    <span
-                      className={`text-xs font-bold px-2 py-0.5 rounded-full bg-black/20 ${col.color}`}
-                    >
-                      {colJobs.length}
-                    </span>
-                  </div>
+                    {/* JOBS */}
+                    <div className="flex flex-col gap-4 min-h-[120px]">
+                      {colJobs.map((job) => (
+                        <div
+                          key={job.id}
+                          className="glass-card rounded-xl p-4 flex flex-col gap-3"
+                        >
+                          {/* TOP */}
+                          <div className="flex items-start justify-between gap-2 pl-4">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">
+                                  {job?.companyName?.slice(0, 1) || "?"}
+                                </span>
+                              </div>
 
-                  {/* JOBS */}
-                  <div className="flex flex-col gap-4 min-h-[120px]">
-                    {colJobs.map((job) => (
-                      <div
-                        key={job.id}
-                        className="glass-card rounded-xl p-4 flex flex-col gap-3"
-                      >
-                        {/* TOP */}
-                        <div className="flex items-start justify-between gap-2 pl-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
-                              <span className="text-white text-xs font-bold">
-                                {job?.companyName?.slice(0, 1) || "?"}
+                              <span className="text-white text-sm font-bold">
+                                {job?.companyName || "Unknown"}
                               </span>
                             </div>
 
-                            <span className="text-white text-sm font-bold">
-                              {job?.companyName || "Unknown"}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={job.status}
+                                onChange={(e) =>
+                                  handleChangeStatus(job.id, e.target.value)
+                                }
+                                options={STATUS}
+                                className="!w-[100px] !h-[30px]"
+                              />
+
+                              <IconButton
+                                onClick={(e) => handleClick(e, job.id)}
+                              >
+                                <MoreVertIcon sx={{ color: "#fff" }} />
+                              </IconButton>
+                            </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <Select
-                              value={job.status}
-                              onChange={(e) =>
-                                handleChangeStatus(job.id, e.target.value)
-                              }
-                              options={STATUS}
-                              className="!w-[100px] !h-[30px]"
-                            />
+                          {/* ROLE */}
+                          <p className="text-white text-sm pl-6">
+                            {job?.role || "-"}
+                          </p>
 
-                            <IconButton onClick={(e) => handleClick(e, job.id)}>
-                              <MoreVertIcon sx={{ color: "#fff" }} />
-                            </IconButton>
+                          {/* LOCATION */}
+                          <div className="pl-6 text-xs text-white">
+                            <MapPin className="w-3 h-3 inline mr-1" />
+                            {job?.location || "-"}
                           </div>
+
+                          {/* VIEW */}
+                          <Link
+                            href={`/job-tracker/${job.id}`}
+                            className="px-4 py-2 text-center border border-dashed border-green-500/50 w-full rounded-full text-white text-xs font-bold"
+                          >
+                            View Details
+                          </Link>
                         </div>
-
-                        {/* ROLE */}
-                        <p className="text-white text-sm pl-6">
-                          {job?.role || "-"}
-                        </p>
-
-                        {/* LOCATION */}
-                        <div className="pl-6 text-xs text-white">
-                          <MapPin className="w-3 h-3 inline mr-1" />
-                          {job?.location || "-"}
-                        </div>
-
-                        {/* VIEW */}
-                        <Link
-                          href={`/job-tracker/${job.id}`}
-                          className="px-4 py-2 text-center border border-dashed border-green-500/50 w-full rounded-full text-white text-xs font-bold"
-                        >
-                          View Details
-                        </Link>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </CardWrp>
+              );
+            })}
+          </div>
+          {jobs.length === 0 && (
+            <div className="text-center py-10 text-white/60">
+              No applications found
+            </div>
+          )}
+        </CardWrp>
+      )}
+      {view === "table" && (
+        <CardWrp>
+          <h2 className="text-lg font-bold text-white mb-5">
+            Applications Table
+          </h2>
 
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left text-white">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="p-4">Company</th>
+                  <th className="p-4">Role</th>
+                  <th className="p-4">Location</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {jobs.map((job) => (
+                  <tr
+                    key={job.id}
+                    className="border-b border-white/5 hover:bg-white/5"
+                  >
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
+                          <span className="text-xs font-bold">
+                            {job?.companyName?.slice(0, 1) || "?"}
+                          </span>
+                        </div>
+
+                        {job?.companyName || "Unknown"}
+                      </div>
+                    </td>
+
+                    <td className="p-4">{job?.role || "-"}</td>
+
+                    <td className="p-4">{job?.location || "-"}</td>
+
+                    <td className="p-4">
+                      <Select
+                        value={job.status}
+                        onChange={(e) =>
+                          handleChangeStatus(job.id, e.target.value)
+                        }
+                        options={STATUS}
+                        className="!w-[120px]"
+                      />
+                    </td>
+
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/job-tracker/${job.id}`}
+                          className="px-3 py-1 rounded-full border border-green-500/50 text-xs"
+                        >
+                          View
+                        </Link>
+
+                        <IconButton onClick={(e) => handleClick(e, job.id)}>
+                          <MoreVertIcon sx={{ color: "#fff" }} />
+                        </IconButton>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {jobs.length === 0 && (
+              <div className="text-center py-10 text-white/60">
+                No applications found
+              </div>
+            )}
+          </div>
+        </CardWrp>
+      )}
       {/* MENU */}
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         {options.map((option) => (

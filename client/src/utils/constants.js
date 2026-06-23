@@ -28,7 +28,7 @@ export const JOB_OPTIONS = {
     "Expert (8+ years)",
   ],
   JOB_TYPE: ["FullTime", "PartTime", "Contract", "Freelance", "Internship"],
-  WORK_MODE: ["Remote", "Hybrid", "On-site"],
+  WORK_MODE: ["Remote", "Hybrid", "Onsite"],
   PRIORITY: ["LOW", "MEDIUM", "HIGH"],
   JOB_STATUS: [
     "saved",

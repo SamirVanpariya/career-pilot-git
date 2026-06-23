@@ -24,7 +24,7 @@ export const jobSchema = yup.object({
     .oneOf(["FullTime", "PartTime", "Contract", "Freelance", "Internship"])
     .required(),
 
-  workMode: yup.string().oneOf(["Remote", "Hybrid", "On-site"]).required(),
+  workMode: yup.string().oneOf(["Remote", "Hybrid", "Onsite"]).required(),
 
   platform: yup.string().required("Platform is required").max(100),
 
