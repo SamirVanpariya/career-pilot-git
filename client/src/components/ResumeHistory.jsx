@@ -27,13 +27,15 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import LoadingWrpNew from "./common/LoadingWrpNew";
 import SecondaryButton from "./atoms/buttons/SecondaryButton";
+import { useRouter } from "next/navigation";
+import PrimaryButton from "./atoms/buttons/PrimaryButton";
 
 const ResumeHistory = () => {
   const [selectedResume, setSelectedResume] = useState(null);
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const [analyzingResumeId, setAnalyzingResumeId] = useState(null);
   const queryClient = useQueryClient();
-
+  const route = useRouter();
   const formatDate = (isoString) => {
     if (!isoString) return "";
     const date = new Date(isoString);
@@ -112,6 +114,10 @@ const ResumeHistory = () => {
   const handleAtsAnalysis = (resumeId) => {
     setAnalyzingResumeId(resumeId);
     analyzeResume(resumeId);
+  };
+
+  const viewResumeATSAnalysis = (resumeId) => {
+    route.push(`/resume-analysis/${resumeId}`);
   };
 
   if (isLoading) return <LoadingWrpNew />;
@@ -211,15 +217,27 @@ const ResumeHistory = () => {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <SecondaryButton
-                  onClick={() => handleAtsAnalysis(resume.id)}
-                  className="!w-fit"
-                  disabled={analyzingResumeId === resume.id}
-                >
-                  {analyzingResumeId === resume.id
-                    ? "Analyzing..."
-                    : "Check ATS Analysis"}
-                </SecondaryButton>
+                <div className="flex items-center gap-2 justify-end">
+                  {!resume?.isAtsAvailable &&
+                  analyzingResumeId !== resume.id ? (
+                    <SecondaryButton
+                      onClick={() => handleAtsAnalysis(resume.id)}
+                      className="!w-fit"
+                      disabled={analyzingResumeId === resume.id}
+                    >
+                      {analyzingResumeId === resume.id
+                        ? "Analyzing..."
+                        : "Check ATS Analysis"}
+                    </SecondaryButton>
+                  ) : (
+                    <PrimaryButton
+                      onClick={() => viewResumeATSAnalysis(resume.id)}
+                      className="!w-fit"
+                    >
+                      View ATS Report
+                    </PrimaryButton>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -120,6 +120,7 @@ export const analyzeResume = async (
       data: {
         atsScore: analysis.score,
         atsAnalysis: analysis,
+        isAtsAvailable: true,
       },
     });
 

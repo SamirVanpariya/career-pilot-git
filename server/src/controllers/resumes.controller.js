@@ -60,6 +60,33 @@ export const getResumes = async (req, res) => {
   }
 };
 
+export const getResumeById = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
+    const resumeId = Number(req.params.resumeId);
+    if (Number.isNaN(resumeId)) {
+      return res.status(400).json({ message: "Invalid resume ID" });
+    }
+    const resume = await prisma.resume.findUnique({
+      where: { id: resumeId },
+    });
+    if (!resume) {
+      return res.status(404).json({ message: "Resume not found" });
+    }
+    if (resume.userId !== req.user.id) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized: user not authorized" });
+    }
+    return res.status(200).json(resume);
+  } catch (error) {
+    console.error("Error in getResumeById:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const deleteResume = async (req, res) => {
   try {
     if (!req.user?.id) {

@@ -12,6 +12,11 @@ export const getResumesAPI = async () => {
   return res.data;
 };
 
+// GET RESUME BY ID
+export const getResumeByIdAPI = async (resumeId) => {
+  const res = await api.get(`/resume/${resumeId}`);
+  return res.data;
+};
 // DELETE
 export const deleteResumeAPI = async (resumeId) => {
   const res = await api.delete(`/resume/${resumeId}`);
@@ -25,6 +30,9 @@ export const analyzeResumeAPI = async (resumeId) => {
     return res.data;
   } catch (error) {
     console.error("Error in analyzeResumeAPI:", error);
-    throw new Error(error.response?.data?.message || "An error occurred while analyzing the resume.");
+    throw new Error(
+      error.response?.data?.message ||
+        "An error occurred while analyzing the resume.",
+    );
   }
 };
