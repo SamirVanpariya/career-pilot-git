@@ -62,6 +62,7 @@ model Resume {
   linkedin  String?
   portfolio String?
   notes     String?
+  parsedText String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -161,4 +162,4 @@ model PrepResource {
   description String?
   resourceUrl String
   createdAt   DateTime @default(now())
-}
+} 

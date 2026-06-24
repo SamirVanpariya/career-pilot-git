@@ -147,6 +147,7 @@ const ResumeUploadModal = ({ open, onClose }) => {
     const payload = {
       ...data,
       file: cloudinaryResponse,
+      parsedText: cloudinaryResponse?.parsedText,
     };
 
     console.log(payload);

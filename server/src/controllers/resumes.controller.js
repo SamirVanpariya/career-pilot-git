@@ -7,6 +7,7 @@ export const createResume = async (req, res) => {
     }
     const {
       file,
+      parsedText,
       title,
       name,
       email,
@@ -21,6 +22,7 @@ export const createResume = async (req, res) => {
       data: {
         userId: req.user?.id,
         file: file?.url,
+        parsedText: parsedText || null,
         title,
         name,
         email,

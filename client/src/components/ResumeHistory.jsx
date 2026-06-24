@@ -396,6 +396,17 @@ const ResumeHistory = () => {
                 )}
               </div>
             </div>
+            <div className="space-y-4 pt-2">
+              <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                Parsed Text From Resume (pdf)
+              </h4>
+
+              <div className="space-y-4 bg-[#111] p-5 rounded-xl border border-zinc-800/80">
+                <p className="text-sm text-zinc-300 leading-relaxed italic bg-black/20 p-3 rounded-lg border border-zinc-800/40">
+                  "{selectedResume?.parsedText || "No parsed text found"}"
+                </p>
+              </div>
+            </div>
           </div>
           {/* Footer */}
           <div className="flex items-center justify-end pt-4 border-t border-zinc-800 mt-6">
