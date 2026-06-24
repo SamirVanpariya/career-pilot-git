@@ -3,7 +3,7 @@ import CommonModal from "./common/modal/CommonModal";
 import PrimaryButton from "./atoms/buttons/PrimaryButton";
 import { LogOutIcon } from "lucide-react";
 
-const LogoutModal = ({ open, onClose, onLogout, loading = false }) => {
+const LogoutModal = ({ open, onClose, onLogout, isLogoutLoading }) => {
   return (
     <CommonModal open={open} onClose={onClose} maxWidth="xs">
       {/* Body */}
@@ -37,7 +37,6 @@ const LogoutModal = ({ open, onClose, onLogout, loading = false }) => {
         <button
           type="button"
           onClick={onClose}
-          disabled={loading}
           className="px-5 h-[44px] rounded-[var(--radius-md)] text-sm font-medium text-gray-400 hover:text-white hover:bg-[#1f1f1f] transition-colors focus:outline-none disabled:opacity-50"
         >
           Cancel
@@ -46,10 +45,10 @@ const LogoutModal = ({ open, onClose, onLogout, loading = false }) => {
         <PrimaryButton
           type="button"
           onClick={onLogout}
-          disabled={loading}
+          disabled={isLogoutLoading}
           className="bg-red-600 hover:bg-red-700 text-white"
         >
-          {loading ? "Logout..." : "Logout"}
+          {isLogoutLoading ? "Logout..." : "Logout"}
         </PrimaryButton>
       </div>
     </CommonModal>

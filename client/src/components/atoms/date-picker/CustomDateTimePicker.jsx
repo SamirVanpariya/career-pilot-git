@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 
 export default function CustomDateTimePicker({
-  label = "Select Date & Time",
+  label,
   value,
   onChange,
   error,
@@ -15,7 +14,7 @@ export default function CustomDateTimePicker({
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DateTimePicker
-        label={label}
+        label={label && label}
         value={value ? dayjs(value) : null}
         onChange={(newValue) => onChange?.(newValue)}
         slotProps={{

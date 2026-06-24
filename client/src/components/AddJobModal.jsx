@@ -382,12 +382,15 @@ const AddJobModal = ({ open, onClose }) => {
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Application Date
+            </label>
+
             <Controller
               name="applicationDate"
               control={control}
               render={({ field, fieldState }) => (
                 <CustomDateTimePicker
-                  label="Application Date"
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState?.error?.message}
@@ -396,12 +399,14 @@ const AddJobModal = ({ open, onClose }) => {
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Interview Date
+            </label>
             <Controller
               name="interviewDate"
               control={control}
               render={({ field, fieldState }) => (
                 <CustomDateTimePicker
-                  label="Interview Date"
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState?.error?.message}
@@ -410,12 +415,14 @@ const AddJobModal = ({ open, onClose }) => {
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Follow Up Date
+            </label>
             <Controller
               name="followUpDate"
               control={control}
               render={({ field, fieldState }) => (
                 <CustomDateTimePicker
-                  label="Follow Up Date"
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState?.error?.message}

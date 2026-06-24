@@ -169,7 +169,7 @@ const ApplicationBoard = ({ columns }) => {
   // ======================
   return (
     <>
-      <div className="flex justify-end mb-4 gap-2">
+      <div className="flex justify-end  gap-2">
         <button
           onClick={() => setView("board")}
           className={`px-4 py-2 rounded-[12px] ${
@@ -324,7 +324,7 @@ const ApplicationBoard = ({ columns }) => {
                     key={job.id}
                     className="border-b border-white/5 hover:bg-white/5"
                   >
-                    <td className="p-4">
+                    <td className="md:p-4 p-2 md:min-w-[300px] min-w-[200px]">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
                           <span className="text-xs font-bold">
@@ -336,22 +336,22 @@ const ApplicationBoard = ({ columns }) => {
                       </div>
                     </td>
 
-                    <td className="p-4">{job?.role || "-"}</td>
+                    <td className="md:p-4 p-2 min-w-[200px]">{job?.role || "-"}</td>
 
-                    <td className="p-4">{job?.location || "-"}</td>
+                    <td className="md:p-4 p-2 min-w-[200px]">{job?.location || "-"}</td>
 
-                    <td className="p-4">
+                    <td className="md:p-4 p-2 min-w-[140px]">
                       <Select
                         value={job.status}
                         onChange={(e) =>
                           handleChangeStatus(job.id, e.target.value)
                         }
                         options={STATUS}
-                        className="!w-[120px]"
+                        // className="!w-[120px]"
                       />
                     </td>
 
-                    <td className="p-4">
+                    <td className="md:p-4 p-2">
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/job-tracker/${job.id}`}

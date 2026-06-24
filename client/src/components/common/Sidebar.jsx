@@ -41,7 +41,7 @@ export default function Sidebar() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const logoutMutate = useMutation({
+  const {mutate:logoutMutate,isPending:isLogoutLoading} = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
       // 💥 instantly remove user from cache
@@ -215,7 +215,8 @@ export default function Sidebar() {
       <LogoutModal
         open={openLogoutModal}
         onClose={() => setOpenLogoutModal(false)}
-        onLogout={() => logoutMutate.mutate()}
+        onLogout={() => logoutMutate()}
+        isLogoutLoading={isLogoutLoading}
       />
     </>
   );

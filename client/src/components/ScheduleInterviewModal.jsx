@@ -174,12 +174,14 @@ const ScheduleInterviewModal = ({ open, onClose }) => {
           </Grid>
 
           <Grid size={{ xs: 12, sm: 6 }}>
+            <label className="block text-sm font-medium text-gray-300 mb-1.5">
+              Interview Date & Time
+            </label>
             <Controller
               name="scheduledDate"
               control={control}
               render={({ field, fieldState }) => (
                 <CustomDateTimePicker
-                  label="Date & Time"
                   value={field.value}
                   onChange={field.onChange}
                   error={fieldState?.error?.message}
