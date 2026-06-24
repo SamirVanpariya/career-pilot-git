@@ -123,3 +123,17 @@
                 │
                 ▼
     Return Success Response
+
+<!-- ## GEMINI API FOR ATS (this is not work currently )>>>>>>>>> -->
+
+<!-- https://aistudio.google.com/
+
+npm install @google/genai -->
+
+
+## OPENROUTER API FOR ATS (this is work currently )>>>>>>>>>
+
+npm install openai
+<!-- https://openrouter.ai -->
+
+https://openrouter.ai/workspaces?utm_source=signup-success

@@ -17,14 +17,21 @@ import {
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
-import { deleteResumeAPI, getResumesAPI } from "@/services/resumeService";
+import {
+  analyzeResumeAPI,
+  deleteResumeAPI,
+  getResumesAPI,
+} from "@/services/resumeService";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import LoadingWrpNew from "./common/LoadingWrpNew";
+import SecondaryButton from "./atoms/buttons/SecondaryButton";
+
 const ResumeHistory = () => {
   const [selectedResume, setSelectedResume] = useState(null);
   const [resumeToDelete, setResumeToDelete] = useState(null);
+  const [analyzingResumeId, setAnalyzingResumeId] = useState(null);
   const queryClient = useQueryClient();
 
   const formatDate = (isoString) => {
@@ -85,6 +92,28 @@ const ResumeHistory = () => {
       toast.error(error?.message || "Failed to delete resume.");
     },
   });
+
+  //  CHECK ATS (RESUME AI ANALYSIS) MUTATION
+  const { mutate: analyzeResume, isPending: analyzeResumeLoading } =
+    useMutation({
+      mutationFn: analyzeResumeAPI,
+      mutationKey: ["resumes"],
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["resumes"] });
+        toast.success("Resume analyzed successfully");
+        setAnalyzingResumeId(null);
+      },
+      onError: (error) => {
+        toast.error(error?.message || "Failed to analyze resume.");
+        setAnalyzingResumeId(null);
+      },
+    });
+
+  const handleAtsAnalysis = (resumeId) => {
+    setAnalyzingResumeId(resumeId);
+    analyzeResume(resumeId);
+  };
+
   if (isLoading) return <LoadingWrpNew />;
   if (isError) return <p>Error: {error?.message}</p>;
 
@@ -182,6 +211,15 @@ const ResumeHistory = () => {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
+                <SecondaryButton
+                  onClick={() => handleAtsAnalysis(resume.id)}
+                  className="!w-fit"
+                  disabled={analyzingResumeId === resume.id}
+                >
+                  {analyzingResumeId === resume.id
+                    ? "Analyzing..."
+                    : "Check ATS Analysis"}
+                </SecondaryButton>
               </div>
             ))}
           </div>

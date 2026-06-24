@@ -7,6 +7,7 @@ import uploadRoutes from "./routes/upload.routes.js";
 import resumeRoutes from "./routes/resume.routes.js";
 import jobRoutes from "./routes/job.routes.js";
 import interviewRoutes from "./routes/interview.routes.js";
+import atsRoutes from "./routes/ats.routes.js";
 dotenv.config();
 
 const app = express();
@@ -28,6 +29,7 @@ app.use("/api", uploadRoutes);
 app.use("/api", resumeRoutes);
 app.use("/api", jobRoutes);
 app.use("/api", interviewRoutes);
+app.use("/api/ats", atsRoutes);
 // Debug Route - just for checking the request object
 app.get("/debug", (req, res) => {
   res.json({

@@ -17,3 +17,14 @@ export const deleteResumeAPI = async (resumeId) => {
   const res = await api.delete(`/resume/${resumeId}`);
   return res.data;
 };
+
+//  CHECK ATS (RESUME AI ANALYSIS) API
+export const analyzeResumeAPI = async (resumeId) => {
+  try {
+    const res = await api.post(`/ats/analyze-resume/${resumeId}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error in analyzeResumeAPI:", error);
+    throw new Error(error.response?.data?.message || "An error occurred while analyzing the resume.");
+  }
+};
