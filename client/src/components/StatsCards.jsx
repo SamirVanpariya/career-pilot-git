@@ -33,7 +33,7 @@ export default function StatsCards() {
   const resumeHealth = latestResumeData?.atsAnalysis?.scoringStatus;
   const stats = [
     {
-      title: "Applications",
+      title: "Job Applications",
       value: totalApplications || "-",
       sub: "+12% this week",
       trend: "up",

@@ -293,7 +293,7 @@ export default function DashboardBanner() {
                     border: "1px solid rgba(255,87,34,0.22)",
                   }}
                 >
-                  {latestResumeData?.atsScore}{" "}
+                  {latestResumeData?.atsScore || "Null"}{" "}
                 </span>{" "}
                 Out of 100.
               </p>

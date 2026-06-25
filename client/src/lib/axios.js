@@ -16,7 +16,8 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      error.response.data?.code === "TOKEN_EXPIRED"
+      (error.response.data?.code === "TOKEN_EXPIRED" ||
+        error.response.data?.message === "Not authenticated")
     ) {
       originalRequest._retry = true;
       try {

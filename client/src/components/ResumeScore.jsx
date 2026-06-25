@@ -23,7 +23,7 @@ const ResumeScore = () => {
   const weaknesses = latestResume?.atsAnalysis?.weaknesses?.length || 0;
 
   const resumeStrengthScore = Math.round(
-    (strengths / (strengths + weaknesses)) * 100,
+    (strengths / (strengths + weaknesses)) * 100 || 0,
   );
 
   const scoreBreakdown = [

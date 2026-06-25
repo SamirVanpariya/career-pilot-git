@@ -16,6 +16,8 @@ import {
   AlertTriangle,
   SearchCheck,
   FileBarChart2,
+  Loader2,
+  SearchCheckIcon,
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
@@ -239,7 +241,7 @@ const ResumeHistory = () => {
                         </>
                       ) : (
                         <>
-                          <SearchCheck className="h-4 w-4 text-cyan-400" />
+                          <SearchCheckIcon className="h-4 w-4 text-cyan-400" />
                           Check ATS Analysis
                         </>
                       )}

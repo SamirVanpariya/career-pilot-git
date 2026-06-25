@@ -90,12 +90,12 @@ const ProfileAvatar = ({ myProfile, isEditable, setProfileAvatar }) => {
 
   return (
     <CardWrp className="mt-0 relative overflow-hidden">
-      <h2 className="text-base font-bold text-white mb-5">Profile Photo</h2>
+      <h2 className="text-base font-bold text-white mb-5">Profile picture</h2>
 
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
         <div className="relative shrink-0">
           <div
-            className="w-20 h-20 rounded-2xl border flex items-center justify-center overflow-hidden"
+            className="w-25 h-25 rounded-2xl border flex items-center justify-center overflow-hidden"
             style={{
               background:
                 "linear-gradient(135deg, rgba(255,87,34,0.35), rgba(255,112,67,0.25))",
