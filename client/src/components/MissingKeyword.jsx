@@ -14,7 +14,7 @@ const MissingKeyword = ({ resumeData }) => {
           </div>
 
           <div>
-            <h2 className="text-[22px] md:text-[26px] font-bold text-white">
+            <h2 className="text-[20px] md:text-[22px] font-bold text-white">
               Missing Keywords
             </h2>
             <p className="text-zinc-400 text-sm">

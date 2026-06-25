@@ -6,14 +6,14 @@ const AISuggestions = ({ resumeData = [] }) => {
   const suggestions = resumeData?.atsAnalysis?.suggestions || [];
 
   return (
-    <Grid size={{ xs: 12, lg: 7 }}>
+    <Grid size={{ xs: 12, lg: 6 }}>
       <CardWrp className="!mt-0 h-full">
         <div className="flex items-center gap-2 mb-5">
           <Sparkles
             className="w-7 h-7"
             style={{ color: "var(--color-orange)" }}
           />
-          <h2 className="text-[22px] md:text-[26px] font-bold text-white">AI Recommendations</h2>
+          <h2 className="text-[20px] md:text-[22px] font-bold text-white">AI Recommendations</h2>
         </div>
 
         <div className="space-y-4">

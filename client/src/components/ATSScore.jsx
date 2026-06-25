@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { Grid } from "@mui/material";
 
-const ATSScore = ({ overallScore }) => {
+const ATSScore = ({ resumeData }) => {
   return (
     <Grid size={{ xs: 12, md: 4 }}>
       <div className="glass-card rounded-2xl p-6 flex flex-col items-center text-center gap-4 h-full">
@@ -53,7 +53,7 @@ const ATSScore = ({ overallScore }) => {
                 fill="none"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 50}`}
-                strokeDashoffset={`${2 * Math.PI * 50 * (1 - overallScore / 100)}`}
+                strokeDashoffset={`${2 * Math.PI * 50 * (1 - resumeData?.atsScore / 100)}`}
                 className="transition-all duration-700"
               />
               <defs>
@@ -71,7 +71,7 @@ const ATSScore = ({ overallScore }) => {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-4xl font-black text-white">
-                {overallScore}
+                {resumeData?.atsScore}
               </span>
               <span className="text-xs text-[var(--color-text-secondary)] tracking-widest">
                 / 100
@@ -80,15 +80,14 @@ const ATSScore = ({ overallScore }) => {
           </div>
         </div>
         <div className="w-full pt-2 border-t border-white/5">
-          <p className="text-zinc-400 text-xs">
-            Your resume ranks in the{" "}
+          <p className="text-zinc-400 text-sm">
+            Your resume status is{" "}
             <span
-              className="font-bold"
+              className="ml-2 font-bold text-[20px] capitalize"
               style={{ color: "var(--color-orange-light)" }}
             >
-              top 26%
+              {resumeData?.atsAnalysis?.scoringStatus}
             </span>{" "}
-            of candidates.
           </p>
         </div>
       </div>

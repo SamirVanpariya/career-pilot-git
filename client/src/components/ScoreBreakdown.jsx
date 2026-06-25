@@ -11,7 +11,7 @@ const ScoreBreakdown = ({ scoreSections }) => {
             className="w-7 h-7"
             style={{ color: "var(--color-orange)" }}
           />
-          <h2 className="text-[22px] md:text-[26px] font-bold text-white">Score Breakdown</h2>
+          <h2 className="text-[20px] md:text-[22px] font-bold text-white">Score Breakdown</h2>
         </div>
         <div className="flex flex-col gap-4">
           {scoreSections.map((s) => {

@@ -86,7 +86,29 @@ export const getResumeById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getLatestResume = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized: user not found" });
+    }
 
+    const latestResume = await prisma.resume.findFirst({
+      where: { userId: req.user.id },
+      orderBy: {
+        createdAt: "desc", // newest first
+      },
+    });
+
+    if (!latestResume) {
+      return res.status(404).json({ message: "No resumes found" });
+    }
+
+    return res.status(200).json(latestResume);
+  } catch (error) {
+    console.error("Error in getLatestResume:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 export const deleteResume = async (req, res) => {
   try {
     if (!req.user?.id) {

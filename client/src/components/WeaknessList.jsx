@@ -13,7 +13,7 @@ const WeaknessList = ({ resumeData = [] }) => {
             className="w-7 h-7"
             style={{ color: "#f59e0b" }}
           />
-          <h2 className="text-[22px] md:text-[26px] font-bold text-white">
+          <h2 className="text-[20px] md:text-[22px] font-bold text-white">
             Areas for Improvement / Weaknesses
           </h2>
         </div>

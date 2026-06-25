@@ -9,10 +9,11 @@ import {
   Briefcase,
   Target,
   Sparkles,
-  ChevronRight,
   Star,
 } from "lucide-react";
 import { useMe } from "@/services/useMe";
+import { useLatestResume } from "@/hooks/useLatestResume";
+import LoadingWrpNew from "./common/LoadingWrpNew";
 
 function StatPill({ icon: Icon, label, value, color, bg }) {
   return (
@@ -56,7 +57,7 @@ function AnimatedNumber({ target, suffix = "" }) {
   );
 }
 
-function GaugeRing({ percentile }) {
+function GaugeRing({ percentile, score }) {
   const radius = 80;
   const circumference = 2 * Math.PI * radius;
   const arc = circumference * 0.75;
@@ -134,7 +135,7 @@ function GaugeRing({ percentile }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] lg:w-[148px] lg:h-[148px] rounded-full bg-[var(--color-surface)] border border-[var(--color-border)] flex flex-col items-center justify-center shadow-[inset_0_0_30px_rgba(0,0,0,0.6)]">
           <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-none">
-            <AnimatedNumber target={percentile} suffix="%" />
+            <AnimatedNumber target={score} suffix="%" />
           </span>
           <span
             className="text-[8px] sm:text-[9px] tracking-[0.2em] font-bold mt-1.5 uppercase"
@@ -153,18 +154,11 @@ function GaugeRing({ percentile }) {
 
 export default function DashboardBanner() {
   const [percentile] = useState(95);
-  const [activeMatch, setActiveMatch] = useState(0);
-
-  const matches = [
-    {
-      company: "Stripe",
-      role: "Senior Frontend Engineer",
-      match: 97,
-      salary: "$180k",
-    },
-    { company: "Vercel", role: "Staff Engineer", match: 94, salary: "$200k" },
-    { company: "Linear", role: "Product Engineer", match: 91, salary: "$165k" },
-  ];
+  const {
+    data: latestResumeData,
+    isLoading: isLatestResumeLoading,
+    error: latestResumeError,
+  } = useLatestResume();
 
   const stats = [
     {
@@ -177,7 +171,7 @@ export default function DashboardBanner() {
     {
       icon: Target,
       label: "ATS Score",
-      value: "88/100",
+      value: `${latestResumeData?.atsScore}/100`,
       color: "text-orange-300",
       bg: "bg-orange-400/10",
     },
@@ -189,8 +183,11 @@ export default function DashboardBanner() {
       bg: "bg-emerald-500/10",
     },
   ];
-
   const { data: user } = useMe();
+
+  if (isLatestResumeLoading) return <LoadingWrpNew />;
+  if (latestResumeError) return <p>Error loading resume</p>;
+
   return (
     <div className="w-full animate-fade-in-up">
       <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl glass-card">
@@ -254,33 +251,36 @@ export default function DashboardBanner() {
                 Welcome back,{" "}
                 <span className="gradient-text">{user?.fullName}</span> 👋
               </h1>
-              <span className="text-zinc-400 text-sm sm:text-base leading-relaxed block mb-2 max-w-lg">
-                {user?.email}
-              </span>
 
               <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-lg">
-                Your resume ranks in the{" "}
+                Your Latest resume{" "}
+                <Link
+                  href={`/resume-analysis/${latestResumeData?.id}`}
+                  className="underline text-blue-400 hover:text-blue-500 transition-colors"
+                >
+                  {latestResumeData?.title}'s resume
+                </Link>{" "}
+                ranks with ATS Of
                 <span
-                  className="font-bold px-2 py-0.5 rounded-lg"
+                  className="font-bold px-2 py-0.5 rounded-lg mx-2"
                   style={{
                     color: "#FFAB91",
                     background: "rgba(255,87,34,0.10)",
                     border: "1px solid rgba(255,87,34,0.22)",
                   }}
                 >
-                  top {101 - percentile}%
+                  {latestResumeData?.atsScore}{" "}
                 </span>{" "}
-                of candidates globally.
               </p>
               <p className="text-[var(--color-text-secondary)] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
-                AI detected{" "}
+                AI detected it is a{" "}
                 <span
-                  className="font-semibold"
+                  className="font-bold text-[16px] uppercase"
                   style={{ color: "var(--color-orange-light)" }}
                 >
-                  3 high-intent matches
+                  {latestResumeData?.atsAnalysis?.scoringStatus}
                 </span>{" "}
-                aligned with your skills, salary range, and growth goals.
+                resume.
               </p>
 
               <div className="flex flex-wrap gap-2 mb-6">
@@ -316,86 +316,15 @@ export default function DashboardBanner() {
             {/* RIGHT */}
             <div className="w-full lg:max-w-[400px] lg:w-[50%] flex flex-col sm:flex-row lg:flex-col items-center gap-6 lg:gap-5 shrink-0">
               <div className="flex flex-col items-center gap-3">
-                <GaugeRing percentile={percentile} />
+                <GaugeRing
+                  percentile={percentile}
+                  score={latestResumeData?.atsScore}
+                />
                 <div className="flex items-center gap-1.5">
                   <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                  <span className="text-xs text-zinc-400 font-medium">
-                    Top {101 - percentile}% globally
+                  <span className="text-xs text-white font-medium uppercase">
+                    {latestResumeData?.atsAnalysis?.scoringStatus}
                   </span>
-                </div>
-              </div>
-
-              <div className="w-full ">
-                <div className="flex items-center justify-between mb-2.5">
-                  <p className="text-xs font-semibold text-zinc-400">
-                    AI Matches
-                  </p>
-                  <Link
-                    href="/job-tracker"
-                    className="text-[10px] font-semibold flex items-center gap-0.5 transition-colors hover:opacity-80"
-                    style={{ color: "var(--color-orange)" }}
-                  >
-                    View all <ChevronRight className="w-3 h-3" />
-                  </Link>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  {matches.map((m, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveMatch(i)}
-                      className="w-full text-left p-3 rounded-xl border transition-all duration-200"
-                      style={
-                        activeMatch === i
-                          ? {
-                              background: "rgba(255,87,34,0.10)",
-                              borderColor: "rgba(255,87,34,0.30)",
-                            }
-                          : {
-                              background: "rgba(255,255,255,0.02)",
-                              borderColor: "rgba(255,255,255,0.04)",
-                            }
-                      }
-                    >
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-5 h-5 rounded-md bg-white/5 flex items-center justify-center shrink-0">
-                            <span className="text-white text-[9px] font-black">
-                              {m.company[0]}
-                            </span>
-                          </div>
-                          <span className="text-white text-xs font-semibold truncate">
-                            {m.company}
-                          </span>
-                        </div>
-                        <span
-                          className="text-[10px] font-black shrink-0"
-                          style={{
-                            color: activeMatch === i ? "#FFAB91" : "#71717a",
-                          }}
-                        >
-                          {m.match}%
-                        </span>
-                      </div>
-                      <p className="text-[var(--color-text-secondary)] text-[10px] truncate pl-7">
-                        {m.role}
-                      </p>
-                      <div className="mt-1.5 pl-7">
-                        <div className="h-1 w-full rounded-full bg-white/5">
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${m.match}%`,
-                              background:
-                                activeMatch === i
-                                  ? "linear-gradient(to right, #FF8A65, #FF5722)"
-                                  : "#3f3f46",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </button>
-                  ))}
                 </div>
               </div>
             </div>

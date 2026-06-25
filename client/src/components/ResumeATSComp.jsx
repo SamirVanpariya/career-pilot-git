@@ -22,6 +22,7 @@ import Link from "next/link";
 import StrengthList from "./StrengthList";
 import WeaknessList from "./WeaknessList";
 import MissingKeyword from "./MissingKeyword";
+import TopCompany from "./TopCompany";
 
 const scoreSections = [
   { label: "Formatting & Structure", score: 90, status: "good" },
@@ -102,7 +103,7 @@ export default function ResumeATSComp({ resumeId }) {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-  const overallScore = resumeData?.atsScore;
+
 
   if (isLoading) return <LoadingWrpNew />;
   if (isError) return <p>Error: {error?.message}</p>;
@@ -153,7 +154,7 @@ export default function ResumeATSComp({ resumeId }) {
           </div>
         </div>
         <Grid container spacing={3}>
-          <ATSScore overallScore={overallScore} />
+          <ATSScore resumeData={resumeData} />
           {/* <ScoreBreakdown scoreSections={scoreSections} /> */}
           <MissingKeyword resumeData={resumeData} />
           <StrengthList resumeData={resumeData} />
@@ -161,7 +162,8 @@ export default function ResumeATSComp({ resumeId }) {
         </Grid>
         <Grid container spacing={3}>
           <AISuggestions resumeData={resumeData} />
-          <SkillGap skillGap={skillGap} />
+          {/* <SkillGap skillGap={skillGap} /> */}
+          <TopCompany resumeData={resumeData}/>
         </Grid>
       </div>
     </div>
