@@ -14,6 +14,8 @@ import {
   Link as LinkIcon,
   FileCheck,
   AlertTriangle,
+  SearchCheck,
+  FileBarChart2,
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
@@ -173,15 +175,6 @@ const ResumeHistory = () => {
                       </p>
                     </div>
                   </div>
-
-                  {/* {resume?.score && ( */}
-                  <div
-                    className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${getScoreColor(resume?.score)}`}
-                  >
-                    <Award className="w-3 h-3" />
-                    <span>{resume?.score} Static ATS as of now</span>
-                  </div>
-                  {/* )} */}
                 </div>
 
                 {/* Details grid */}
@@ -217,25 +210,60 @@ const ResumeHistory = () => {
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <div className="flex items-center gap-2 justify-end">
-                  {!resume?.isAtsAvailable &&
-                  analyzingResumeId !== resume.id ? (
-                    <SecondaryButton
+                <div className="flex items-center justify-end">
+                  {!resume?.isAtsAvailable ? (
+                    <button
                       onClick={() => handleAtsAnalysis(resume.id)}
-                      className="!w-fit"
                       disabled={analyzingResumeId === resume.id}
+                      className="
+        inline-flex items-center gap-2
+        px-4 py-2
+        rounded-xl
+        bg-zinc-900
+        border border-zinc-700
+        text-zinc-100
+        text-sm font-medium
+        transition-all duration-200
+        hover:bg-zinc-800
+        hover:border-cyan-500/50
+        hover:shadow-lg hover:shadow-cyan-500/10
+        disabled:opacity-60
+        disabled:cursor-not-allowed
+        cursor-pointer
+      "
                     >
-                      {analyzingResumeId === resume.id
-                        ? "Analyzing..."
-                        : "Check ATS Analysis"}
-                    </SecondaryButton>
+                      {analyzingResumeId === resume.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <SearchCheck className="h-4 w-4 text-cyan-400" />
+                          Check ATS Analysis
+                        </>
+                      )}
+                    </button>
                   ) : (
-                    <PrimaryButton
+                    <button
                       onClick={() => viewResumeATSAnalysis(resume.id)}
-                      className="!w-fit"
+                      className="
+                      inline-flex items-center gap-2
+                      px-4 py-2
+                      rounded-xl
+                      bg-gradient-to-r
+                      from-orange-600
+                      to-orange-800
+                      text-white
+                      text-sm font-semibold
+                      transition-all duration-200
+                      active:scale-[0.98]
+                      cursor-pointer
+                    "
                     >
+                      <FileBarChart2 className="h-4 w-4" />
                       View ATS Report
-                    </PrimaryButton>
+                    </button>
                   )}
                 </div>
               </div>

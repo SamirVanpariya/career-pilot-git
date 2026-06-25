@@ -104,7 +104,6 @@ export default function ResumeATSComp({ resumeId }) {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
-
   if (isLoading) return <LoadingWrpNew />;
   if (isError) return <p>Error: {error?.message}</p>;
 
@@ -119,9 +118,19 @@ export default function ResumeATSComp({ resumeId }) {
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm font-medium">Back to Resume Analysis</span>
       </Link>
-      <div className="flex flex-col gap-[20px] md:gap-[30px]">
-        <div className="w-full mx-auto">
-          <div className="rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black p-8 shadow-2xl">
+      <div className="flex overflow-hidden flex-col gap-[20px] md:gap-[30px]">
+        <div className="w-full mx-auto overflow-hidden">
+          <div
+            className="rounded-2xl border border-zinc-800 p-8 py-12  overflow-hidden shadow-2xl"
+            style={{
+              backgroundImage: "url(/images/resume-analiser-person.jpg)",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundColor: "rgba(0,0,0,0.6)",
+              backgroundBlendMode: "overlay",
+            }}
+          >
             <div className="flex flex-col  gap-4">
               {/* Resume Title */}
               <div className="flex items-center gap-3">
@@ -129,7 +138,7 @@ export default function ResumeATSComp({ resumeId }) {
                   <FileText className="h-6 w-6 text-blue-400" />
                 </div>
 
-                <h1 className="text-center text-2xl md:text-2xl font-bold text-white tracking-tight">
+                <h1 className="text-[18px] md:text-2xl font-bold text-white tracking-tight">
                   {resumeData?.name}'s Resume Analysis
                 </h1>
               </div>
@@ -163,7 +172,7 @@ export default function ResumeATSComp({ resumeId }) {
         <Grid container spacing={3}>
           <AISuggestions resumeData={resumeData} />
           {/* <SkillGap skillGap={skillGap} /> */}
-          <TopCompany resumeData={resumeData}/>
+          <TopCompany resumeData={resumeData} />
         </Grid>
       </div>
     </div>

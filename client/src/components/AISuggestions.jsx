@@ -13,7 +13,9 @@ const AISuggestions = ({ resumeData = [] }) => {
             className="w-7 h-7"
             style={{ color: "var(--color-orange)" }}
           />
-          <h2 className="text-[20px] md:text-[22px] font-bold text-white">AI Recommendations</h2>
+          <h2 className="text-[20px] md:text-[22px] font-bold text-white">
+            AI Recommendations
+          </h2>
         </div>
 
         <div className="space-y-4">
@@ -24,18 +26,14 @@ const AISuggestions = ({ resumeData = [] }) => {
                 group
                 relative
                 overflow-hidden
-                rounded-2xl
+                rounded-xl
                 border
-                border-violet-500/20
-                bg-gradient-to-r
-                from-violet-500/10
-                via-indigo-500/5
-                to-cyan-500/10
+                border-gray-500/20
+             
                 p-4
                 transition-all
                 duration-300
-                hover:border-violet-400/50
-                hover:shadow-[0_0_25px_rgba(139,92,246,0.15)]
+                hover:border-gray-400/50
               "
             >
               {/* Glow Effect */}
@@ -74,7 +72,7 @@ const AISuggestions = ({ resumeData = [] }) => {
                 </div>
 
                 <div className="flex-1">
-                  <p className="text-zinc-200 leading-relaxed md:text-[18px] text-[16px]">
+                  <p className="text-zinc-200 leading-relaxed text-[16px]">
                     {suggestion}
                   </p>
                 </div>

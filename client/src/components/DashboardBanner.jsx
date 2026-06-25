@@ -14,6 +14,8 @@ import {
 import { useMe } from "@/services/useMe";
 import { useLatestResume } from "@/hooks/useLatestResume";
 import LoadingWrpNew from "./common/LoadingWrpNew";
+import { getJobsAPI } from "@/services/jobService";
+import { useQuery } from "@tanstack/react-query";
 
 function StatPill({ icon: Icon, label, value, color, bg }) {
   return (
@@ -160,25 +162,37 @@ export default function DashboardBanner() {
     error: latestResumeError,
   } = useLatestResume();
 
+  const { data: jobs = [] } = useQuery({
+    queryKey: ["jobs"],
+    queryFn: getJobsAPI,
+  });
+
+  const totalApplications = jobs.length;
+  const interviewRate = totalApplications
+    ? (jobs.filter((job) => job.status === "interview").length /
+        totalApplications) *
+      100
+    : 0;
+  const atsScore = latestResumeData?.atsScore || 0;
   const stats = [
     {
       icon: Briefcase,
       label: "Applications",
-      value: "42",
+      value: totalApplications,
       color: "text-orange-400",
       bg: "bg-orange-500/10",
     },
     {
       icon: Target,
       label: "ATS Score",
-      value: `${latestResumeData?.atsScore}/100`,
+      value: atsScore,
       color: "text-orange-300",
       bg: "bg-orange-400/10",
     },
     {
       icon: TrendingUp,
       label: "Interview Rate",
-      value: "15%",
+      value: `${interviewRate.toFixed(1)}%`,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
@@ -222,7 +236,17 @@ export default function DashboardBanner() {
           />
         </div>
 
-        <div className="relative z-10 p-5 sm:p-7 lg:p-8">
+        <div
+          className="relative z-10 p-5 sm:p-7 lg:p-8"
+          style={{
+            backgroundImage: "url(/images/dashboard-banner.jpg)",
+            backgroundSize: "cover",
+            backgroundPosition: "top",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "rgba(0,0,0,0.4)",
+            backgroundBlendMode: "overlay",
+          }}
+        >
           <div className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-8">
             {/* LEFT */}
             <div className="flex-1 min-w-0">
@@ -249,10 +273,10 @@ export default function DashboardBanner() {
 
               <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-white leading-[1.1] tracking-tight mb-3">
                 Welcome back,{" "}
-                <span className="gradient-text">{user?.fullName}</span> 👋
+                <span className="gradient-text">{user?.fullName}</span>
               </h1>
 
-              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-lg">
+              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-4xl">
                 Your Latest resume{" "}
                 <Link
                   href={`/resume-analysis/${latestResumeData?.id}`}
@@ -271,6 +295,7 @@ export default function DashboardBanner() {
                 >
                   {latestResumeData?.atsScore}{" "}
                 </span>{" "}
+                Out of 100.
               </p>
               <p className="text-[var(--color-text-secondary)] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
                 AI detected it is a{" "}
