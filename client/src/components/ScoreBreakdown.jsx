@@ -8,10 +8,10 @@ const ScoreBreakdown = ({ scoreSections }) => {
       <CardWrp className="!mt-0 h-full">
         <div className="flex items-center gap-2 mb-5">
           <TrendingUp
-            className="w-5 h-5"
+            className="w-7 h-7"
             style={{ color: "var(--color-orange)" }}
           />
-          <h2 className="text-lg font-bold text-white">Score Breakdown</h2>
+          <h2 className="text-[22px] md:text-[26px] font-bold text-white">Score Breakdown</h2>
         </div>
         <div className="flex flex-col gap-4">
           {scoreSections.map((s) => {

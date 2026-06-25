@@ -143,10 +143,10 @@ const JobDetailClient = ({ id }) => {
         {/* Glow backdrop decorator */}
         <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-br from-orange-500/10 to-transparent blur-3xl pointer-events-none" />
 
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+        <div className="py-5 flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start  gap-4">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-tr from-orange-500/20 to-orange-400/5 border border-orange-500/30 flex items-center justify-center text-orange-400 font-extrabold text-2xl shadow-inner shrink-0">
-              {JOBS?.companyName?.[0]}
+            <div className="absolute md:top-[90px] bottom-[-30px] right-8  tracking-tighter font-[900]  md:text-[7rem] text-[4rem] leading-[110%] scale-[1.7] opacity-[0.1] shrink-0">
+              {JOBS?.companyName}
             </div>
             <div>
               <div className="flex flex-wrap flex-col  gap-2">

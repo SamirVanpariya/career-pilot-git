@@ -68,7 +68,12 @@ p {
 
 /* ── Glassmorphism ── */
 .glass-card {
-  background: #1f1e1eb3;
+  background: linear-gradient(
+    to bottom right,
+    #18181b 0%,
+    #09090b 50%,
+    #000000 80%
+  );
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(24px);
   transition: border-color .2s, box-shadow .2s;
@@ -78,7 +83,7 @@ p {
 }
 
 .glass-card:hover {
-  border-color: var(--glass-border-hover);
+  border-color: #ffffff21;
 }
 
 .glass-nav {

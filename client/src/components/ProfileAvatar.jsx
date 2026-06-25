@@ -89,7 +89,7 @@ const ProfileAvatar = ({ myProfile, isEditable, setProfileAvatar }) => {
   };
 
   return (
-    <CardWrp className="mt-0">
+    <CardWrp className="mt-0 relative overflow-hidden">
       <h2 className="text-base font-bold text-white mb-5">Profile Photo</h2>
 
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
@@ -186,6 +186,9 @@ const ProfileAvatar = ({ myProfile, isEditable, setProfileAvatar }) => {
             )}
           </div>
         </div>
+      </div>
+      <div className="absolute md:top-[90px] bottom-[-20px] right-8  tracking-tighter font-[900]  md:text-[6rem] text-[4rem] leading-[110%] scale-[1.7] opacity-[0.1] shrink-0">
+        {myProfile?.fullName}
       </div>
     </CardWrp>
   );

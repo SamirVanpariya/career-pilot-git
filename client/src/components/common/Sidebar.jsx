@@ -56,6 +56,9 @@ export default function Sidebar() {
   const SidebarContent = () => (
     <div
       className={`h-screen bg-[var(--color-surface)] border-r border-[var(--color-border)] flex flex-col transition-all duration-300 ${collapsed && !isMobile ? "w-[68px]" : "w-64"}`}
+      style={{
+         background: "linear-gradient(to bottom right, #18181b 0%,#09090b 50%,#000000 100%)",
+      }}
     >
       {/* Header */}
       <div

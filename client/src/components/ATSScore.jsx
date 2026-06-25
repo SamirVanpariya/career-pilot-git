@@ -15,7 +15,25 @@ const ATSScore = ({ overallScore }) => {
           />
         </div>
         <div>
-          <p className="text-zinc-400 text-sm">Overall ATS Score</p>
+          <p
+            className="
+    inline-flex
+    items-center
+    px-4
+    py-1.5
+    rounded-full
+    text-[18px]
+    md:text-[20px]
+    font-bold
+    text-emerald-300
+    bg-emerald-500/10
+    border
+    border-emerald-500/20
+    backdrop-blur-sm
+  "
+          >
+            ✨ Overall ATS Score
+          </p>
           <div className="mt-3 relative w-36 h-36 mx-auto">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
               <circle

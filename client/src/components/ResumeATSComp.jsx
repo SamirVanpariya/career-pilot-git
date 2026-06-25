@@ -1,6 +1,13 @@
 "use client";
 import Grid from "@mui/material/Grid";
-import { CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import {
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  FileText,
+  ExternalLink,
+  ArrowLeft,
+} from "lucide-react";
 import AnalysisHead from "@/components/AnalysisHead";
 import ATSScore from "@/components/ATSScore";
 import ScoreBreakdown from "@/components/ScoreBreakdown";
@@ -12,6 +19,9 @@ import LoadingWrpNew from "./common/LoadingWrpNew";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import StrengthList from "./StrengthList";
+import WeaknessList from "./WeaknessList";
+import MissingKeyword from "./MissingKeyword";
 
 const scoreSections = [
   { label: "Formatting & Structure", score: 90, status: "good" },
@@ -101,23 +111,56 @@ export default function ResumeATSComp({ resumeId }) {
 
   return (
     <div className="animate-fade-in-up">
+      <Link
+        href="/resume-analysis"
+        className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors duration-200 mb-5"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        <span className="text-sm font-medium">Back to Resume Analysis</span>
+      </Link>
       <div className="flex flex-col gap-[20px] md:gap-[30px]">
-        <h1 className="text-[30px] text-white text-center">
-          Current Resume ID : {resumeId}
-        </h1>
-        <Link
-          href={`${resumeData?.file}`}
-          target="_blank"
-          className="text-blue-500 text-[26px] underline"
-        >
-          View Resume PDF
-        </Link>
+        <div className="w-full mx-auto">
+          <div className="rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black p-8 shadow-2xl">
+            <div className="flex flex-col  gap-4">
+              {/* Resume Title */}
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-blue-500/10 p-3 border border-blue-500/20">
+                  <FileText className="h-6 w-6 text-blue-400" />
+                </div>
+
+                <h1 className="text-center text-2xl md:text-2xl font-bold text-white tracking-tight">
+                  {resumeData?.name}'s Resume Analysis
+                </h1>
+              </div>
+
+              {/* Subtitle */}
+              <p className="text-zinc-400 ">
+                AI-powered insights, resume scoring, strengths, weaknesses, and
+                recommendations for improvement.
+              </p>
+
+              {/* Resume Link */}
+              <Link
+                href={resumeData?.file || "#"}
+                target="_blank"
+                className="w-fit group inline-flex items-center gap-2 rounded-xl border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-blue-400 transition-all duration-300 hover:border-blue-500 hover:bg-blue-500/20 hover:text-blue-300 hover:shadow-lg hover:shadow-blue-500/20"
+              >
+                <FileText className="h-5 w-5" />
+                <span className="font-medium">View Resume PDF</span>
+                <ExternalLink className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </Link>
+            </div>
+          </div>
+        </div>
         <Grid container spacing={3}>
           <ATSScore overallScore={overallScore} />
-          <ScoreBreakdown scoreSections={scoreSections} />
+          {/* <ScoreBreakdown scoreSections={scoreSections} /> */}
+          <MissingKeyword resumeData={resumeData} />
+          <StrengthList resumeData={resumeData} />
+          <WeaknessList resumeData={resumeData} />
         </Grid>
         <Grid container spacing={3}>
-          <AISuggestions suggestions={suggestions} />
+          <AISuggestions resumeData={resumeData} />
           <SkillGap skillGap={skillGap} />
         </Grid>
       </div>

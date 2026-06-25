@@ -6,8 +6,8 @@ const SkillGap = ({ skillGap }) => {
   return (
     <Grid size={{ xs: 12, lg: 5 }}>
       <CardWrp className="mt-0">
-        <h2 className="text-lg font-bold text-white mb-5">
-          Skill Gap Analysis
+        <h2 className="text-[22px] md:text-[26px] font-bold text-white mb-5">
+          Skill Gap Analysis (static --- TODO)
         </h2>
         <p className="text-[var(--color-text-secondary)] text-xs mb-4">
           Based on top 50 matched job descriptions.
