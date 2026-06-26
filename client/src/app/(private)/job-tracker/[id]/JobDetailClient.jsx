@@ -8,10 +8,6 @@ import {
   Globe,
   Mail,
   MapPin,
-  Clock,
-  MessageSquare,
-  Star,
-  XCircle,
   ExternalLink,
   CheckCircle,
   Sparkles,
@@ -25,31 +21,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { getJobByIdAPI } from "@/services/jobService";
 import LoadingWrpNew from "@/components/common/LoadingWrpNew";
-
-// Columns configuration matching Kanban Board
-// const columns = {
-//   applied: {
-//     label: "Applied",
-//     icon: Clock,
-//     color: "text-amber-400 border-amber-400/20 bg-amber-400/10",
-//   },
-//   interview: {
-//     label: "Interview",
-//     icon: MessageSquare,
-//     color: "text-orange-400 border-orange-400/20 bg-orange-400/10",
-//   },
-//   offer: {
-//     label: "Offer",
-//     icon: Star,
-//     color: "text-emerald-400 border-emerald-400/20 bg-emerald-400/10",
-//   },
-//   rejected: {
-//     label: "Rejected",
-//     icon: XCircle,
-//     color: "text-red-400 border-red-400/20 bg-red-400/10",
-//   },
-
-// };
 
 const JobDetailClient = ({ id }) => {
   const [activeTab, setActiveTab] = useState("profile");

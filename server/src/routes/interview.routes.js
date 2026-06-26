@@ -16,6 +16,6 @@ router.post("/interview", protect, create);
 router.get("/interview/stats", protect, getStats);
 router.get("/interview/upcoming", protect, getUpcoming);
 router.get("/interview/past", protect, getPast);
-router.get("/interview/:id", protect, getOne);
+router.get("/interview/past/:id", protect, getOne);
 
 export default router;

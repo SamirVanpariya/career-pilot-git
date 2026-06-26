@@ -27,3 +27,14 @@ export const getPastInterviewsAPI = async () => {
     throw error;
   }
 };
+// GET PAST INTERVIEW BY ID
+
+export const getInterviewByIdAPI = async (id) => {
+  try {
+    const res = await api.get(`/interview/past/${id}`);
+    return res.data;
+  } catch (error) {
+    console.error("Error fetching interview by id:", error);
+    throw error;
+  }
+};

@@ -131,7 +131,7 @@ export const getPast = async (req, res) => {
 };
 
 // ============================================================
-// 4. GET /api/interviews/:id
+// 4. GET /api/interviews/past/:id
 // ============================================================
 export const getOne = async (req, res) => {
   try {
@@ -140,18 +140,11 @@ export const getOne = async (req, res) => {
 
     const interview = await prisma.interview.findFirst({
       where: {
-        id: id,
+        id: Number(id),
         application: { userId }, // SECURITY: ensures user owns this interview
       },
       include: {
-        application: {
-          select: {
-            company: true,
-            jobTitle: true,
-            status: true,
-            appliedDate: true,
-          },
-        },
+        // application: true,
       },
     });
 

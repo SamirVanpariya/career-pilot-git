@@ -14,7 +14,6 @@ import {
   Link as LinkIcon,
   FileCheck,
   AlertTriangle,
-  SearchCheck,
   FileBarChart2,
   Loader2,
   SearchCheckIcon,
@@ -30,9 +29,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import LoadingWrpNew from "./common/LoadingWrpNew";
-import SecondaryButton from "./atoms/buttons/SecondaryButton";
 import { useRouter } from "next/navigation";
-import PrimaryButton from "./atoms/buttons/PrimaryButton";
 
 const ResumeHistory = () => {
   const [selectedResume, setSelectedResume] = useState(null);
