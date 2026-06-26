@@ -38,3 +38,14 @@ export const getInterviewByIdAPI = async (id) => {
     throw error;
   }
 };
+// UPDATE PAST INTERVIEW BY ID
+
+export const updateInterviewByIdAPI = async (id, jobData) => {
+  try {
+    const res = await api.put(`/interview/past/${id}`, jobData);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating interview by id:", error);
+    throw error;
+  }
+};

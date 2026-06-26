@@ -10,8 +10,6 @@ import {
   CalendarDays,
   Star,
   Layers,
-  CheckCircle2,
-  XCircle,
   NotebookText,
   MessageSquareText,
   Link2,
@@ -113,7 +111,17 @@ const InterviewDetailSidebar = ({
               <CheckCircle2Icon size={16} />
               <span>Result</span>
             </div>
-            <span className="rounded-full bg-sky-500/15 text-sky-400 px-4 py-2 text-sm font-semibold capitalize">
+            <span
+              className={`rounded-full px-4 py-2 text-sm font-semibold capitalize`}
+              style={{
+                backgroundColor: interviewData?.result === "Pass"
+                  ? "green"
+                  : interviewData?.result === "Fail"
+                    ? "red"
+                    : "orange",
+                color: "white",
+              }}
+            >
               {interviewData?.result}
             </span>
           </div>
@@ -151,11 +159,11 @@ const InterviewDetailSidebar = ({
               </div>
 
               <Link
-                href={interviewData.prepLink}
+                href={interviewData?.prepLink}
                 target="_blank"
-                className="text-orange-400 underline"
+                className="text-blue-400 underline"
               >
-                Open resource
+                {interviewData?.prepLink}
               </Link>
             </div>
           )}

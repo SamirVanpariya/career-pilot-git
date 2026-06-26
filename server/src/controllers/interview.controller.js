@@ -162,6 +162,47 @@ export const getOne = async (req, res) => {
 };
 
 // ============================================================
+// 4. UPDATE /api/interviews/past/:id
+// ============================================================
+export const update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const updateData = req.body;
+
+    // 1. Check ownership
+    const interview = await prisma.interview.findFirst({
+      where: {
+        id: Number(id),
+        application: {
+          userId,
+        },
+      },
+    });
+
+    if (!interview) {
+      return res.status(404).json({
+        error: "Interview not found or unauthorized",
+      });
+    }
+
+    const updatedInterview = await prisma.interview.update({
+      where: {
+        id: Number(id),
+      },
+      data: updateData,
+    });
+
+    return res.json(updatedInterview);
+  } catch (error) {
+    console.error("Error updating interview:", error);
+    return res.status(500).json({
+      error: "Failed to update interview",
+    });
+  }
+};
+
+// ============================================================
 // 5. POST /api/interviews
 // ============================================================
 

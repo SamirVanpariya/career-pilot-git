@@ -1,19 +1,24 @@
 "use client";
 import { Grid } from "@mui/material";
 import CardWrp from "./CardWrp";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Eye, Pencil } from "lucide-react";
 import LoadingWrpNew from "./common/LoadingWrpNew";
-import { getJobByIdAPI } from "@/services/jobService";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 import InterviewDetailSidebar from "./InterviewDetailSidebar";
-import { getInterviewByIdAPI } from "@/services/interviewService";
+import {
+  getInterviewByIdAPI,
+  updateInterviewByIdAPI,
+} from "@/services/interviewService";
 import Link from "next/link";
+import toast from "react-hot-toast";
+import UpdateInterviewModal from "./UpdateInterviewModal";
 const PastInterviews = ({ pastInterviews, isPastLoading }) => {
   const [currentID, setCurrentID] = useState(null);
   const [openSidebar, setOpenSidebar] = useState(false);
-  console.log("pastInterviews", pastInterviews);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const queryClient = useQueryClient();
 
   const viewInterview = (id, e) => {
     e.preventDefault();
@@ -32,6 +37,28 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
     queryFn: () => getInterviewByIdAPI(currentID),
     enabled: !!currentID,
   });
+
+  const { mutate: updateInterview, isPending: isUpdatingInterview } =
+    useMutation({
+      mutationFn: (payload) => updateInterviewByIdAPI(currentID, payload),
+      onSuccess: () => {
+        toast.success("Interview updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["interview", currentID] });
+        queryClient.invalidateQueries({ queryKey: ["past-interviews"] });
+        setOpenUpdateModal(false);
+      },
+      onError: (error) => {
+        toast.error(error?.message || "Error updating interview");
+      },
+    });
+
+  const handleUpdateInterview = (id, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentID(Number(id));
+    setOpenUpdateModal(true);
+  };
+
   if (isError)
     return (
       <div className="flex items-center justify-center h-full">
@@ -95,21 +122,41 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 justify-end">
                     <button
                       onClick={(e) => viewInterview(item?.id, e)}
                       className="cursor-pointer bg-orange-500 px-2 py-0.5 rounded-full"
                     >
-                      View
+                      <Eye size={18} />
+                    </button>
+                    <button
+                      onClick={(e) => handleUpdateInterview(item?.id, e)}
+                      className="cursor-pointer bg-orange-500 px-2 py-1 rounded-full"
+                    >
+                      <Pencil size={18} />
                     </button>
                   </div>
                   <span
-                    className={`text-xs font-bold px-2 py-0.5 rounded-full ${item.outcomeBg} ${item.outcomeColor}`}
+                    className={`text-md font-bold px-2 py-1 mt-1 block rounded-full `}
+                    style={{
+                      color:
+                        item?.result === "Pass"
+                          ? "green"
+                          : item?.result === "Fail"
+                            ? "red"
+                            : item?.result === "Waiting"
+                              ? "yellow"
+                              : "white",
+                    }}
                   >
                     {item?.result || "not given yet"}
                   </span>
-                  <p className="text-zinc-600 text-xs mt-1">
-                    Score: {item?.score || "not given yet"}%
+                  <p className="text-zinc-600 text-md mt-1">
+                    Score:{" "}
+                    <span className="text-white text-[16px] font-bold">
+                      {item?.score || "-"}
+                    </span>
+                    /10
                   </p>
                 </div>
               </Link>
@@ -137,6 +184,13 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
         isLoading={isLoading}
         openSidebar={openSidebar}
         setOpenSidebar={setOpenSidebar}
+      />
+      <UpdateInterviewModal
+        interviewData={interviewData}
+        updateInterview={updateInterview}
+        isUpdatingInterview={isUpdatingInterview}
+        open={openUpdateModal}
+        onClose={() => setOpenUpdateModal(false)}
       />
     </>
   );
