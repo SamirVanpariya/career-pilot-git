@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 // middleware file is now deprecated in version 16
 export function proxy(request) {
-  const token = request.cookies.get("refreshToken")?.value;
+  const token = request.cookies.get("accessToken")?.value;
   const pathname = request.nextUrl.pathname;
 
   const isProtected =
