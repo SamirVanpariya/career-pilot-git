@@ -16,13 +16,19 @@ import {
   AlertCircle,
   Clock1,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getJobByIdAPI } from "@/services/jobService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getJobByIdAPI,
+  updateNextActionStatusAPI,
+} from "@/services/jobService";
 import LoadingWrpNew from "@/components/common/LoadingWrpNew";
 import Back from "@/components/common/Back";
+import { Checkbox, FormControlLabel } from "@mui/material";
+import toast from "react-hot-toast";
 
 const JobDetailClient = ({ id }) => {
   const [activeTab, setActiveTab] = useState("profile");
+  const queryClient = useQueryClient();
 
   const toggleChecklistItem = (itemId) => {
     setJob((prev) => ({
@@ -30,19 +36,6 @@ const JobDetailClient = ({ id }) => {
       checklists: prev.checklists.map((item) =>
         item.id === itemId ? { ...item, done: !item.done } : item,
       ),
-    }));
-  };
-
-  const addChecklistItem = (label) => {
-    if (!label.trim()) return;
-    const newItem = {
-      id: Date.now(),
-      label,
-      done: false,
-    };
-    setJob((prev) => ({
-      ...prev,
-      checklists: [...prev.checklists, newItem],
     }));
   };
 
@@ -70,6 +63,41 @@ const JobDetailClient = ({ id }) => {
     queryKey: ["job", id],
     queryFn: () => getJobByIdAPI(id),
   });
+
+  const JOBS = jobData?.job;
+  const NEXT_ACTIONS = jobData?.job?.nextActions || [];
+  console.log("NEXT_ACTIONS", NEXT_ACTIONS);
+
+  // Update next-actions complted status :========
+
+  const { mutate: updateNextAction, isPending: isUpdatingAction } = useMutation(
+    {
+      mutationFn: ({ actionId, completed }) =>
+        updateNextActionStatusAPI(actionId, {
+          completed,
+        }),
+
+      onSuccess: () => {
+        toast.success("Action updated successfully");
+
+        queryClient.invalidateQueries({
+          queryKey: ["job", id],
+        });
+      },
+
+      onError: (error) => {
+        toast.error(error?.response?.data?.message || "Error updating action");
+      },
+    },
+  );
+
+  const handleActionToggle = (action) => {
+    updateNextAction({
+      actionId: action.id,
+      completed: !action.completed,
+    });
+  };
+
   if (isLoading) return <LoadingWrpNew />;
   if (isError)
     return (
@@ -79,12 +107,10 @@ const JobDetailClient = ({ id }) => {
         </p>
       </div>
     );
-  const JOBS = jobData?.job;
-
   return (
     <div className="animate-fade-in-up space-y-6">
       {/* Top Navigation Row */}
-      <div className="flex items-center justify-between pb-2">
+      <div className="flex items-center justify-between p">
         <Back text="Back to Kanban Board" />
       </div>
 
@@ -218,16 +244,6 @@ const JobDetailClient = ({ id }) => {
             >
               Notes & Checklist
             </button>
-            <button
-              onClick={() => setActiveTab("prep")}
-              className={`bg-[var(--color-card)] flex-1 py-2.5 text-xs md:text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
-                activeTab === "prep"
-                  ? "bg-gradient-to-tr from-orange-500 to-orange-600 text-white shadow-md glow-sm"
-                  : "text-zinc-400 hover:text-white hover:bg-white/5"
-              }`}
-            >
-              Interview Prep Guide
-            </button>
           </div>
 
           {/* TAB CONTENT: PROFILE */}
@@ -311,194 +327,59 @@ const JobDetailClient = ({ id }) => {
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                   <CheckSquare className="w-5 h-5 text-orange-500" />
-                  Application Checklist & Milestones (static --- TODO)
+                  Next Steps (Actions)
                 </h3>
-
-                <div className="space-y-2.5">
-                  {JOBS?.checklists && JOBS.checklists.length > 0 ? (
-                    JOBS.checklists.map((item) => (
-                      <div
-                        key={item.id}
-                        onClick={() => toggleChecklistItem(item.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border border-white/5 bg-black/10 cursor-pointer hover:border-orange-500/25 transition-all duration-200 ${
-                          item.done ? "opacity-60" : ""
-                        }`}
-                      >
-                        <div
-                          className={`w-4 h-4 rounded flex items-center justify-center border transition-all ${
-                            item.done
-                              ? "bg-emerald-500 border-emerald-600 text-white"
-                              : "border-white/20 text-transparent"
-                          }`}
-                        >
-                          <svg
-                            className="w-3 h-3 stroke-[3]"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </div>
-                        <span
-                          className={`text-sm text-zinc-300 font-medium ${
-                            item.done ? "line-through text-zinc-500" : ""
-                          }`}
-                        >
-                          {item.label}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-zinc-500 text-sm italic">
-                      No custom milestone items created.
-                    </p>
-                  )}
-                </div>
 
                 {/* Add Quick Checklist Item */}
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    const input = e.target.elements.newItem;
-                    addChecklistItem(input.value);
-                    input.value = "";
-                  }}
-                  className="mt-4 flex gap-2"
-                >
-                  <input
-                    name="newItem"
-                    type="text"
-                    placeholder="Add a new tracking milestone (e.g. Follow-up email sent)..."
-                    className="flex-1 bg-black/35 border border-white/10 rounded-xl text-white px-3.5 py-2 text-xs focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-zinc-600"
-                  />
-                  <button
-                    type="submit"
-                    className="px-3.5 py-2 bg-zinc-800 border border-white/5 text-white text-xs font-bold rounded-xl hover:bg-orange-500 hover:border-orange-600 transition-all duration-200 cursor-pointer shrink-0"
-                  >
-                    Add Item
-                  </button>
-                </form>
-              </div>
-            </div>
-          )}
+                <form className="mt-4 flex gap-2 w-full">
+                  <div className="mt-5 w-full  border border-white/10 bg-white/5 backdrop-blur-md shadow-lg overflow-hidden">
+                    {NEXT_ACTIONS?.map((action) => (
+                      <label
+                        key={action.id}
+                        className="group flex cursor-pointer items-center gap-4 border-b border-white/10 px-5 py-2 transition-all duration-200 last:border-b-0 hover:bg-white/10"
+                      >
+                        <Checkbox
+                          checked={action.completed}
+                          disabled={isUpdatingAction}
+                          onChange={() => handleActionToggle(action)}
+                          sx={{
+                            color: "#c7c5c5",
+                            "&.Mui-checked": {
+                              color: "#22c55e",
+                            },
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 24,
+                            },
+                          }}
+                        />
 
-          {/* TAB CONTENT: AI INTERVIEW PREP */}
-          {activeTab === "prep" && (
-            <div className="glass-card rounded-xl p-6 space-y-6">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-orange-400" />
-                <h3 className="text-lg font-bold text-white">
-                  AI-Tailored Interview Prep (TODO)
-                </h3>
-              </div>
-
-              <div className="p-4 rounded-xl border border-orange-500/10 bg-orange-500/5 text-zinc-300 text-sm leading-relaxed flex gap-3">
-                <AlertCircle className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
-                <div>
-                  <span className="text-white font-bold block mb-0.5">
-                    Automated Role Analysis
-                  </span>
-                  Based on the job title{" "}
-                  <span className="text-orange-300 font-semibold">
-                    {JOBS?.role}
-                  </span>
-                  , we suggest preparing details about:{" "}
-                  <span className="font-bold text-zinc-200">
-                    {JOBS?.interviewPrep?.focus ||
-                      "Core system concepts, React APIs, and responsive design systems."}
-                  </span>
-                </div>
-              </div>
-
-              {JOBS?.interviewPrep?.questions &&
-              JOBS.interviewPrep.questions.length > 0 ? (
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-white uppercase tracking-wider text-zinc-400">
-                    Role-Specific Questions & Suggested Responses
-                  </h4>
-
-                  {JOBS.interviewPrep.questions.map((qItem, index) => (
-                    <div
-                      key={index}
-                      className="p-4 rounded-xl border border-white/5 bg-black/20 space-y-2.5 hover:border-orange-500/10 transition-colors"
-                    >
-                      <div className="flex gap-2">
-                        <span className="text-orange-400 font-extrabold text-sm shrink-0">
-                          Q{index + 1}:
-                        </span>
-                        <h5 className="text-white font-bold text-sm leading-snug">
-                          {qItem.q}
-                        </h5>
-                      </div>
-                      <div className="flex gap-2 text-zinc-300 text-xs pl-5 border-l border-white/5 ml-2.5">
-                        <div className="space-y-1">
-                          <span className="text-emerald-400 font-bold block uppercase tracking-wider text-[10px]">
-                            Recommended Approach:
-                          </span>
-                          <p className="leading-relaxed text-zinc-400">
-                            {qItem.a}
+                        <div className="flex-1">
+                          <p
+                            className={`text-md font-medium transition-all duration-200 ${
+                              action.completed
+                                ? "text-gray-400 line-through"
+                                : "text-white group-hover:text-green-300"
+                            }`}
+                          >
+                            {action.title}
                           </p>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-zinc-500 italic text-sm">
-                  No specific questions configured for this role template.
-                </p>
-              )}
+                      </label>
+                    ))}
+                    {NEXT_ACTIONS.length <= 0 && (
+                      <p className="px-5 py-3 text-center text-zinc-500 text-sm">
+                        No actions added yet.
+                      </p>
+                    )}
+                  </div>
+                </form>
+              </div>
             </div>
           )}
         </div>
 
         {/* Right Column - 1/3 Width: Quick Tips, Priorities & Progress Summary */}
         <div className="space-y-6">
-          {/* Quick Tracking Checklist Progress */}
-          <div className="glass-card rounded-xl p-5 space-y-4">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-400" />
-              Milestone Progress (TODO)
-            </h4>
-
-            {JOBS?.checklists && JOBS.checklists.length > 0 ? (
-              <div className="space-y-2">
-                {(() => {
-                  const completed = JOBS.checklists.filter(
-                    (item) => item.done,
-                  ).length;
-                  const total = JOBS.checklists.length;
-                  const percentage =
-                    total > 0 ? Math.round((completed / total) * 100) : 0;
-
-                  return (
-                    <>
-                      <div className="flex justify-between text-xs font-semibold text-zinc-400">
-                        <span>Stages Complete</span>
-                        <span className="text-white font-extrabold">
-                          {percentage}% ({completed}/{total})
-                        </span>
-                      </div>
-                      <div className="w-full bg-zinc-800/80 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="progress-bar"
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            ) : (
-              <p className="text-zinc-500 text-xs italic">No stages tracked.</p>
-            )}
-          </div>
-
           {/* Pro tips banner */}
           <div className="glass-card rounded-xl p-5 border-l-2 border-l-orange-500 bg-gradient-bg-card space-y-2">
             <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">

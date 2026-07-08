@@ -56,3 +56,15 @@ export const deleteJobAPI = async (jobId) => {
     throw error;
   }
 };
+
+// UPDATE Next_actions completed status
+
+export const updateNextActionStatusAPI = async (actionId, data) => {
+  try {
+    const res = await api.patch(`/next-action/${actionId}`, data);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating next action:", error);
+    throw error;
+  }
+};

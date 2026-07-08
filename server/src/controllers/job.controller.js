@@ -9,9 +9,24 @@ export const createJob = async (req, res) => {
       data: {
         userId: userId,
         ...jobData,
+        nextActions: {
+          create: [
+            { title: "Research the company" },
+            { title: "Tailor your resume" },
+            { title: "Prepare for the interview" },
+            { title: "Follow up with the recruiter" },
+            { title: "Track the application status" },
+          ],
+        },
+      },
+      include: {
+        nextActions: true,
       },
     });
-    return res.json({ message: "Job created successfully" });
+    return res.status(201).json({
+      message: "Job created successfully",
+      job,
+    });
   } catch (error) {
     console.log("Error in createJob", error);
     return res.json({ message: "error", error: error.message });
@@ -23,6 +38,9 @@ export const getAllJobs = async (req, res) => {
     const jobs = await prisma.job.findMany({
       where: {
         userId: req.user.id,
+      },
+      include: {
+        nextActions: true,
       },
     });
     return res.json(jobs);
@@ -45,7 +63,10 @@ export const getJobById = async (req, res) => {
     }
 
     const job = await prisma.job.findUnique({
-      where: { id ,userId:req.user?.id },
+      where: { id, userId: req.user?.id },
+      include: {
+        nextActions: true,
+      },
     });
 
     if (!job) {
@@ -96,5 +117,59 @@ export const deleteJob = async (req, res) => {
   } catch (error) {
     console.error("Error in deleteJob:", error);
     res.status(500).json({ message: error.message });
+  }
+};
+// UPDATE NEXT ACTION STATUS
+export const updateNextAction = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    const actionId = Number(req.params.actionId);
+    const { completed } = req.body;
+
+    if (Number.isNaN(actionId)) {
+      return res.status(400).json({
+        message: "Invalid action id",
+      });
+    }
+
+    const action = await prisma.nextActions.findFirst({
+      where: {
+        id: actionId,
+        job: {
+          userId: req.user.id,
+        },
+      },
+    });
+
+    if (!action) {
+      return res.status(404).json({
+        message: "Action not found",
+      });
+    }
+
+    const updatedAction = await prisma.nextActions.update({
+      where: {
+        id: actionId,
+      },
+      data: {
+        completed,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Next action updated successfully",
+      nextAction: updatedAction,
+    });
+  } catch (error) {
+    console.error("Error in updateNextAction:", error);
+
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };

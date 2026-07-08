@@ -5,6 +5,7 @@ import {
   getAllJobs,
   getJobById,
   updateJob,
+  updateNextAction,
 } from "../controllers/job.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -20,9 +21,12 @@ router.get("/job", protect, getAllJobs);
 router.get("/job/:id", protect, getJobById);
 
 // Update a job
-router.patch("/job/:id",protect,updateJob);
+router.patch("/job/:id", protect, updateJob);
 
 // Delete a job
-router.delete("/job/:id",protect,deleteJob);
+router.delete("/job/:id", protect, deleteJob);
+
+// update the completed status
+router.patch("/next-action/:actionId", protect, updateNextAction);
 
 export default router;
