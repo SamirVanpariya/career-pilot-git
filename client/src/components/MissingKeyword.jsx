@@ -6,7 +6,7 @@ const MissingKeyword = ({ resumeData }) => {
   const missingKeywords = resumeData?.atsAnalysis?.missingKeywords || [];
 
   return (
-    <Grid size={{ xs: 12, md: 8 }}>
+    <Grid size={{ xs: 12, md: 12 }}>
       <CardWrp className="!mt-0 h-full">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">

@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   Calendar,
   DollarSign,
   Globe,
@@ -15,16 +14,15 @@ import {
   Building,
   CheckSquare,
   AlertCircle,
-  Copy,
   Clock1,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getJobByIdAPI } from "@/services/jobService";
 import LoadingWrpNew from "@/components/common/LoadingWrpNew";
+import Back from "@/components/common/Back";
 
 const JobDetailClient = ({ id }) => {
   const [activeTab, setActiveTab] = useState("profile");
-  const [copiedLink, setCopiedLink] = useState(false);
 
   const toggleChecklistItem = (itemId) => {
     setJob((prev) => ({
@@ -48,11 +46,6 @@ const JobDetailClient = ({ id }) => {
     }));
   };
 
-  const copyJobLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setCopiedLink(true);
-    setTimeout(() => setCopiedLink(false), 2000);
-  };
   const priorityBadgeStyle = {
     high: "bg-red-500/10 border-red-500/30 text-red-400",
     medium: "bg-amber-500/10 border-amber-500/30 text-amber-400",
@@ -92,21 +85,7 @@ const JobDetailClient = ({ id }) => {
     <div className="animate-fade-in-up space-y-6">
       {/* Top Navigation Row */}
       <div className="flex items-center justify-between pb-2">
-        <Link
-          href="/job-tracker"
-          className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors duration-200"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm font-medium">Back to Kanban Board</span>
-        </Link>
-
-        <button
-          onClick={copyJobLink}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-300 hover:border-orange-500/30 hover:text-white transition-all duration-200 text-xs cursor-pointer"
-        >
-          <Copy className="w-3.5 h-3.5" />
-          <span>{copiedLink ? "Copied!" : "Share Link"}</span>
-        </button>
+        <Back text="Back to Kanban Board" />
       </div>
 
       {/* Main Glassmorphic Header Card */}

@@ -9,6 +9,7 @@ const PrimaryButton = ({
   disabled = false,
   className = "",
   loading = false,
+  target,
 }) => {
   const baseStyles =
     "inline-flex items-center justify-center gap-2 w-full sm:w-auto px-4 sm:px-5 h-9 sm:h-11 rounded-md text-[14px] font-[600] transition-all duration-200 focus:outline-none select-none";
@@ -23,7 +24,11 @@ const PrimaryButton = ({
   // Link mode
   if (href) {
     return (
-      <Link href={href} className={`${baseStyles} ${styles} ${className}`}>
+      <Link
+        href={href}
+        className={`${baseStyles} ${styles} ${className}`}
+        target={target}
+      >
         {content}
       </Link>
     );

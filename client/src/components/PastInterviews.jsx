@@ -58,7 +58,15 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
     setCurrentID(Number(id));
     setOpenUpdateModal(true);
   };
-
+  const averageScore =
+    pastInterviews?.length > 0
+      ? (
+          pastInterviews.reduce(
+            (sum, interview) => sum + (Number(interview.score) || 0),
+            0,
+          ) / pastInterviews.length
+        ).toFixed(1)
+      : 0;
   if (isError)
     return (
       <div className="flex items-center justify-center h-full">
@@ -89,7 +97,7 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
             </span>
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 max-h-[350px] overflow-y-auto">
             {isPastLoading && <LoadingWrpNew />}
 
             {pastInterviews?.length === 0 && (
@@ -162,18 +170,24 @@ const PastInterviews = ({ pastInterviews, isPastLoading }) => {
               </Link>
             ))}
           </div>
-          <div className="mt-5 pt-4 border-t border-white/5">
+          <div className="mt-5 pt-4 border-t border-[#a09d9d]">
             <div className="flex items-center justify-between mb-3">
               <p className="text-zinc-400 text-sm font-medium">
                 Average Interview Score
               </p>
-              <span className="text-white font-black text-lg">82%</span>
+              <span className="text-white font-black text-lg">
+                {" "}
+                {(averageScore / 10) * 100 || 0}%
+              </span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-white/5">
-              <div className="progress-bar" style={{ width: "82%" }} />
+              <div
+                className="progress-bar"
+                style={{ width: `${(averageScore / 10) * 100}%` }}
+              />
             </div>
             <p className="text-zinc-600 text-xs mt-2">
-              Top 18% of candidates on this platform
+              Based on interview score out of 10
             </p>
           </div>
         </CardWrp>

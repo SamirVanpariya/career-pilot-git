@@ -5,7 +5,7 @@ const ATSScore = ({ resumeData }) => {
   return (
     <Grid size={{ xs: 12, md: 4 }}>
       <div className="glass-card rounded-2xl p-6 flex flex-col items-center text-center gap-4 h-full">
-        <div
+        {/* <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(255,87,34,0.12)" }}
         >
@@ -13,7 +13,7 @@ const ATSScore = ({ resumeData }) => {
             className="w-6 h-6"
             style={{ color: "var(--color-orange)" }}
           />
-        </div>
+        </div> */}
         <div>
           <p
             className="
@@ -22,8 +22,8 @@ const ATSScore = ({ resumeData }) => {
     px-4
     py-1.5
     rounded-full
-    text-[18px]
-    md:text-[20px]
+    text-[16px]
+    md:text-[18px]
     font-bold
     text-emerald-300
     bg-emerald-500/10

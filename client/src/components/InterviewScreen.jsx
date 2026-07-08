@@ -81,6 +81,17 @@ export default function InterviewScreen() {
     queryFn: () => getPastInterviewsAPI(),
     staleTime: 60 * 1000, // 1 minute
   });
+
+  const averageScore =
+    pastInterviews?.length > 0
+      ? (
+          pastInterviews.reduce(
+            (sum, interview) => sum + (Number(interview.score) || 0),
+            0,
+          ) / pastInterviews.length
+        ).toFixed(1)
+      : 0;
+
   const summaryStats = [
     {
       label: "Total Interviews",
@@ -90,22 +101,22 @@ export default function InterviewScreen() {
       bg: "bg-orange-500/10",
     },
     {
-      label: "Upcoming",
+      label: "Upcoming Interviews",
       value: upcomingInterviews?.length || "0",
       icon: Calendar,
       color: "text-orange-300",
       bg: "bg-orange-400/10",
     },
     {
-      label: "Completed / Past",
+      label: "Past Interviews",
       value: pastInterviews?.length || "0",
       icon: CheckCircle,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
     {
-      label: "Avg. Score --- TODO",
-      value: "82%",
+      label: "Avg. Score out of 10",
+      value: averageScore,
       icon: Award,
       color: "text-amber-400",
       bg: "bg-amber-500/10",

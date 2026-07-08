@@ -1,8 +1,26 @@
-import { Grid } from "@mui/material";
+"use client";
 import CardWrp from "./CardWrp";
-import { BookOpen, ChevronRight, Clock } from "lucide-react";
+import { BookOpen, ChevronRight, SquareArrowUpRight } from "lucide-react";
+import { useLatestResume } from "@/hooks/useLatestResume";
+import Link from "next/link";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
 
-const InterviewPrep = ({ prepResources }) => {
+import "swiper/css";
+import "swiper/css/navigation";
+const InterviewPrep = () => {
+  const { data: latestResume } = useLatestResume();
+  const latestResumeResources =
+    latestResume?.atsAnalysis?.interviewPrep?.resources || [];
+
+  const withoutMock = latestResumeResources.filter((resource) => {
+    return !(
+      resource.title?.toLowerCase().includes("mock") ||
+      resource.platform?.toLowerCase().includes("mock") ||
+      resource.technology?.toLowerCase().includes("mock") ||
+      resource.type?.toLowerCase().includes("mock")
+    );
+  });
   return (
     <CardWrp>
       <div className="flex items-center gap-2 mb-6">
@@ -15,51 +33,91 @@ const InterviewPrep = ({ prepResources }) => {
             style={{ color: "var(--color-orange)" }}
           />
         </div>
-        <h2 className="text-lg font-bold text-white">
-          Interview Prep Resources
-        </h2>
+        <div>
+          <h2 className="text-lg font-bold text-white">
+            Interview Prep Resources
+          </h2>
+          <p className="italic text-sm  !text-[#fff06a]">
+            These resources are based on your " Recent Resume "{" "}
+          </p>
+        </div>
       </div>
-      <Grid container spacing={3}>
-        {prepResources.map((res) => {
-          const Icon = res.icon;
-          return (
-            <Grid key={res.title} size={{ xs: 12, sm: 6, xl: 3 }}>
-              <div className="glass-card rounded-xl p-5 flex flex-col gap-4 hover:border-orange-500/30 hover:translate-y-[-2px] transition-all duration-300 cursor-pointer group">
-                <div className="flex items-start justify-between">
-                  <div
-                    className={`w-10 h-10 rounded-xl ${res.bg} flex items-center justify-center`}
-                  >
-                    <Icon className={`w-5 h-5 ${res.color}`} />
-                  </div>
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${res.diffBg} ${res.diffColor}`}
-                  >
-                    {res.difficulty}
-                  </span>
-                </div>
+      <Swiper
+        modules={[Navigation, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={3}
+        navigation
+        autoplay={{
+          delay: 3500,
+          disableOnInteraction: false,
+        }}
+        breakpoints={{
+          0: {
+            slidesPerView: 1,
+          },
+          640: {
+            slidesPerView: 2,
+          },
+          1024: {
+            slidesPerView: 2,
+          },
+          1400: {
+            slidesPerView: 3,
+          },
+        }}
+      >
+        {withoutMock?.map((res) => (
+          <SwiperSlide key={res.title}>
+            <div className="glass-card rounded-xl p-5 flex flex-col gap-4 h-full">
+              <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-white text-sm font-bold leading-snug">
-                    {res.title}
+                    {res?.title}
                   </p>
-                  <p className="text-[var(--color-text-secondary)] text-xs mt-1">{res.category}</p>
+
+                  <p className="text-[var(--color-text-secondary)] text-xs mt-1">
+                    {res?.platform}
+                  </p>
                 </div>
-                <div className="flex items-center justify-between mt-auto">
-                  <span className="flex items-center gap-1 text-[var(--color-text-secondary)] text-xs">
-                    <Clock className="w-3 h-3" />
-                    {res.duration}
-                  </span>
-                  <button
-                    className="text-xs font-semibold flex items-center gap-1 transition-colors hover:opacity-80 group-hover:gap-2"
-                    style={{ color: "var(--color-orange)" }}
-                  >
-                    Start <ChevronRight className="w-3 h-3" />
-                  </button>
-                </div>
+
+                <span
+                  className="
+              inline-flex items-center justify-center
+              rounded-full
+              px-3 py-1
+              text-xs
+              font-semibold
+              capitalize
+              bg-amber-500/10
+              text-amber-300
+              border border-amber-500/30
+              whitespace-nowrap
+            "
+                >
+                  {res?.type || "-"}
+                </span>
               </div>
-            </Grid>
-          );
-        })}
-      </Grid>
+
+              <div className="flex items-center justify-between mt-auto">
+                <span className="flex items-center gap-1 text-[var(--color-text-secondary)] text-xs">
+                  <SquareArrowUpRight className="w-3 h-3" />
+                  {res?.technology}
+                </span>
+
+                <Link
+                  href={res?.url || ""}
+                  target="_blank"
+                  className="text-md font-semibold flex items-center gap-1 transition-all hover:gap-2"
+                  style={{ color: "var(--color-orange)" }}
+                >
+                  Start
+                  <ChevronRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
     </CardWrp>
   );
 };

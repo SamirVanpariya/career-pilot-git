@@ -33,7 +33,7 @@
 import openrouter from "../config/openrouter.js";
 
 export const analyzeResumeATS = async (resumeText) => {
-const prompt = `
+  const prompt = `
 You are an ATS Resume Expert and Career Matchmaker.
 
 TASK:
@@ -55,7 +55,23 @@ STRICT JSON SCHEMA:
   "missingKeywords": [],
   "suggestions": [],
   "inDemandSkills": [],
-  "topCompanies": []
+  "topCompanies": [],
+  "interviewPrep": {
+    "guide": [],
+    "developerProTip": "",
+    "resources": [
+      {
+        "technology": "",
+        "title": "",
+        "platform": "",
+        "url": "",
+        "type": ""
+      }
+    ]
+  },
+   "aiMockInterview": {
+    "sessionUrl": "",
+  }
 }
 
 SCORING RULES:
@@ -69,6 +85,74 @@ RULES:
 - score must be an integer between 0 and 100
 - scoringStatus must be exactly one of:
   ["very poor", "weak", "average", "strong", "excellent"]
+
+INTERVIEW PREP RULES:
+
+Generate interview preparation based ONLY on the uploaded resume.
+
+interviewPrep.guide:
+- 5-8 practical interview preparation steps.
+- Mention important technical concepts to revise.
+- Mention behavioral interview preparation.
+- Mention project discussion preparation.
+
+developerProTip:
+- One concise professional tip that can improve interview performance.
+
+
+RESOURCES RULES:
+
+Analyze ONLY the uploaded resume.
+
+Extract all  skills mentioned in the resume.
+  
+Based on those extracted skills, generate 5-10 interview preparation resources that are directly relevant to the candidate.
+
+Resources should focus on interview preparation rather than general tutorials whenever possible.
+
+Examples of good resource titles:
+- React Deep Dive Interview Questions
+- Node.js Backend Interview Preparation
+- JavaScript Coding Interview Practice
+- Mock Frontend Developer Interview
+- Behavioural Interview Mastery
+- System Design for Backend Developers
+- SQL Interview Questions
+- REST API Interview Guide
+- Live Coding Practice for React Developers
+- Project Discussion Preparation for E-commerce Application
+
+Each resource must include:
+
+{
+  "technology": "",
+  "title": "",
+  "platform": "",
+  "url": "",
+  "type": ""
+}
+
+Rules:
+- Resources MUST be related to the uploaded resume.
+- If the resume contains React and Node.js, recommend React/Node interview resources.
+- If the resume contains Java + Spring Boot, recommend Spring Boot interview resources.
+- If the resume contains Data Science, recommend Python, ML and SQL interview resources.
+- If projects are mentioned, include resources on explaining projects during interviews.
+- Include at least one behavioural interview resource.
+- Include at least one mock interview or live coding practice resource.
+- Prefer high-quality resources from YouTube, freeCodeCamp, Coursera, GeeksforGeeks, InterviewBit, NeetCode, Roadmap.sh, Microsoft Learn, AWS Skill Builder, or official documentation.
+- Return real, working URLs whenever possible.
+
+AI MOCK INTERVIEW RULES:
+
+Generate an AI mock interview section for the candidate.
+
+aiMockInterview:
+- sessionUrl should contain the URL where the user starts the AI interview.
+
+If an interview platform URL is not available, return:
+"sessionUrl": "/ai-interview/start"
+
 
 EXTRA REQUIREMENTS:
 - inDemandSkills: 5 to 10 items based on current job market trends

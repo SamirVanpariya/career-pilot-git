@@ -10,10 +10,12 @@ const StrengthList = ({ resumeData = [] }) => {
       <CardWrp className="!mt-0 h-full">
         <div className="flex items-center gap-2 mb-5">
           <Award className="w-7 h-7" style={{ color: "var(--color-orange)" }} />
-          <h2 className="text-[20px] md:text-[22px] font-bold text-white">Key Strengths</h2>
+          <h2 className="text-[20px] md:text-[22px] font-bold text-white">
+            Key Strengths
+          </h2>
         </div>
 
-        <div className="grid gap-3">
+        <div className="max-h-[350px] overflow-y-auto grid gap-3">
           {strengths.length === 0 ? (
             <p>No strengths found</p>
           ) : (
