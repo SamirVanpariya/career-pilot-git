@@ -28,7 +28,7 @@ const TopCompanies = () => {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">
-                    {co?.name[0]}
+                    {co?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>

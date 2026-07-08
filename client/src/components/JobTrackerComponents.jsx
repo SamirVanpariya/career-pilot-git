@@ -212,14 +212,14 @@ const JobTrackerComponents = () => {
     },
     {
       label: "Interviews",
-      value: jobsData?.filter((job) => job.status === "interview")?.length,
+      value: jobsData?.filter((job) => job.status === "interview")?.length || 0,
       icon: MessageSquare,
       color: "text-orange-300",
       bg: "bg-orange-400/10",
     },
     {
       label: "Offers",
-      value: jobsData?.filter((job) => job.status === "offer")?.length,
+      value: jobsData?.filter((job) => job.status === "offer")?.length || 0,
       icon: Star,
       color: "text-amber-400",
       bg: "bg-amber-500/10",
@@ -263,9 +263,7 @@ const JobTrackerComponents = () => {
             />
           </div>
         )}
-        <ApplicationBoard
-          columns={columns}
-        />
+        <ApplicationBoard columns={columns} />
       </div>
     </div>
   );

@@ -1,47 +1,7 @@
-import { BarChart2, Users, Target, Award } from "lucide-react";
 import AnalyticsHead from "@/components/AnalyticsHead";
 import AnalyticsStats from "@/components/AnalyticsStats";
 import MonthlyApplications from "@/components/MonthlyApplications";
 import DemandSkills from "@/components/DemandSkills";
-
-const kpis = [
-  {
-    label: "Total Applications",
-    value: "142",
-    change: "+18%",
-    trend: "up",
-    icon: BarChart2,
-    color: "text-orange-400",
-    bg: "bg-orange-500/10",
-  },
-  {
-    label: "Response Rate",
-    value: "23%",
-    change: "+5%",
-    trend: "up",
-    icon: Users,
-    color: "text-orange-300",
-    bg: "bg-orange-400/10",
-  },
-  {
-    label: "Interview Conversion",
-    value: "15%",
-    change: "-2%",
-    trend: "down",
-    icon: Target,
-    color: "text-amber-400",
-    bg: "bg-amber-500/10",
-  },
-  {
-    label: "Offer Rate",
-    value: "8%",
-    change: "+3%",
-    trend: "up",
-    icon: Award,
-    color: "text-orange-200",
-    bg: "bg-orange-300/10",
-  },
-];
 
 const monthlyData = [
   { month: "Jan", apps: 8, interviews: 2 },
@@ -98,7 +58,7 @@ export default function AnalyticsPage() {
     <div className="animate-fade-in-up">
       <AnalyticsHead />
       <div className="flex flex-col gap-[20px] md:gap-[30px]">
-        <AnalyticsStats kpis={kpis} />
+        <AnalyticsStats />
         <MonthlyApplications
           topCompanies={topCompanies}
           monthlyData={monthlyData}
