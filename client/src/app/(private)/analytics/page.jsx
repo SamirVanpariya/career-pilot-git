@@ -93,15 +93,6 @@ const topCompanies = [
   },
 ];
 
-const skillDemand = [
-  { skill: "React", demand: 94 },
-  { skill: "TypeScript", demand: 87 },
-  { skill: "Node.js", demand: 76 },
-  { skill: "Next.js", demand: 71 },
-  { skill: "GraphQL", demand: 58 },
-  { skill: "AWS", demand: 52 },
-];
-
 export default function AnalyticsPage() {
   return (
     <div className="animate-fade-in-up">
@@ -113,7 +104,7 @@ export default function AnalyticsPage() {
           monthlyData={monthlyData}
           maxApps={maxApps}
         />
-        <DemandSkills skillDemand={skillDemand} />
+        <DemandSkills />
       </div>
     </div>
   );

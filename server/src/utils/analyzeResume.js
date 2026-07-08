@@ -54,7 +54,12 @@ STRICT JSON SCHEMA:
   "weaknesses": [],
   "missingKeywords": [],
   "suggestions": [],
-  "inDemandSkills": [],
+"inDemandSkills": [
+  {
+    "skill": "",
+    "demandPercentage": 0
+  }
+],
   "topCompanies": [],
   "interviewPrep": {
     "guide": [],
@@ -153,6 +158,13 @@ aiMockInterview:
 If an interview platform URL is not available, return:
 "sessionUrl": "/ai-interview/start"
 
+inDemandSkills RULES:
+- Generate 5 to 10 currently in-demand skills based on the candidate's profile and current job market trends.
+- Each skill must include an estimated market demand percentage.
+- demandPercentage must be an integer between 0 and 100.
+- The percentage represents how frequently this skill is requested in relevant job postings.
+- Sort skills from highest demand percentage to lowest.
+- Do not include random skills unrelated to the resume.
 
 EXTRA REQUIREMENTS:
 - inDemandSkills: 5 to 10 items based on current job market trends
