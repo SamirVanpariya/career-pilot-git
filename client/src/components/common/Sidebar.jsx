@@ -17,6 +17,7 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
+  BellRing,
 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutUser } from "@/services/authService";
@@ -29,7 +30,8 @@ const navItems = [
   { text: "Job Tracker", icon: AudioWaveform, idx: 2 },
   { text: "Interviews", icon: Video, idx: 3 },
   { text: "Analytics", icon: ChartPie, idx: 4 },
-  { text: "Settings", icon: Settings, idx: 5 },
+  { text: "Notifications", icon: BellRing, idx: 5 },
+  { text: "Settings", icon: Settings, idx: 6 },
 ];
 
 export default function Sidebar() {
@@ -41,7 +43,7 @@ export default function Sidebar() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const {mutate:logoutMutate,isPending:isLogoutLoading} = useMutation({
+  const { mutate: logoutMutate, isPending: isLogoutLoading } = useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
       // 💥 instantly remove user from cache
@@ -57,7 +59,8 @@ export default function Sidebar() {
     <div
       className={`h-screen bg-[var(--color-surface)] border-r border-[var(--color-border)] flex flex-col transition-all duration-300 ${collapsed && !isMobile ? "w-[68px]" : "w-64"}`}
       style={{
-         background: "linear-gradient(to bottom right, #18181b 0%,#09090b 50%,#000000 100%)",
+        background:
+          "linear-gradient(to bottom right, #18181b 0%,#09090b 50%,#000000 100%)",
       }}
     >
       {/* Header */}

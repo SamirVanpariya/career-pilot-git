@@ -4,6 +4,7 @@ import QueryProviders from "@/utils/QueryProviders";
 import { Toaster } from "react-hot-toast";
 import ReduxProviders from "@/utils/ReduxProviders";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { SocketProvider } from "@/utils/SocketProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,9 +32,11 @@ export default function RootLayout({ children }) {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
         >
-          <QueryProviders>
-            <ReduxProviders>{children}</ReduxProviders>
-          </QueryProviders>
+          <SocketProvider>
+            <QueryProviders>
+              <ReduxProviders>{children}</ReduxProviders>
+            </QueryProviders>
+          </SocketProvider>
         </GoogleOAuthProvider>
         <Toaster position="top-right" />
       </body>

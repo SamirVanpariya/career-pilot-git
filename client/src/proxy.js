@@ -10,6 +10,7 @@ export function proxy(request) {
     pathname.startsWith("/job-tracker") ||
     pathname.startsWith("/interviews") ||
     pathname.startsWith("/analytics") ||
+    pathname.startsWith("/notification") ||
     pathname.startsWith("/settings");
 
   const isAuthPage = pathname === "/login" || pathname === "/register";
@@ -37,5 +38,6 @@ export const config = {
     "/settings/:path*",
     "/login",
     "/register",
+    "/notification/:path*",
   ],
 };

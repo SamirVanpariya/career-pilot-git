@@ -1,4 +1,4 @@
-import { Building2, Building2Icon, CheckCircle } from "lucide-react";
+import { Building2, Building2Icon } from "lucide-react";
 import { Grid } from "@mui/material";
 import CardWrp from "./CardWrp";
 

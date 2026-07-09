@@ -1,11 +1,12 @@
 import prisma from "../db/prisma.js";
+import { createAndEmitNotification } from "../services/notificationService.js";
 
 export const createJob = async (req, res) => {
   try {
     const jobData = req.body;
     console.log("JD", jobData);
     const userId = req.user.id;
-    await prisma.job.create({
+    const job = await prisma.job.create({
       data: {
         userId: userId,
         ...jobData,
@@ -102,23 +103,65 @@ export const updateJob = async (req, res) => {
   }
 };
 
-// DELETE JOB
+// ============================================================
+// DELETE JOB → Creates notification instantly
+// ============================================================
+// export const deleteJob = async (req, res) => {
+//   try {
+//     if (!req.user?.id) {
+//       return res.status(401).json({ message: "Unauthorized: user not found" });
+//     }
+//     await prisma.job.delete({
+//       where: { id: Number(req.params.id) },
+//     });
+//     res.status(200).json({
+//       message: "Job deleted successfully",
+//     });
+//   } catch (error) {
+//     console.error("Error in deleteJob:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// ============================================================
+// DELETE JOB → Creates notification instantly
+// ============================================================
 export const deleteJob = async (req, res) => {
   try {
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "Unauthorized: user not found" });
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // 1. Get job details before deleting
+    const job = await prisma.job.findFirst({
+      where: { id: Number(id), userId },
+      select: { companyName: true, jobTitle: true },
+    });
+
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
     }
+
+    // 2. Delete the job
     await prisma.job.delete({
-      where: { id: Number(req.params.id) },
+      where: { id: Number(id) },
     });
-    res.status(200).json({
-      message: "Job deleted successfully",
-    });
+
+    // 3. Create notification (this also emits via Socket.IO)
+    await createAndEmitNotification(
+      userId,
+      "APPLICATION_DELETED",
+      `🗑️ Deleted: ${job.companyName}`,
+      `You deleted your application for "${job.jobTitle}".`,
+      { companyName: job.companyName, jobTitle: job.jobTitle },
+    );
+
+    res.json({ success: true, message: "Application deleted successfully" });
   } catch (error) {
-    console.error("Error in deleteJob:", error);
-    res.status(500).json({ message: error.message });
+    console.error("Error deleting job:", error);
+    res.status(500).json({ error: "Failed to delete job" });
   }
 };
+
 // UPDATE NEXT ACTION STATUS
 export const updateNextAction = async (req, res) => {
   try {
