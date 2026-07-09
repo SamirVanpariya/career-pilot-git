@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
+import cookie from "cookie";
 import prisma from "./db/prisma.js";
 
 let io;
@@ -12,52 +13,73 @@ export const initializeSocket = (server) => {
     },
   });
 
-  // Authentication middleware
+  // Socket Authentication Middleware
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth.token;
-      if (!token) return next(new Error("No token provided"));
+      const cookies = cookie.parse(socket.handshake.headers.cookie || "");
+
+      const token = cookies.accessToken;
+
+      if (!token) {
+        return next(new Error("Unauthorized: Missing token"));
+      }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const userId = decoded.id; // adjust based on your JWT payload
 
       const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { id: true, email: true, fullName: true },
+        where: {
+          id: decoded.userId,
+        },
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+        },
       });
 
-      if (!user) return next(new Error("User not found"));
+      if (!user) {
+        return next(new Error("User not found"));
+      }
 
-      socket.userId = userId;
       socket.user = user;
+
       next();
-    } catch (err) {
-      next(new Error("Authentication error"));
+    } catch (error) {
+      console.error("Socket auth error:", error.message);
+      next(new Error("Unauthorized"));
     }
   });
 
+  // Connection Handler
   io.on("connection", (socket) => {
-    const userId = socket.userId;
-    console.log(`✅ User ${userId} connected`);
+    const userId = socket.user.id;
 
-    socket.join(`user-${userId}`);
+    console.log(`✅ Socket connected: ${socket.user.email}`);
 
-    socket.on("disconnect", () => {
-      console.log(`❌ User ${userId} disconnected`);
+    socket.join(`user:${userId}`);
+
+    socket.on("disconnect", (reason) => {
+      console.log(`❌ Socket disconnected ${userId}:`, reason);
     });
   });
 
   return io;
 };
 
-// Helper: Emit to a specific user
-export const emitToUser = (userId, event, data) => {
-  if (io) {
-    io.to(`user-${userId}`).emit(event, data);
+// Emit notification to user
+export const emitToUser = (userId, event, payload) => {
+  if (!io) {
+    console.warn("Socket.IO not initialized");
+    return;
   }
+
+  io.to(`user:${userId}`).emit(event, payload);
 };
 
 export const getIO = () => {
-  if (!io) throw new Error("Socket.IO not initialized");
+  if (!io) {
+    throw new Error("Socket.IO has not been initialized");
+  }
+
   return io;
 };

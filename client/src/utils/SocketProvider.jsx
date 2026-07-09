@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import io from "socket.io-client";
+import { useMe } from "@/services/useMe";
 
 const SocketContext = createContext(null);
 
@@ -13,15 +14,27 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef(null);
+  const { isLoggedIn } = useMe();
 
   useEffect(() => {
-    const token = localStorage.getItem("token"); // adjust based on your auth
-    if (!token) return;
+    // Only connect when the user is authenticated
+    if (!isLoggedIn) {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+        setIsConnected(false);
+      }
+      return;
+    }
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL, {
-      auth: { token },
-      transports: ["websocket"],
-    });
+    // Auth is cookie-based — withCredentials sends the httpOnly accessToken cookie
+    const socket = io(
+      process.env.NEXT_PUBLIC_BE_PORT || "http://localhost:5000",
+      {
+        withCredentials: true,
+        transports: ["websocket"],
+      },
+    );
 
     socketRef.current = socket;
 
@@ -35,11 +48,16 @@ export const SocketProvider = ({ children }) => {
       setIsConnected(false);
     });
 
+    socket.on("connect_error", (err) => {
+      console.error("Socket connection error:", err.message);
+      setIsConnected(false);
+    });
+
     return () => {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <SocketContext.Provider value={{ socket: socketRef.current, isConnected }}>

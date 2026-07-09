@@ -32,11 +32,11 @@ export default function RootLayout({ children }) {
         <GoogleOAuthProvider
           clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
         >
-          <SocketProvider>
-            <QueryProviders>
-              <ReduxProviders>{children}</ReduxProviders>
-            </QueryProviders>
-          </SocketProvider>
+          <QueryProviders>
+            <ReduxProviders>
+              <SocketProvider>{children}</SocketProvider>
+            </ReduxProviders>
+          </QueryProviders>
         </GoogleOAuthProvider>
         <Toaster position="top-right" />
       </body>
