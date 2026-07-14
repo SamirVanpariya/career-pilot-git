@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Bell, Building2 } from "lucide-react";
 import { fetchNotifications } from "@/services/notificationService";
+import LoadingWrpNew from "./LoadingWrpNew";
 
 export default function NotificationComponent() {
   const {
@@ -15,16 +16,7 @@ export default function NotificationComponent() {
   });
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-cyan-400 border-t-transparent"></div>
-          <span className="text-gray-300 text-lg">
-            Loading notifications...
-          </span>
-        </div>
-      </div>
-    );
+    return <LoadingWrpNew />;
   }
 
   if (isError) {
@@ -39,11 +31,11 @@ export default function NotificationComponent() {
 
   return (
     <div className=" px-4 py-8">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="mb-8 flex items-center gap-4">
           <div className="rounded-2xl bg-cyan-500/10 p-4 ring-1 ring-cyan-500/30">
-            <Bell className="h-8 w-8 text-cyan-400" />
+            <Bell className="h-8 w-8 text-[var(--color-orange)]" />
           </div>
 
           <div>
@@ -68,22 +60,20 @@ export default function NotificationComponent() {
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                className="group relative overflow-hidden rounded-2xl border border-slate-700 bg-slate-900/70 p-5 backdrop-blur-md transition-all duration-300 hover:border-cyan-500/40 hover:shadow-[0_0_25px_rgba(34,211,238,0.15)] hover:-translate-y-1"
+                className="group relative overflow-hidden rounded-[10px] border border-slate-700 bg-[var(--color-neutral)] p-[10px_20px] backdrop-blur-md transition-all duration-300 hover:border-[var(--color-orange)] hover:shadow-[0_0_25px_rgba(34,211,238,0.15)] hover:-translate-y-1"
               >
                 {/* Accent Line */}
-                <div className="absolute left-0 top-0 h-full w-1 bg-cyan-400"></div>
+                <div className="absolute left-0 top-0 h-full w-1 bg-[var(--color-orange)]"></div>
 
                 <div className="flex gap-4">
                   {/* Icon */}
-
-                  {/* Content */}
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <h2 className="text-lg font-semibold text-white">
                         {notification.title}
                       </h2>
 
-                      <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                      <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold text-[var(--color-orange)]">
                         NEW
                       </span>
                     </div>

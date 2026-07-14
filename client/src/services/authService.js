@@ -36,3 +36,13 @@ export const resetPasswordAPI = async ({ token, password }) => {
 
   return res.data;
 };
+
+// change  password
+export const changePasswordAPI = async ({ currentPassword, newPassword }) => {
+  const res = await api.post(`/auth/change-password`, {
+    currentPassword,
+    newPassword,
+  });
+
+  return res.data;
+};

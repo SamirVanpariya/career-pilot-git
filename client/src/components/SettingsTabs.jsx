@@ -20,10 +20,10 @@ import Integrations from "./Integrations";
 /* ─── Sidebar Tabs ───────────────────────────────────────────── */
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
-  { id: "notifications", label: "Notifications", icon: Bell },
+  // { id: "notifications", label: "Notifications", icon: Bell },
   { id: "security", label: "Security", icon: Shield },
-  { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "integrations", label: "Integrations", icon: Link2 },
+  // { id: "appearance", label: "Appearance", icon: Palette },
+  // { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
 /* ─── Toggle Component ───────────────────────────────────────── */
