@@ -38,19 +38,28 @@ function StatPill({ icon: Icon, label, value, color, bg }) {
 }
 
 function AnimatedNumber({ target, suffix = "" }) {
+  const safeTarget = Number.isFinite(Number(target)) ? Number(target) : 0;
+
   const [count, setCount] = useState(0);
+
   useEffect(() => {
     let start = 0;
-    const step = Math.ceil(target / 60);
+    const step = Math.max(1, Math.ceil(safeTarget / 60));
+
     const timer = setInterval(() => {
       start += step;
-      if (start >= target) {
-        setCount(target);
+
+      if (start >= safeTarget) {
+        setCount(safeTarget);
         clearInterval(timer);
-      } else setCount(start);
+      } else {
+        setCount(start);
+      }
     }, 16);
+
     return () => clearInterval(timer);
-  }, [target]);
+  }, [safeTarget]);
+
   return (
     <>
       {count}
@@ -156,11 +165,8 @@ function GaugeRing({ percentile, score }) {
 
 export default function DashboardBanner() {
   const [percentile] = useState(95);
-  const {
-    data: latestResumeData,
-    isLoading: isLatestResumeLoading,
-    error: latestResumeError,
-  } = useLatestResume();
+  const { data: latestResumeData, isLoading: isLatestResumeLoading } =
+    useLatestResume();
 
   const { data: jobs = [] } = useQuery({
     queryKey: ["jobs"],
@@ -200,7 +206,6 @@ export default function DashboardBanner() {
   const { data: user } = useMe();
 
   if (isLatestResumeLoading) return <LoadingWrpNew />;
-  if (latestResumeError) return <p>Error loading resume</p>;
 
   return (
     <div className="w-full animate-fade-in-up">
@@ -235,7 +240,6 @@ export default function DashboardBanner() {
             }}
           />
         </div>
-
         <div
           className="relative z-10 p-5 sm:p-7 lg:p-8"
           style={{
@@ -275,38 +279,46 @@ export default function DashboardBanner() {
                 Welcome back,{" "}
                 <span className="gradient-text">{user?.fullName}</span>
               </h1>
-
-              <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-4xl">
-                Your Latest resume{" "}
-                <Link
-                  href={`/resume-analysis/${latestResumeData?.id}`}
-                  className="underline text-blue-400 hover:text-blue-500 transition-colors"
-                >
-                  {latestResumeData?.title}'s resume
-                </Link>{" "}
-                ranks with ATS Of
-                <span
-                  className="font-bold px-2 py-0.5 rounded-lg mx-2"
-                  style={{
-                    color: "#FFAB91",
-                    background: "rgba(255,87,34,0.10)",
-                    border: "1px solid rgba(255,87,34,0.22)",
-                  }}
-                >
-                  {latestResumeData?.atsScore || "Null"}{" "}
-                </span>{" "}
-                Out of 100.
-              </p>
-              <p className="text-[var(--color-text-secondary)] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
-                AI detected it is a{" "}
-                <span
-                  className="font-bold text-[16px] uppercase"
-                  style={{ color: "var(--color-orange-light)" }}
-                >
-                  {latestResumeData?.atsAnalysis?.scoringStatus}
-                </span>{" "}
-                resume.
-              </p>
+              {latestResumeData ? (
+                <>
+                  <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-4xl">
+                    Your latest resume{" "}
+                    <Link
+                      href={`/resume-analysis/${latestResumeData.id}`}
+                      className="underline text-blue-400 hover:text-blue-500 transition-colors"
+                    >
+                      {latestResumeData.title}'s resume
+                    </Link>{" "}
+                    ranks with an ATS score of{" "}
+                    <span
+                      className="font-bold px-2 py-0.5 rounded-lg mx-2"
+                      style={{
+                        color: "#FFAB91",
+                        background: "rgba(255,87,34,0.10)",
+                        border: "1px solid rgba(255,87,34,0.22)",
+                      }}
+                    >
+                      {latestResumeData.atsScore ?? "N/A"}
+                    </span>{" "}
+                    out of 100.
+                  </p>
+                  <p className="text-[var(--color-text-secondary)] text-xs sm:text-sm leading-relaxed mb-6 max-w-lg">
+                    AI detected it is a{" "}
+                    <span
+                      className="font-bold text-[16px] uppercase"
+                      style={{ color: "var(--color-orange-light)" }}
+                    >
+                      {latestResumeData?.atsAnalysis?.scoringStatus}
+                    </span>{" "}
+                    resume.
+                  </p>
+                </>
+              ) : (
+                <p className="text-zinc-400 text-sm sm:text-base leading-relaxed mb-2 max-w-4xl">
+                  You haven't uploaded a resume yet. Upload your first resume to
+                  receive an ATS score and personalized analysis.
+                </p>
+              )}
 
               <div className="flex flex-wrap gap-2 mb-6">
                 {stats.map((s) => (

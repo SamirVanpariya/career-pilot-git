@@ -4,17 +4,13 @@ import CardWrp from "./CardWrp";
 import { useLatestResume } from "@/hooks/useLatestResume";
 
 const TopCompanies = () => {
-  const {
-    data: latestResumeData,
-    isLoading: isLatestResumeLoading,
-    error: latestResumeError,
-  } = useLatestResume();
+  const { data: latestResumeData, isLoading: isLatestResumeLoading } =
+    useLatestResume();
 
   const topCompaniesData = latestResumeData?.atsAnalysis?.topCompanies || [];
 
   if (isLatestResumeLoading) return <div>Loading top companies ...</div>;
-  if (latestResumeError)
-    return <div>Error loading data {latestResumeError}</div>;
+
   return (
     <Grid size={{ xs: 12, lg: 5 }}>
       <CardWrp className="mt-0">

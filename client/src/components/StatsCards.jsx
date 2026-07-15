@@ -43,7 +43,7 @@ export default function StatsCards() {
     },
     {
       title: "ATS Score",
-      value: `${latestResumeData?.atsScore}`,
+      value: latestResumeData?.atsScore ?? "-",
       sub: "Out of 100",
       trend: "up",
       icon: Target,
@@ -70,7 +70,6 @@ export default function StatsCards() {
     },
   ];
   if (isLatestResumeLoading) return <LoadingWrpNew />;
-  if (latestResumeError) return <p>Error loading resume</p>;
   return (
     <Grid container spacing={3}>
       {stats.map((stat) => {

@@ -6,16 +6,11 @@ import { useLatestResume } from "@/hooks/useLatestResume";
 import LoadingWrpNew from "./common/LoadingWrpNew";
 
 const DemandSkills = () => {
-  const {
-    data: latestResumeData,
-    isLoading: isLatestResumeLoading,
-    error: latestResumeError,
-  } = useLatestResume();
+  const { data: latestResumeData, isLoading: isLatestResumeLoading } =
+    useLatestResume();
 
   const skillDemand = latestResumeData?.atsAnalysis?.inDemandSkills || [];
   if (isLatestResumeLoading) return <LoadingWrpNew />;
-  if (latestResumeError)
-    return <div className="text-red-500">Error loading demand skills..</div>;
   return (
     <CardWrp>
       <div className="flex items-center gap-2 mb-6">
