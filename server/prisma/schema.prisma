@@ -52,6 +52,7 @@ model Resume {
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   file  String
+  fileResult String[] 
   title String
   name  String
   email String

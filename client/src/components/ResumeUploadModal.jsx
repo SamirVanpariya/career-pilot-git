@@ -154,6 +154,7 @@ const ResumeUploadModal = ({ open, onClose }) => {
     uploadOnDb(payload);
     reset();
   };
+  console.log("yuuyuyuyuyu",cloudinaryResponse)
 
   return (
     <CommonModal

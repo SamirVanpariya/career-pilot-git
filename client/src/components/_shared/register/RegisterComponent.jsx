@@ -11,6 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { registerUserAPI } from "@/services/authService";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function RegisterComponent() {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +41,29 @@ export default function RegisterComponent() {
   const handleRegisterSubmit = (data) => {
     registerMutation.mutate(data);
   };
+  // Google login handler >>>>>>>>>>>>
+  const handleGoogleLogin = async (response) => {
+    const token = response.credential; // Google JWT
 
+    const res = await fetch("http://localhost:5000/api/auth/google", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token,
+      }),
+    });
+    const data = await res.json();
+    console.log("Google login response >>>> ", data);
+    toast.success(data?.message || "Google login successful!");
+    router.refresh();
+  };
+
+  const handleGoogleLoginFailed = () => {
+    toast.error("Google login failed");
+  };
   return (
     <div className="max-w-[1400px] w-full mx-auto min-h-screen bg-[var(--color-bg)] text-white flex">
       {/* Left Panel */}
@@ -129,15 +152,12 @@ export default function RegisterComponent() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {["Google", "GitHub"].map((p) => (
-              <button
-                key={p}
-                className="btn-secondary !h-11 !text-sm !w-full !justify-center"
-              >
-                {p}
-              </button>
-            ))}
+          <div className=" mb-6 google-btn">
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={handleGoogleLoginFailed}
+                text="signup_with"
+              />
           </div>
 
           <div className="flex items-center gap-3 mb-6">

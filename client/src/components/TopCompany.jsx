@@ -36,7 +36,7 @@ const TopCompany = ({ resumeData }) => {
               >
                 {/* Company Name */}
                 <span className="text-zinc-200 text-sm font-medium group-hover:text-white transition-colors">
-                  {company?.name || company || "not found"}
+                  {company?.company || company?.name || "not found"}
                 </span>
 
                 {/* Badge */}
@@ -45,7 +45,7 @@ const TopCompany = ({ resumeData }) => {
                                  text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full"
                 >
                   <Building2 className="w-3.5 h-3.5" />
-                  {company?.industry || "not found"}
+                  {company?.score != null ? `Score: ${company.score}` : company?.industry || "N/A"}
                 </span>
               </div>
             ))

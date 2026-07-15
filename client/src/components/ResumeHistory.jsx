@@ -120,7 +120,7 @@ const ResumeHistory = () => {
   const viewResumeATSAnalysis = (resumeId) => {
     route.push(`/resume-analysis/${resumeId}`);
   };
-
+  console.log("fire", resumesData);
   if (isLoading) return <LoadingWrpNew />;
   if (isError) return <p>Error: {error?.message}</p>;
 
@@ -179,15 +179,17 @@ const ResumeHistory = () => {
                 {/* Details grid */}
                 <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-zinc-500 text-[11px] border-t border-white/5 pt-3">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                    <span className="truncate">
+                    <Calendar className="w-3.5 h-3.5 text-zinc-200 shrink-0" />
+                    <span className="truncate text-zinc-100">
                       {formatDate(resume?.createdAt)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <HardDrive className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                    <span className="truncate">
-                      {resume?.fileSize || "Unknown size"}
+                    <HardDrive className="w-3.5 h-3.5 text-zinc-200 shrink-0" />
+                    <span className="truncate text-zinc-100">
+                      {resume?.fileResult?.[1]?.bytes
+                        ? `${(Number(resume.fileResult[1].bytes) / 1024).toFixed(2)} KB`
+                        : "Unknown size"}
                     </span>
                   </div>
                 </div>
@@ -301,8 +303,14 @@ const ResumeHistory = () => {
                 <div
                   className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${getScoreColor(selectedResume?.score)}`}
                 >
-                  <Award className="w-4 h-4" />
-                  <span>{selectedResume?.score} 50/ 100 ATS Score</span>
+                  {selectedResume?.atsScore ? (
+                    <>
+                      <Award className="w-4 h-4" />
+                      <span>{selectedResume?.atsScore}/100 ATS Score</span>
+                    </>
+                  ) : (
+                    "Pending ATS "
+                  )}
                 </div>
               </div>
               {/* )} */}

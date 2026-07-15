@@ -220,7 +220,7 @@ export default function Login() {
               </button>
             ))}
           </div> */}
-          <div className="mb-5">
+          <div className="mb-5 google-btn">
             <GoogleLogin
               onSuccess={handleGoogleLogin}
               onError={handleGoogleLoginFailed}
@@ -319,7 +319,7 @@ export default function Login() {
               className="font-semibold transition-colors hover:opacity-80"
               style={{ color: "var(--color-orange)" }}
             >
-              Create one free
+              Create Now
             </Link>
           </p>
         </div>

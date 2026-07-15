@@ -1,13 +1,11 @@
 "use client";
 import Grid from "@mui/material/Grid";
-import { ArrowLeft } from "lucide-react";
 import ATSScore from "@/components/ATSScore";
 import AISuggestions from "@/components/AISuggestions";
 import { getResumeByIdAPI } from "@/services/resumeService";
 import LoadingWrpNew from "./common/LoadingWrpNew";
 import toast from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import StrengthList from "./StrengthList";
 import WeaknessList from "./WeaknessList";
 import MissingKeyword from "./MissingKeyword";
