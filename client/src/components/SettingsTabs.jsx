@@ -1,31 +1,19 @@
 "use client";
-
 import { useState } from "react";
 import Grid from "@mui/material/Grid";
-import {
-  User,
-  Bell,
-  Shield,
-  Palette,
-  Link2,
-  Trash2,
-  ChevronRight,
-} from "lucide-react";
+import { User, Shield, Trash2, ChevronRight } from "lucide-react";
 import PersonalInfo from "./PersonalInfo";
 import Notifications from "./Notifications";
 import Passwords from "./Passwords";
 import Appearance from "./Appearance";
 import Integrations from "./Integrations";
+import DeleteAccountModal from "./DeleteAccountModal";
 
 /* ─── Sidebar Tabs ───────────────────────────────────────────── */
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
-  // { id: "notifications", label: "Notifications", icon: Bell },
   { id: "security", label: "Security", icon: Shield },
-  // { id: "appearance", label: "Appearance", icon: Palette },
-  // { id: "integrations", label: "Integrations", icon: Link2 },
 ];
-
 /* ─── Toggle Component ───────────────────────────────────────── */
 function Toggle({ defaultOn = false }) {
   const [on, setOn] = useState(defaultOn);
@@ -45,13 +33,20 @@ function Toggle({ defaultOn = false }) {
     </button>
   );
 }
-
 const SettingsTabs = () => {
   const [activeTab, setActiveTab] = useState("profile");
 
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] =
+    useState(false);
+
+  const handleOpenAccoundModal = () => {
+    setIsDeleteAccountModalOpen(true);
+  };
+  const handleDeleteAccoundModalClose = () => {
+    setIsDeleteAccountModalOpen(false);
+  };
   return (
     <Grid container spacing={3} className="items-start">
-      {/* ── Left Nav ── */}
       <Grid size={{ xs: 12, md: 3 }}>
         <div className="glass-card rounded-[15px] p-2 flex flex-col gap-1">
           {tabs.map((tab) => {
@@ -74,36 +69,32 @@ const SettingsTabs = () => {
             );
           })}
 
-          {/* Danger zone */}
           <div className="mt-2 pt-2 border-t border-white/5">
-            <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-400/10 transition-all duration-200">
+            <button
+              onClick={handleOpenAccoundModal}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-400 hover:bg-red-400/10 transition-all duration-200"
+            >
               <Trash2 className="w-4 h-4 shrink-0" />
               Delete Account
             </button>
           </div>
+
+          <DeleteAccountModal
+            open={isDeleteAccountModalOpen}
+            onClose={handleDeleteAccoundModalClose}
+          />
         </div>
       </Grid>
 
-      {/* ── Right Panel ── */}
       <Grid size={{ xs: 12, md: 9 }}>
-        {/* ── PROFILE ── */}
         {activeTab === "profile" && (
           <div className="flex flex-col gap-6">
-            {/* Personal Info */}
             <PersonalInfo />
           </div>
         )}
 
-        {/* ── NOTIFICATIONS ── */}
         {activeTab === "notifications" && <Notifications Toggle={Toggle} />}
-        {/* ── SECURITY ── */}
         {activeTab === "security" && <Passwords />}
-
-        {/* ── APPEARANCE ── */}
-        {activeTab === "appearance" && <Appearance Toggle={Toggle} />}
-
-        {/* ── INTEGRATIONS ── */}
-        {activeTab === "integrations" && <Integrations />}
       </Grid>
     </Grid>
   );

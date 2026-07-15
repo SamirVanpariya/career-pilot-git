@@ -11,6 +11,7 @@ import {
   refreshToken,
   googleLogin,
   changePassword,
+  deleteAccount,
 } from "../controllers/auth.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 
@@ -28,5 +29,6 @@ router.post("/reset-password/:token", resetPassword);
 router.post("/logout", logoutUser);
 router.post("/refresh", refreshToken);
 router.post("/change-password", protect, changePassword);
+router.delete("/user/delete-account", protect, deleteAccount);
 
 export default router;

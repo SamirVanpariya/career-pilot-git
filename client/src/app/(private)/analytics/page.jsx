@@ -14,56 +14,13 @@ const monthlyData = [
   { month: "Aug", apps: 32, interviews: 11 },
 ];
 const maxApps = Math.max(...monthlyData.map((d) => d.apps));
-
-const topCompanies = [
-  {
-    name: "Stripe",
-    applied: 3,
-    status: "Interview",
-    statusColor: "text-emerald-400",
-    statusBg: "bg-emerald-400/10",
-  },
-  {
-    name: "Vercel",
-    applied: 2,
-    status: "Offer",
-    statusColor: "text-orange-400",
-    statusBg: "bg-orange-400/10",
-  },
-  {
-    name: "Linear",
-    applied: 4,
-    status: "Pending",
-    statusColor: "text-amber-400",
-    statusBg: "bg-amber-400/10",
-  },
-  {
-    name: "Figma",
-    applied: 2,
-    status: "Rejected",
-    statusColor: "text-red-400",
-    statusBg: "bg-red-400/10",
-  },
-  {
-    name: "Notion",
-    applied: 1,
-    status: "Interview",
-    statusColor: "text-emerald-400",
-    statusBg: "bg-emerald-400/10",
-  },
-];
-
 export default function AnalyticsPage() {
   return (
     <div className="animate-fade-in-up">
       <AnalyticsHead />
       <div className="flex flex-col gap-[20px] md:gap-[30px]">
         <AnalyticsStats />
-        <MonthlyApplications
-          topCompanies={topCompanies}
-          monthlyData={monthlyData}
-          maxApps={maxApps}
-        />
+        <MonthlyApplications monthlyData={monthlyData} maxApps={maxApps} />
         <DemandSkills />
       </div>
     </div>

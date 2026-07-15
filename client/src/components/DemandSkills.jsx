@@ -14,6 +14,8 @@ const DemandSkills = () => {
 
   const skillDemand = latestResumeData?.atsAnalysis?.inDemandSkills || [];
   if (isLatestResumeLoading) return <LoadingWrpNew />;
+  if (latestResumeError)
+    return <div className="text-red-500">Error loading demand skills..</div>;
   return (
     <CardWrp>
       <div className="flex items-center gap-2 mb-6">

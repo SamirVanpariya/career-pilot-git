@@ -675,7 +675,7 @@ export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;
-    console.log("pw",currentPassword,newPassword)
+    console.log("pw", currentPassword, newPassword);
 
     const user = await prisma.user.findUnique({
       where: {
@@ -703,5 +703,41 @@ export const changePassword = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Delete Account
+
+export const deleteAccount = async (req, res) => {
+  try {
+    await prisma.user.delete({
+      where: {
+        id: req.user.id,
+      },
+    });
+
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
   }
 };
