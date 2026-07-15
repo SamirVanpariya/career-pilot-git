@@ -167,7 +167,17 @@ export const getMe = async (req, res) => {
       where: {
         id: req.user.id,
       },
-      include: {
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        agreeToTerms: true,
+        createdAt: true,
+        resetToken: true,
+        resetTokenExpiry: true,
+        refreshToken: true,
+        googleId: true,
+        provider: true,
         profile: true,
         resumes: true,
       },
