@@ -23,9 +23,9 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:migrate": "prisma migrate dev && prisma generate",
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "db:migrate": "prisma migrate dev && prisma generate"
   },
   "keywords": [],
   "author": "",
