@@ -1,3 +1,18 @@
+Branch for > client UI backup (static) --- client/static-ui-backup
+
+
+USED BELOW LIB AND TOOLS -------------
+
+TOAST_NOTIFICATION (react-hot-toast): https://react-hot-toast.com/
+
+CLIENT SIDE DATA FETCHING (Redux Toolkit): https://redux-toolkit.js.org/tutorials/quick-start
+
+SERVER SIDE DATA FETCHING (TanStack Query): https://tanstack.com
+
+API CALLING (Axios): https://axios-http.com/docs/intro
+
+FORM SUBMISSION AND VALIDATION (React Hook Form + yup for validation): https://react-hook-form.com/
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
