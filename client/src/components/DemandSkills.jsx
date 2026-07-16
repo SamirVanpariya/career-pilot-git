@@ -1,10 +1,17 @@
+"use client";
 import { Grid } from "@mui/material";
 import CardWrp from "./CardWrp";
 import { TrendingUp } from "lucide-react";
+import { useLatestResume } from "@/hooks/useLatestResume";
+import LoadingWrpNew from "./common/LoadingWrpNew";
 
-const DemandSkills = ({ skillDemand }) => {
+const DemandSkills = () => {
+  const { data: latestResumeData, isLoading: isLatestResumeLoading } =
+    useLatestResume();
+
+  const skillDemand = latestResumeData?.atsAnalysis?.inDemandSkills || [];
+  if (isLatestResumeLoading) return <LoadingWrpNew />;
   return (
-    
     <CardWrp>
       <div className="flex items-center gap-2 mb-6">
         <TrendingUp
@@ -21,21 +28,26 @@ const DemandSkills = ({ skillDemand }) => {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <span className="text-zinc-300 text-sm font-medium">
-                  {item.skill}
+                  {item?.skill}
                 </span>
                 <span className="text-white text-sm font-bold">
-                  {item.demand}%
+                  {item?.demandPercentage || "-"}%
                 </span>
               </div>
               <div className="h-1.5 w-full rounded-full bg-white/5">
                 <div
                   className="progress-bar"
-                  style={{ width: `${item.demand}%` }}
+                  style={{ width: `${item?.demandPercentage}%` }}
                 />
               </div>
             </div>
           </Grid>
         ))}
+        {skillDemand.length <= 0 && (
+          <div className="text-center py-8">
+            <p className="text-zinc-400">No in-demand skills found</p>
+          </div>
+        )}
       </Grid>
     </CardWrp>
   );

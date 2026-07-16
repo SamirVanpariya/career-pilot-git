@@ -3,9 +3,11 @@ import DangerButton from "@/components/atoms/buttons/DangerButton";
 import PrimaryButton from "@/components/atoms/buttons/PrimaryButton";
 import SecondaryButton from "@/components/atoms/buttons/SecondaryButton";
 import Colors from "@/components/atoms/colors/Colors";
+import CustomDateTimePicker from "@/components/atoms/date-picker/CustomDateTimePicker";
 import Input from "@/components/atoms/input/Input";
 import Select from "@/components/atoms/select/Select";
 import Textarea from "@/components/atoms/textarea/Textarea";
+import dayjs from "dayjs";
 import { Lock } from "lucide-react";
 import React, { useState } from "react";
 
@@ -23,8 +25,21 @@ const page = () => {
   ];
   ``;
 
+  const [dateValue, setDateValue] = useState(dayjs("2026-06-20T10:00:00"));
+  const onChangeDate = (newValue) => {
+    setDateValue(newValue);
+  };
   return (
     <div className="p-5 flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <div className="my-5">
+        <CustomDateTimePicker
+          label="Application Date"
+          value={dateValue}
+          onChange={onChangeDate}
+          error={"static error"}
+        />
+      </div>
+
       <Input
         type="text"
         name="password"

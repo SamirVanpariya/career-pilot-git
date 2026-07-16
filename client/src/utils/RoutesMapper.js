@@ -5,5 +5,6 @@ export const sidebarTopNavigation = [
   { path: "/job-tracker" },
   { path: "/interviews" },
   { path: "/analytics" },
+  { path: "/notification" },
   { path: "/settings" },
 ];

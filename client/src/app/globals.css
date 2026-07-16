@@ -68,7 +68,10 @@ p {
 
 /* ── Glassmorphism ── */
 .glass-card {
-  background: #1f1e1eb3;
+  background: linear-gradient(to bottom right,
+      #18181b 0%,
+      #09090b 50%,
+      #000000 80%);
   border: 1px solid var(--glass-border);
   -webkit-backdrop-filter: blur(24px);
   transition: border-color .2s, box-shadow .2s;
@@ -78,7 +81,7 @@ p {
 }
 
 .glass-card:hover {
-  border-color: var(--glass-border-hover);
+  border-color: #ffffff21;
 }
 
 .glass-nav {
@@ -470,4 +473,61 @@ p {
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
+}
+
+.swiper-slide {
+  height: auto !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ff6b35 !important;
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 107, 53, 0.12);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+}
+
+.swiper-button-next svg,
+.swiper-button-prev svg {
+  width: 15px !important;
+  height: 15px !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 14px !important;
+  font-weight: 700;
+}
+
+/* Move arrows slightly */
+.swiper-button-prev {
+  left: -8px !important;
+}
+
+.swiper-button-next {
+  right: -8px !important;
+}
+
+.swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.swiper-pagination-bullet-active {
+  background: #ff6b35 !important;
+}
+
+.swiper {
+  padding-bottom: 40px;
+}
+
+.google-btn .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb {
+  justify-content: center !important;
+}
+
+.google-btn .nsm7Bb-HzV7m-LgbsSe-BPrWId {
+  flex-grow: unset !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
 }

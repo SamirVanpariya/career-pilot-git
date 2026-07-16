@@ -1,9 +1,3 @@
-import React from "react";
-
-/**
- * CardWrp — glassmorphism section wrapper.
- * Accepts an optional `className` for per-use overrides.
- */
 const CardWrp = ({ children, className = "" }) => {
   return (
     <div

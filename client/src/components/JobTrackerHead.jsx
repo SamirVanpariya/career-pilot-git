@@ -19,7 +19,7 @@ const JobTrackerHead = () => {
       </div>
 
       <PrimaryButton onClick={handleOpen}>
-        <Plus className="w-4 h-4" /> Add Job
+        <Plus className="w-4 h-4" /> Add Job Application
       </PrimaryButton>
       <AddJobModal open={isModalOpen} onClose={handleClose} />
     </div>

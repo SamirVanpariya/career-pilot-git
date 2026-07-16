@@ -10,7 +10,7 @@ const DeleteJobModal = ({
   jobId,
   loading = false,
 }) => {
-  console.log("electedJobId", jobId);
+  console.log("selectedJobId", jobId);
 
   return (
     <CommonModal open={open} onClose={onClose} maxWidth="sm">

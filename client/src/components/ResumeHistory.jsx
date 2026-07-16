@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   FileText,
   Eye,
@@ -14,95 +14,29 @@ import {
   Link as LinkIcon,
   FileCheck,
   AlertTriangle,
+  FileBarChart2,
+  Loader2,
+  SearchCheckIcon,
 } from "lucide-react";
 import CardWrp from "./CardWrp";
 import CommonModal from "./common/modal/CommonModal";
-
-const MOCK_INITIAL_RESUMES = [
-  {
-    id: "res_mock1",
-    title: "Senior Frontend Engineer Resume",
-    name: "Samir Patel",
-    email: "samir.patel@example.com",
-    phone: "+1 (555) 019-2834",
-    skills: "React, Next.js, TypeScript, TailwindCSS, Node.js, GraphQL",
-    experience: "Senior Level (5-8 years)",
-    linkedin: "https://linkedin.com/in/samirpatel",
-    portfolio: "https://samirpatel.dev",
-    notes:
-      "Focused on React performance tuning and team leadership experiences.",
-    fileName: "Samir_Patel_Resume_2026.pdf",
-    fileSize: "1.24 MB",
-    createdAt: "2026-05-25T14:32:00.000Z",
-    score: 85,
-  },
-  {
-    id: "res_mock2",
-    title: "Fullstack Web Developer",
-    name: "Samir Patel",
-    email: "samir.patel@example.com",
-    phone: "+1 (555) 019-2834",
-    skills: "Vue.js, Express, Postgres, Docker, AWS, CI/CD",
-    experience: "Mid Level (3-5 years)",
-    linkedin: "https://linkedin.com/in/samirpatel",
-    portfolio: "https://samirpatel.dev",
-    notes: "Version for backend/devops focused roles.",
-    fileName: "Samir_Patel_Fullstack_Resume.pdf",
-    fileSize: "1.85 MB",
-    createdAt: "2026-05-18T09:15:00.000Z",
-    score: 72,
-  },
-];
+import {
+  analyzeResumeAPI,
+  deleteResumeAPI,
+  getResumesAPI,
+} from "@/services/resumeService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import LoadingWrpNew from "./common/LoadingWrpNew";
+import { useRouter } from "next/navigation";
 
 const ResumeHistory = () => {
-  const [resumes, setResumes] = useState([]);
   const [selectedResume, setSelectedResume] = useState(null);
   const [resumeToDelete, setResumeToDelete] = useState(null);
-
-  const loadResumes = () => {
-    try {
-      const stored = localStorage.getItem("uploaded_resumes");
-      if (stored) {
-        setResumes(JSON.parse(stored));
-      } else {
-        localStorage.setItem(
-          "uploaded_resumes",
-          JSON.stringify(MOCK_INITIAL_RESUMES),
-        );
-        setResumes(MOCK_INITIAL_RESUMES);
-      }
-    } catch (err) {
-      console.error("Failed to load resumes", err);
-    }
-  };
-
-  useEffect(() => {
-    loadResumes();
-
-    // Listen to uploads from ResumeUploadModal
-    window.addEventListener("resume-updated", loadResumes);
-    return () => {
-      window.removeEventListener("resume-updated", loadResumes);
-    };
-  }, []);
-
-  const handleDeleteClick = (resume, e) => {
-    e.stopPropagation();
-    setResumeToDelete(resume);
-  };
-
-  const handleConfirmDelete = () => {
-    if (!resumeToDelete) return;
-    try {
-      const updated = resumes.filter((r) => r.id !== resumeToDelete.id);
-      localStorage.setItem("uploaded_resumes", JSON.stringify(updated));
-      setResumes(updated);
-      setResumeToDelete(null);
-    } catch (err) {
-      console.error("Failed to delete resume", err);
-    }
-  };
-
+  const [analyzingResumeId, setAnalyzingResumeId] = useState(null);
+  const queryClient = useQueryClient();
+  const route = useRouter();
   const formatDate = (isoString) => {
     if (!isoString) return "";
     const date = new Date(isoString);
@@ -121,6 +55,75 @@ const ResumeHistory = () => {
     return "text-orange-400 bg-orange-500/10 border-orange-500/20";
   };
 
+  // fetching all resumes of the user
+  const {
+    data: resumesData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["resumes"],
+    queryFn: () => getResumesAPI(),
+    onSuccess: (data) => {
+      console.log("Resumes loaded successfully:", data);
+    },
+    onError: (error) => {
+      console.error("Failed to load resumes:", error);
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const handleDeleteClick = (resume, e) => {
+    e.stopPropagation();
+    setResumeToDelete(resume);
+  };
+
+  const handleConfirmDelete = (resumeId) => {
+    if (!resumeId) return;
+    deleteResume(resumeId);
+  };
+  //   Resume Delete Mutation
+  const { mutate: deleteResume, isPending: deleteResumeLoading } = useMutation({
+    mutationFn: deleteResumeAPI,
+    mutationKey: ["resumes"],
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["resumes"] });
+      toast.success("Resume deleted successfully");
+      setResumeToDelete(null);
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to delete resume.");
+    },
+  });
+
+  //  CHECK ATS (RESUME AI ANALYSIS) MUTATION
+  const { mutate: analyzeResume, isPending: analyzeResumeLoading } =
+    useMutation({
+      mutationFn: analyzeResumeAPI,
+      mutationKey: ["resumes"],
+      onSuccess: (data) => {
+        queryClient.invalidateQueries({ queryKey: ["resumes"] });
+        toast.success("Resume analyzed successfully");
+        setAnalyzingResumeId(null);
+      },
+      onError: (error) => {
+        toast.error(error?.message || "Failed to analyze resume.");
+        setAnalyzingResumeId(null);
+      },
+    });
+
+  const handleAtsAnalysis = (resumeId) => {
+    setAnalyzingResumeId(resumeId);
+    analyzeResume(resumeId);
+  };
+
+  const viewResumeATSAnalysis = (resumeId) => {
+    route.push(`/resume-analysis/${resumeId}`);
+  };
+  console.log("fire", resumesData);
+  if (isLoading) return <LoadingWrpNew />;
+  if (isError) return <p>Error: {error?.message}</p>;
+
   return (
     <CardWrp className="w-full">
       <div className="flex flex-col gap-4">
@@ -134,11 +137,11 @@ const ResumeHistory = () => {
             </p>
           </div>
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
-            {resumes.length} Total
+            {resumesData.length} Total
           </span>
         </div>
 
-        {resumes.length === 0 ? (
+        {resumesData.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 border border-dashed border-zinc-800 rounded-xl bg-black/20 text-center">
             <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 mb-3">
               <FileText className="w-6 h-6" />
@@ -151,7 +154,7 @@ const ResumeHistory = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {resumes.map((resume) => (
+            {resumesData.map((resume) => (
               <div
                 key={resume.id}
                 className="glass-card border border-white/5 hover:border-orange-500/20 bg-zinc-900/40 rounded-xl p-4 flex flex-col justify-between gap-4 transition-all duration-200 group relative overflow-hidden"
@@ -164,36 +167,29 @@ const ResumeHistory = () => {
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-white text-sm font-bold truncate group-hover:text-orange-400 transition-colors">
-                        {resume.title}
+                        {resume?.title}
                       </h3>
                       <p className="text-zinc-400 text-xs font-medium truncate mt-0.5">
-                        Candidate: {resume.name}
+                        Candidate: {resume?.name}
                       </p>
                     </div>
                   </div>
-
-                  {resume.score && (
-                    <div
-                      className={`flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-full border ${getScoreColor(resume.score)}`}
-                    >
-                      <Award className="w-3 h-3" />
-                      <span>{resume.score} ATS</span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Details grid */}
                 <div className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-zinc-500 text-[11px] border-t border-white/5 pt-3">
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <Calendar className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                    <span className="truncate">
-                      {formatDate(resume.createdAt)}
+                    <Calendar className="w-3.5 h-3.5 text-zinc-200 shrink-0" />
+                    <span className="truncate text-zinc-100">
+                      {formatDate(resume?.createdAt)}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <HardDrive className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                    <span className="truncate">
-                      {resume.fileSize || "Unknown size"}
+                    <HardDrive className="w-3.5 h-3.5 text-zinc-200 shrink-0" />
+                    <span className="truncate text-zinc-100">
+                      {resume?.fileResult?.[1]?.bytes
+                        ? `${(Number(resume.fileResult[1].bytes) / 1024).toFixed(2)} KB`
+                        : "Unknown size"}
                     </span>
                   </div>
                 </div>
@@ -202,7 +198,7 @@ const ResumeHistory = () => {
                 <div className="flex items-center gap-2 mt-1 pt-3 border-t border-white/5">
                   <button
                     onClick={() => setSelectedResume(resume)}
-                    className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors border border-zinc-700"
+                    className="flex-1 cursor-pointer flex items-center justify-center gap-1.5 h-9 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold transition-colors border border-zinc-700"
                   >
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Details</span>
@@ -214,6 +210,62 @@ const ResumeHistory = () => {
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
+                </div>
+                <div className="flex items-center justify-end">
+                  {!resume?.isAtsAvailable ? (
+                    <button
+                      onClick={() => handleAtsAnalysis(resume.id)}
+                      disabled={analyzingResumeId === resume.id}
+                      className="
+        inline-flex items-center gap-2
+        px-4 py-2
+        rounded-xl
+        bg-zinc-900
+        border border-zinc-700
+        text-zinc-100
+        text-sm font-medium
+        transition-all duration-200
+        hover:bg-zinc-800
+        hover:border-cyan-500/50
+        hover:shadow-lg hover:shadow-cyan-500/10
+        disabled:opacity-60
+        disabled:cursor-not-allowed
+        cursor-pointer
+      "
+                    >
+                      {analyzingResumeId === resume.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <SearchCheckIcon className="h-4 w-4 text-cyan-400" />
+                          Check ATS Analysis
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => viewResumeATSAnalysis(resume.id)}
+                      className="
+                      inline-flex items-center gap-2
+                      px-4 py-2
+                      rounded-xl
+                      bg-gradient-to-r
+                      from-orange-600
+                      to-orange-800
+                      text-white
+                      text-sm font-semibold
+                      transition-all duration-200
+                      active:scale-[0.98]
+                      cursor-pointer
+                    "
+                    >
+                      <FileBarChart2 className="h-4 w-4" />
+                      View ATS Report
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -229,7 +281,7 @@ const ResumeHistory = () => {
           title="Resume Profile & Metadata"
           maxWidth="md"
         >
-          <div className="space-y-6 text-white max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-6 text-white max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
             {/* Header info card */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#141414] border border-zinc-800 rounded-xl">
               <div className="flex items-center gap-3">
@@ -238,24 +290,30 @@ const ResumeHistory = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    {selectedResume.title}
+                    {selectedResume?.title}
                   </h3>
                   <p className="text-zinc-400 text-xs mt-0.5">
-                    Uploaded {formatDate(selectedResume.createdAt)}
+                    Uploaded {formatDate(selectedResume?.createdAt)}
                   </p>
                 </div>
               </div>
-              {selectedResume.score && (
-                <div className="flex items-center gap-2 self-start sm:self-center">
-                  <span className="text-zinc-400 text-xs">AI Evaluation:</span>
-                  <div
-                    className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${getScoreColor(selectedResume.score)}`}
-                  >
-                    <Award className="w-4 h-4" />
-                    <span>{selectedResume.score} / 100 ATS Score</span>
-                  </div>
+              {/* {selectedResume?.score && ( */}
+              <div className="flex items-center gap-2 self-start sm:self-center">
+                <span className="text-zinc-400 text-xs">AI Evaluation:</span>
+                <div
+                  className={`flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${getScoreColor(selectedResume?.score)}`}
+                >
+                  {selectedResume?.atsScore ? (
+                    <>
+                      <Award className="w-4 h-4" />
+                      <span>{selectedResume?.atsScore}/100 ATS Score</span>
+                    </>
+                  ) : (
+                    "Pending ATS "
+                  )}
                 </div>
-              )}
+              </div>
+              {/* )} */}
             </div>
 
             {/* Profile Grid */}
@@ -274,7 +332,7 @@ const ResumeHistory = () => {
                         Name
                       </p>
                       <p className="font-semibold text-zinc-200">
-                        {selectedResume.name}
+                        {selectedResume?.name}
                       </p>
                     </div>
                   </div>
@@ -286,12 +344,12 @@ const ResumeHistory = () => {
                         Email
                       </p>
                       <p className="font-semibold text-zinc-200 truncate">
-                        {selectedResume.email}
+                        {selectedResume?.email}
                       </p>
                     </div>
                   </div>
 
-                  {selectedResume.phone && (
+                  {selectedResume?.phone && (
                     <div className="flex items-center gap-3 text-sm border-t border-zinc-800/60 pt-2.5">
                       <Phone className="w-4.5 h-4.5 text-orange-400 shrink-0" />
                       <div>
@@ -299,7 +357,7 @@ const ResumeHistory = () => {
                           Phone
                         </p>
                         <p className="font-semibold text-zinc-200">
-                          {selectedResume.phone}
+                          {selectedResume?.phone}
                         </p>
                       </div>
                     </div>
@@ -313,7 +371,7 @@ const ResumeHistory = () => {
                           Experience Level
                         </p>
                         <p className="font-semibold text-zinc-200">
-                          {selectedResume.experience}
+                          {selectedResume?.experience}
                         </p>
                       </div>
                     </div>
@@ -334,18 +392,22 @@ const ResumeHistory = () => {
                       <p className="text-[10px] text-zinc-500 uppercase">
                         Uploaded Document
                       </p>
-                      <p className="font-semibold text-zinc-200 truncate">
-                        {selectedResume.fileName || "unknown_file"}
-                      </p>
-                      <p className="text-[10px] text-zinc-400">
-                        {selectedResume.fileSize || ""}
-                      </p>
+                      <Link
+                        href={selectedResume?.file}
+                        target="_blank"
+                        className="w-[95%] truncate font-semibold text-blue-500 block"
+                      >
+                        {selectedResume?.file || "unknown_file"}
+                      </Link>
+                      {/* <p className="text-[10px] text-zinc-400">
+                        {selectedResume?.file || "unknown_file"}
+                      </p> */}
                     </div>
                   </div>
 
-                  {(selectedResume.linkedin || selectedResume.portfolio) && (
+                  {(selectedResume?.linkedin || selectedResume?.portfolio) && (
                     <div className="border-t border-zinc-800/60 pt-2.5 space-y-2">
-                      {selectedResume.linkedin && (
+                      {selectedResume?.linkedin && (
                         <div className="flex items-center gap-3 text-sm">
                           <LinkIcon className="w-4 h-4 text-orange-300 shrink-0" />
                           <div className="min-w-0">
@@ -353,18 +415,18 @@ const ResumeHistory = () => {
                               LinkedIn
                             </p>
                             <a
-                              href={selectedResume.linkedin}
+                              href={selectedResume?.linkedin}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs text-orange-400 hover:underline truncate block"
                             >
-                              {selectedResume.linkedin}
+                              {selectedResume?.linkedin}
                             </a>
                           </div>
                         </div>
                       )}
 
-                      {selectedResume.portfolio && (
+                      {selectedResume?.portfolio && (
                         <div className="flex items-center gap-3 text-sm pt-1">
                           <LinkIcon className="w-4 h-4 text-orange-300 shrink-0" />
                           <div className="min-w-0">
@@ -372,12 +434,12 @@ const ResumeHistory = () => {
                               Portfolio
                             </p>
                             <a
-                              href={selectedResume.portfolio}
+                              href={selectedResume?.portfolio}
                               target="_blank"
                               rel="noreferrer"
                               className="text-xs text-orange-400 hover:underline truncate block"
                             >
-                              {selectedResume.portfolio}
+                              {selectedResume?.portfolio}
                             </a>
                           </div>
                         </div>
@@ -395,47 +457,57 @@ const ResumeHistory = () => {
               </h4>
 
               <div className="space-y-4 bg-[#111] p-5 rounded-xl border border-zinc-800/80">
-                {selectedResume.skills && (
+                {selectedResume?.skills && (
                   <div>
                     <p className="text-[10px] text-zinc-500 uppercase mb-2 font-semibold">
-                      Parsed Skills
+                      Skills
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {selectedResume.skills.split(",").map((skill, index) => (
+                      {selectedResume?.skills?.map((skill, index) => (
                         <span
                           key={index}
                           className="text-xs px-2.5 py-1 rounded bg-zinc-800 text-zinc-200 border border-zinc-700/60 font-medium"
                         >
-                          {skill.trim()}
+                          {skill?.trim()}
                         </span>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {selectedResume.notes && (
+                {selectedResume?.notes && (
                   <div className="border-t border-zinc-800/60 pt-4">
                     <p className="text-[10px] text-zinc-500 uppercase mb-1 font-semibold">
                       User Notes
                     </p>
                     <p className="text-sm text-zinc-300 leading-relaxed italic bg-black/20 p-3 rounded-lg border border-zinc-800/40">
-                      "{selectedResume.notes}"
+                      "{selectedResume?.notes}"
                     </p>
                   </div>
                 )}
               </div>
             </div>
+            <div className="space-y-4 pt-2">
+              <h4 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+                Parsed Text From Resume (pdf)
+              </h4>
 
-            {/* Footer */}
-            <div className="flex items-center justify-end pt-4 border-t border-zinc-800 mt-6">
-              <button
-                type="button"
-                onClick={() => setSelectedResume(null)}
-                className="px-6 h-[40px] rounded-lg text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-colors focus:outline-none"
-              >
-                Close Profile
-              </button>
+              <div className="space-y-4 bg-[#111] p-5 rounded-xl border border-zinc-800/80">
+                <p className="text-sm text-zinc-300 leading-relaxed italic bg-black/20 p-3 rounded-lg border border-zinc-800/40">
+                  "{selectedResume?.parsedText || "No parsed text found"}"
+                </p>
+              </div>
             </div>
+          </div>
+          {/* Footer */}
+          <div className="flex items-center justify-end pt-4 border-t border-zinc-800 mt-6">
+            <button
+              type="button"
+              onClick={() => setSelectedResume(null)}
+              className="px-6 h-[40px] rounded-lg text-sm font-medium text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 transition-colors focus:outline-none"
+            >
+              Close Profile
+            </button>
           </div>
         </CommonModal>
       )}
@@ -473,10 +545,17 @@ const ResumeHistory = () => {
               </button>
               <button
                 type="button"
-                onClick={handleConfirmDelete}
+                onClick={() => handleConfirmDelete(resumeToDelete?.id)}
                 className="px-4 h-9 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600 transition-all border border-red-500"
               >
-                Confirm Delete
+                {deleteResumeLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Deleting...</span>
+                  </div>
+                ) : (
+                  "Confirm Delete"
+                )}
               </button>
             </div>
           </div>

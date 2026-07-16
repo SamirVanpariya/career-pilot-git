@@ -1,11 +1,11 @@
 import { FileText } from "lucide-react";
 import { Grid } from "@mui/material";
 
-const ATSScore = ({ overallScore }) => {
+const ATSScore = ({ resumeData }) => {
   return (
     <Grid size={{ xs: 12, md: 4 }}>
       <div className="glass-card rounded-2xl p-6 flex flex-col items-center text-center gap-4 h-full">
-        <div
+        {/* <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(255,87,34,0.12)" }}
         >
@@ -13,9 +13,27 @@ const ATSScore = ({ overallScore }) => {
             className="w-6 h-6"
             style={{ color: "var(--color-orange)" }}
           />
-        </div>
+        </div> */}
         <div>
-          <p className="text-zinc-400 text-sm">Overall ATS Score</p>
+          <p
+            className="
+    inline-flex
+    items-center
+    px-4
+    py-1.5
+    rounded-full
+    text-[16px]
+    md:text-[18px]
+    font-bold
+    text-emerald-300
+    bg-emerald-500/10
+    border
+    border-emerald-500/20
+    backdrop-blur-sm
+  "
+          >
+            ✨ Overall ATS Score
+          </p>
           <div className="mt-3 relative w-36 h-36 mx-auto">
             <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
               <circle
@@ -35,7 +53,7 @@ const ATSScore = ({ overallScore }) => {
                 fill="none"
                 strokeLinecap="round"
                 strokeDasharray={`${2 * Math.PI * 50}`}
-                strokeDashoffset={`${2 * Math.PI * 50 * (1 - overallScore / 100)}`}
+                strokeDashoffset={`${2 * Math.PI * 50 * (1 - resumeData?.atsScore / 100)}`}
                 className="transition-all duration-700"
               />
               <defs>
@@ -53,7 +71,7 @@ const ATSScore = ({ overallScore }) => {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-4xl font-black text-white">
-                {overallScore}
+                {resumeData?.atsScore}
               </span>
               <span className="text-xs text-[var(--color-text-secondary)] tracking-widest">
                 / 100
@@ -62,15 +80,14 @@ const ATSScore = ({ overallScore }) => {
           </div>
         </div>
         <div className="w-full pt-2 border-t border-white/5">
-          <p className="text-zinc-400 text-xs">
-            Your resume ranks in the{" "}
+          <p className="text-zinc-400 text-sm">
+            Your resume status is{" "}
             <span
-              className="font-bold"
+              className="ml-2 font-bold text-[20px] capitalize"
               style={{ color: "var(--color-orange-light)" }}
             >
-              top 26%
+              {resumeData?.atsAnalysis?.scoringStatus}
             </span>{" "}
-            of candidates.
           </p>
         </div>
       </div>
