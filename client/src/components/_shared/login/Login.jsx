@@ -77,7 +77,7 @@ export default function Login() {
   const handleGoogleLogin = async (response) => {
     const token = response.credential; // Google JWT
 
-    const res = await fetch("http://localhost:5000/api/auth/google", {
+    const res = await fetch("https://career-pilot-git.onrender.com/api/auth/google", {
       method: "POST",
       credentials: "include",
       headers: {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://career-pilot-git.onrender.com/api",
   // headers: {
   //   "Content-Type": "application/json",
   // },
@@ -22,7 +22,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL || "https://career-pilot-git.onrender.com/api"}/auth/refresh`,
           {},
           { withCredentials: true }
         );

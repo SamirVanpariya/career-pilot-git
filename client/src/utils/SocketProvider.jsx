@@ -29,7 +29,7 @@ export const SocketProvider = ({ children }) => {
 
     // Auth is cookie-based — withCredentials sends the httpOnly accessToken cookie
     const socket = io(
-      process.env.NEXT_PUBLIC_BE_PORT || "http://localhost:5000",
+      process.env.NEXT_PUBLIC_BE_PORT || "https://career-pilot-git.onrender.com/",
       {
         withCredentials: true,
         transports: ["websocket"],
