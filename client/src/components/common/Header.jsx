@@ -69,7 +69,7 @@ export default function Header() {
                     {/* Inner content */}
                     <div className="absolute inset-[2px] rounded-full bg-black flex items-center justify-center">
                       <Image
-                        src={user?.profile?.avatar}
+                        src={user?.profile?.avatar || "/images/profile-defualt.jpg"}
                         alt="avatar"
                         width={41}
                         height={41}

@@ -77,19 +77,24 @@ export default function Login() {
   const handleGoogleLogin = async (response) => {
     const token = response.credential; // Google JWT
 
-    const res = await fetch("https://career-pilot-git.onrender.com/api/auth/google", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await fetch(
+      "https://career-pilot-git.onrender.com/api/auth/google",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+        }),
       },
-      body: JSON.stringify({
-        token,
-      }),
-    });
+    );
     const data = await res.json();
     console.log("Google login response >>>> ", data);
+    queryClient.setQueryData(["me"]);
     toast.success(data?.message || "Google login successful!");
+    router.replace("/dashboard");
     router.refresh();
   };
 
