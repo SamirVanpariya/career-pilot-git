@@ -17,7 +17,7 @@ const app = express();
 app.use(
   cors({
     // origin: "http://localhost:3000",
-    origin: process.env.CLIENT_URL || "https://career-pilot-ats.vercel.app/",
+    origin: process.env.CLIENT_URL || "https://career-pilot-ats.vercel.app",
     credentials: true,
   }),
 ); // >>>> it allows the frontend to make requests to the backend
